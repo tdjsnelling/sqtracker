@@ -3,9 +3,29 @@ import morgan from 'morgan'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
 import { createProxyMiddleware } from 'http-proxy-middleware'
+import mongoose from 'mongoose'
 import { handleRequest } from './controllers/tracker'
 
 dotenv.config()
+
+const connectToDb = () => {
+  console.log('initiating db connection...')
+  mongoose
+    .connect(process.env.SQ_MONGO_URL, {
+      useNewUrlParser: true,
+      useFindAndModify: false,
+      useUnifiedTopology: true,
+    })
+    .catch((e) => {
+      console.error(`error on initial db connection: ${e.message}`)
+      setTimeout(connectToDb, 5000)
+    })
+}
+connectToDb()
+
+mongoose.connection.once('open', () => {
+  console.log('connected to mongodb successfully')
+})
 
 const app = express()
 app.set('trust proxy', true)
@@ -41,7 +61,7 @@ app.use('/tracker', (req, res, next) => {
 app.use(
   '/tracker',
   createProxyMiddleware({
-    target: process.env.TRACKER_URL,
+    target: process.env.SQ_TRACKER_URL,
     changeOrigin: true,
     pathRewrite: {
       '^/tracker/(.*)/': '',
@@ -54,7 +74,7 @@ app.use(
 
 app.get('/', (req, res) => res.sendStatus(200))
 
-const port = process.env.PORT || 44444
+const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
   console.log(`tracker listening on port ${port}`)
 })
