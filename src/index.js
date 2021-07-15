@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import mongoose from 'mongoose'
 import { handleRequest } from './controllers/tracker'
+import { register, login } from './controllers/user'
 
 dotenv.config()
 
@@ -72,9 +73,14 @@ app.use(
   })
 )
 
-app.get('/', (req, res) => res.sendStatus(200))
+// root
+app.get('/', (req, res) => res.send('sqtracker running').status(200))
+
+// auth routes
+app.post('/register', register)
+app.post('/login', login)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
-  console.log(`tracker listening on port ${port}`)
+  console.log(`sqtracker running  http://localhost:${port}`)
 })
