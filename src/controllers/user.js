@@ -19,19 +19,18 @@ export const register = async (req, res) => {
           username: req.body.username,
           email: req.body.email,
           password: hash,
-          downloaded: {},
-          uploaded: {},
+          torrents: {},
           created,
         })
 
         newUser.uid = crypto
           .createHash('sha256')
-          .update(newUser._id)
+          .update(newUser._id.toString())
           .digest('hex')
 
         newUser.token = jwt.sign(
           { id: newUser._id, email: req.body.email, created: created },
-          process.env.JWT_SECRET
+          process.env.SQ_JWT_SECRET
         )
 
         const createdUser = await newUser.save()

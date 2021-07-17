@@ -1,4 +1,5 @@
 import querystring from 'querystring'
+import User from '../schema/user'
 
 const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 
@@ -7,7 +8,7 @@ const parseParams = (query) =>
     decodeURIComponent: unescape,
   })
 
-export const handleRequest = (req) => {
+export const handleAnnounce = async (req) => {
   const q = req.url.split('?')[1]
   const params = parseParams(q)
 
@@ -16,4 +17,17 @@ export const handleRequest = (req) => {
 
   const infoHash = binaryToHex(params.info_hash)
   console.log(infoHash)
+
+  await User.findOneAndUpdate(
+    { uid: req.userId },
+    {
+      $set: {
+        [`torrents.${infoHash}`]: {
+          uploaded: params.uploaded,
+          downloaded: params.downloaded,
+          left: params.left,
+        },
+      },
+    }
+  )
 }

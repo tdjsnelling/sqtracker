@@ -2,9 +2,15 @@ import express from 'express'
 import morgan from 'morgan'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import {
+  createProxyMiddleware,
+  responseInterceptor,
+} from 'http-proxy-middleware'
+import bodyParser from 'body-parser'
+import cors from 'cors'
 import mongoose from 'mongoose'
-import { handleRequest } from './controllers/tracker'
+import announce from './middleware/announce'
+import { handleAnnounce } from './controllers/tracker'
 import { register, login } from './controllers/user'
 
 dotenv.config()
@@ -54,24 +60,48 @@ app.use(
   })
 )
 
-app.use('/tracker', (req, res, next) => {
-  req.userId = req.path.split('/')[1]
-  next()
-})
+app.use('/tracker', announce)
 
 app.use(
   '/tracker',
   createProxyMiddleware({
     target: process.env.SQ_TRACKER_URL,
     changeOrigin: true,
+    selfHandleResponse: true,
     pathRewrite: {
       '^/tracker/(.*)/': '',
     },
     onProxyReq: (proxyReq, req) => {
-      if (req.path === 'announce') handleRequest(req)
+      if (req.path === 'announce') handleAnnounce(req)
     },
+    onProxyRes: responseInterceptor(
+      async (responseBuffer, proxyRes, req, res) => {
+        const response = responseBuffer.toString('utf8')
+        console.log('res', response)
+        return responseBuffer
+      }
+    ),
   })
 )
+
+app.use(
+  '/scrape',
+  createProxyMiddleware({
+    target: process.env.SQ_TRACKER_URL,
+    changeOrigin: true,
+  })
+)
+
+app.use(
+  '/stats',
+  createProxyMiddleware({
+    target: process.env.SQ_TRACKER_URL,
+    changeOrigin: true,
+  })
+)
+
+app.use(bodyParser.json())
+app.use(cors())
 
 // root
 app.get('/', (req, res) => res.send('sqtracker running').status(200))

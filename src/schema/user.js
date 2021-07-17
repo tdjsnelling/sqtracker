@@ -5,8 +5,7 @@ const User = new mongoose.Schema({
   email: String,
   password: String,
   uid: String,
-  downloaded: Object,
-  uploaded: Object,
+  torrents: Object,
   token: String,
   created: Number,
 })
