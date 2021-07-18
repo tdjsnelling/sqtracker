@@ -89,6 +89,9 @@ app.use(
   createProxyMiddleware({
     target: process.env.SQ_TRACKER_URL,
     changeOrigin: true,
+    pathRewrite: {
+      '^/scrape/(.*)/': '',
+    },
   })
 )
 
