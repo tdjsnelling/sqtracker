@@ -12,11 +12,11 @@ export const handleAnnounce = async (req) => {
   const q = req.url.split('?')[1]
   const params = parseParams(q)
 
-  console.log(`userId: ${req.userId}`)
-  console.log(`query: ${JSON.stringify(params, null, 2)}`)
-
   const infoHash = binaryToHex(params.info_hash)
-  console.log(infoHash)
+
+  console.log(`[DEBUG] userId: ${req.userId}`)
+  console.log(`[DEBUG] query: ${JSON.stringify(params, null, 2)}`)
+  console.log(`[DEBUG] infoHash: ${infoHash}`)
 
   await User.findOneAndUpdate(
     { uid: req.userId },

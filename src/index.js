@@ -9,9 +9,11 @@ import {
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import announce from './middleware/announce'
+import bencode from 'bencode'
+import announceParseUser from './middleware/announce'
 import { handleAnnounce } from './controllers/tracker'
 import { register, login } from './controllers/user'
+import { announce, otherTrackerRoutes } from './routes/tracker'
 
 dotenv.config()
 
@@ -60,48 +62,12 @@ app.use(
   })
 )
 
+// parse userId from pathname and append to query
+app.use('/tracker', announceParseUser)
+
+// proxy and manipulate tracker routes
 app.use('/tracker', announce)
-
-app.use(
-  '/tracker',
-  createProxyMiddleware({
-    target: process.env.SQ_TRACKER_URL,
-    changeOrigin: true,
-    selfHandleResponse: true,
-    pathRewrite: {
-      '^/tracker/(.*)/': '',
-    },
-    onProxyReq: (proxyReq, req) => {
-      if (req.path === 'announce') handleAnnounce(req)
-    },
-    onProxyRes: responseInterceptor(
-      async (responseBuffer, proxyRes, req, res) => {
-        const response = responseBuffer.toString('utf8')
-        console.log('res', response)
-        return responseBuffer
-      }
-    ),
-  })
-)
-
-app.use(
-  '/scrape',
-  createProxyMiddleware({
-    target: process.env.SQ_TRACKER_URL,
-    changeOrigin: true,
-    pathRewrite: {
-      '^/scrape/(.*)/': '',
-    },
-  })
-)
-
-app.use(
-  '/stats',
-  createProxyMiddleware({
-    target: process.env.SQ_TRACKER_URL,
-    changeOrigin: true,
-  })
-)
+app.use('/stats', otherTrackerRoutes)
 
 app.use(bodyParser.json())
 app.use(cors())

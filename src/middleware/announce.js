@@ -7,7 +7,7 @@ const userLookup = async (userId) => {
 
 const userLookupMemo = memoize(userLookup)
 
-const announce = async (req, res, next) => {
+const announceParseUser = async (req, res, next) => {
   const userId = req.path.split('/')[1]
   req.userId = userId
 
@@ -17,4 +17,4 @@ const announce = async (req, res, next) => {
   else next()
 }
 
-export default announce
+export default announceParseUser
