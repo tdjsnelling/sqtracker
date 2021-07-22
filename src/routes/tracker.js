@@ -2,9 +2,11 @@ import {
   createProxyMiddleware,
   responseInterceptor,
 } from 'http-proxy-middleware'
-import bencode from 'bencode'
 import dotenv from 'dotenv'
-import { handleAnnounce } from '../controllers/tracker'
+import {
+  handleAnnounceRequest,
+  handleAnnounceResponse,
+} from '../controllers/tracker'
 
 dotenv.config()
 
@@ -16,23 +18,9 @@ export const announce = createProxyMiddleware({
     '^/tracker/(.*)/': '',
   },
   onProxyReq: (proxyReq, req) => {
-    if (req.path === 'announce') handleAnnounce(req)
+    if (req.path === 'announce') handleAnnounceRequest(req)
   },
-  onProxyRes: responseInterceptor(
-    async (responseBuffer, proxyRes, req, res) => {
-      const trackerResponse = bencode.decode(responseBuffer)
-      const updatedResponse = {
-        ...trackerResponse,
-        interval: 30,
-        'min interval': 30,
-      }
-      const bencoded = bencode.encode(updatedResponse)
-      console.log(
-        `[DEBUG] tracker response: ${JSON.stringify(updatedResponse, null, 2)}`
-      )
-      return bencoded
-    }
-  ),
+  onProxyRes: responseInterceptor(handleAnnounceResponse),
 })
 
 export const otherTrackerRoutes = createProxyMiddleware({

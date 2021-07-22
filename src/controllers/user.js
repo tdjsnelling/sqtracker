@@ -27,9 +27,13 @@ export const register = async (req, res) => {
           .createHash('sha256')
           .update(newUser._id.toString())
           .digest('hex')
+          .slice(0, 10)
 
         newUser.token = jwt.sign(
-          { id: newUser._id, email: req.body.email, created: created },
+          {
+            id: newUser._id,
+            created: created,
+          },
           process.env.SQ_JWT_SECRET
         )
 
@@ -39,6 +43,7 @@ export const register = async (req, res) => {
           res.send({
             token: createdUser.token,
             id: createdUser._id,
+            uid: createdUser.uid,
           })
         }
       } else {
@@ -65,6 +70,7 @@ export const login = async (req, res) => {
           res.send({
             token: user.token,
             id: user._id,
+            uid: user.uid,
           })
         } else {
           res.sendStatus(401)
