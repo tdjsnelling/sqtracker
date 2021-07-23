@@ -2,18 +2,12 @@ import express from 'express'
 import morgan from 'morgan'
 import chalk from 'chalk'
 import dotenv from 'dotenv'
-import {
-  createProxyMiddleware,
-  responseInterceptor,
-} from 'http-proxy-middleware'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
-import bencode from 'bencode'
-import announceParseUser from './middleware/announce'
-import { handleAnnounce } from './controllers/tracker'
+import handleAnnounce from './middleware/announce'
 import { register, login } from './controllers/user'
-import { announce, otherTrackerRoutes } from './routes/tracker'
+import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 
 dotenv.config()
 
@@ -62,11 +56,11 @@ app.use(
   })
 )
 
-// parse userId from pathname and append to query
-app.use('/tracker', announceParseUser)
+// custom logic implementing user tracking, ratio control etc
+app.use('/tracker/(.*)/announce', handleAnnounce)
 
 // proxy and manipulate tracker routes
-app.use('/tracker', announce)
+app.use('/tracker', userTrackerRoutes)
 app.use('/stats', otherTrackerRoutes)
 
 app.use(bodyParser.json())
