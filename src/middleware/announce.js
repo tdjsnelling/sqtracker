@@ -12,7 +12,8 @@ const userLookup = async (userId) => {
 
 const userLookupMemo = memoize(userLookup)
 
-const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
+export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
+export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
 
 const parseParams = (query) =>
   querystring.parse(query, null, null, {

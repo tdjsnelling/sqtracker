@@ -8,7 +8,11 @@ import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
 import { register, login } from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
-import { uploadTorrent, downloadTorrent } from './controllers/torrent'
+import {
+  uploadTorrent,
+  downloadTorrent,
+  fetchTorrent,
+} from './controllers/torrent'
 
 dotenv.config()
 
@@ -78,6 +82,7 @@ app.post('/login', login)
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/download/:infoHash', downloadTorrent)
+app.get('/torrent/:infoHash', fetchTorrent)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
