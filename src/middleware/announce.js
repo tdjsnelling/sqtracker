@@ -20,8 +20,10 @@ const parseParams = (query) =>
   })
 
 const handleAnnounce = async (req, res, next) => {
-  const userId = req.path.split('/')[1]
+  const userId = req.baseUrl.split('/')[2]
   req.userId = userId
+
+  console.log(`[DEBUG] userId: ${userId}`)
 
   const user = await userLookupMemo(userId)
 
@@ -37,7 +39,6 @@ const handleAnnounce = async (req, res, next) => {
 
   const infoHash = binaryToHex(params.info_hash)
 
-  console.log(`[DEBUG] userId: ${req.userId}`)
   console.log(`[DEBUG] query: ${JSON.stringify(params)}`)
   console.log(`[DEBUG] infoHash: ${infoHash}`)
 

@@ -8,6 +8,7 @@ import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
 import { register, login } from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
+import { uploadTorrent, downloadTorrent } from './controllers/torrent'
 
 dotenv.config()
 
@@ -57,10 +58,11 @@ app.use(
 )
 
 // custom logic implementing user tracking, ratio control etc
-app.use('/tracker/(.*)/announce', handleAnnounce)
+app.use('/tracker/*/announce', handleAnnounce)
 
 // proxy and manipulate tracker routes
-app.use('/tracker', userTrackerRoutes)
+app.use('/tracker/*/announce', userTrackerRoutes)
+app.use('/tracker/*/scrape', userTrackerRoutes)
 app.use('/stats', otherTrackerRoutes)
 
 app.use(bodyParser.json())
@@ -72,6 +74,10 @@ app.get('/', (req, res) => res.send('sqtracker running').status(200))
 // auth routes
 app.post('/register', register)
 app.post('/login', login)
+
+// torrent routes
+app.post('/torrent/upload', uploadTorrent)
+app.get('/torrent/download/:infoHash', downloadTorrent)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

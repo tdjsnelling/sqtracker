@@ -2,13 +2,14 @@ import mongoose from 'mongoose'
 
 const Torrent = new mongoose.Schema({
   infoHash: String,
-  file: String,
+  parsed: Object,
+  binary: String,
   uploadedBy: String,
   name: String,
   description: String,
+  image: String,
   downloads: Number,
-  leechers: Number,
-  seeders: Number,
+  anonymous: Boolean,
   created: Number,
 })
 
