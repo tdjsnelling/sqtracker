@@ -8,6 +8,7 @@ const User = new mongoose.Schema({
   torrents: Object,
   token: String,
   created: Number,
+  banned: Boolean,
 })
 
 export default mongoose.model('user', User)

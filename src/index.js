@@ -7,7 +7,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
 import auth from './middleware/auth'
-import { register, login } from './controllers/user'
+import { register, login, generateInvite } from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
   uploadTorrent,
@@ -81,6 +81,9 @@ app.post('/register', register)
 app.post('/login', login)
 
 app.use(auth)
+
+// user routes
+app.post('/generate-invite', generateInvite)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)
