@@ -6,6 +6,7 @@ import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
+import auth from './middleware/auth'
 import { register, login } from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
@@ -78,6 +79,8 @@ app.get('/', (req, res) => res.send('sqtracker running').status(200))
 // auth routes
 app.post('/register', register)
 app.post('/login', login)
+
+app.use(auth)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)

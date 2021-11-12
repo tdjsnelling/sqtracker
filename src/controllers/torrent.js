@@ -91,7 +91,11 @@ export const fetchTorrent = async (req, res) => {
     )
 
     if (!trackerRes.ok) {
-      res.status(500).send('Error performing tracker scrape')
+      const body = await trackerRes.text()
+      res
+        .status(500)
+        .send(`Error performing tracker scrape: ${trackerRes.status} ${body}`)
+      return
     }
 
     const bencoded = await trackerRes.text()
@@ -101,8 +105,8 @@ export const fetchTorrent = async (req, res) => {
 
     res.json({
       ...torrent,
-      seeders: scrapeForInfoHash.complete,
-      leechers: scrapeForInfoHash.incomplete,
+      seeders: scrapeForInfoHash?.complete,
+      leechers: scrapeForInfoHash?.incomplete,
     })
   } catch (e) {
     res.status(500).send(e.message)
