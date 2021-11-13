@@ -83,7 +83,7 @@ app.post('/login', login)
 app.use(auth)
 
 // user routes
-app.post('/generate-invite', generateInvite)
+app.get('/generate-invite', generateInvite)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)

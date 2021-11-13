@@ -22,7 +22,7 @@ export const register = async (req, res) => {
         res
           .status(403)
           .send(
-            'Registration is closed. Please provide a valid invitation token'
+            'Registration is currently invite only. Please provide a valid invitation token'
           )
         return
       }
