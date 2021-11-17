@@ -132,7 +132,6 @@ export const login = async (req, res) => {
         res.sendStatus(404)
       }
     } catch (err) {
-      console.error(err)
       res.status(500).send(err.message)
     }
   } else {
@@ -157,5 +156,123 @@ export const generateInvite = async (req, res) => {
 
   if (createdInvite) {
     res.send(createdInvite)
+  }
+}
+
+export const changePassword = async (req, res) => {
+  if (req.body.password && req.body.newPassword) {
+    try {
+      const user = await User.findOne({ _id: req.userId })
+
+      if (!user) {
+        res.status(404).send('User does not exist')
+        return
+      }
+
+      const matches = await bcrypt.compare(req.body.password, user.password)
+
+      if (!matches) {
+        res.status(401).send('Incorrect password')
+        return
+      }
+
+      const hash = await bcrypt.hash(req.body.newPassword, 10)
+
+      await User.findOneAndUpdate(
+        { _id: req.userId },
+        { $set: { password: hash } }
+      )
+
+      res.sendStatus(200)
+    } catch (err) {
+      res.status(500).send(err.message)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+}
+
+export const initiatePasswordReset = async (req, res) => {
+  if (req.body.email) {
+    try {
+      const user = await User.findOne({ email: req.body.email })
+
+      if (!user) {
+        res.status(404).send('User does not exist')
+        return
+      }
+
+      const token = jwt.sign(
+        {
+          user: req.body.email,
+          validUntil: Date.now() + 24 * 60 * 60 * 1000,
+          key: crypto
+            .createHash('sha256')
+            .update(user.password)
+            .digest('hex')
+            .substr(0, 6),
+        },
+        process.env.SQ_JWT_SECRET
+      )
+
+      res.send(token)
+    } catch (err) {
+      res.send(500).send(err.message)
+    }
+  } else {
+    res.sendStatus(400)
+  }
+}
+
+export const finalisePasswordReset = async (req, res) => {
+  if (req.body.email && req.body.newPassword && req.body.token) {
+    try {
+      const user = await User.findOne({ email: req.body.email })
+
+      if (!user) {
+        res.status(404).send('User does not exist')
+        return
+      }
+
+      const {
+        user: email,
+        validUntil,
+        key,
+      } = jwt.verify(req.body.token, process.env.SQ_JWT_SECRET)
+
+      if (email !== req.body.email) {
+        res.status(403).send('Token is invalid')
+        return
+      }
+
+      const calculatedKey = crypto
+        .createHash('sha256')
+        .update(user.password)
+        .digest('hex')
+        .substr(0, 6)
+
+      if (key !== calculatedKey) {
+        res.status(403).send('Token has already been used')
+        return
+      }
+
+      if (validUntil < Date.now()) {
+        res.status(403).send('Token has expired')
+        return
+      }
+
+      const newHash = await bcrypt.hash(req.body.newPassword, 10)
+
+      await User.findOneAndUpdate(
+        { _id: user._id },
+        { $set: { password: newHash } }
+      )
+
+      res.sendStatus(200)
+    } catch (err) {
+      res.status(500).send(err.message)
+    }
+  } else {
+    res.sendStatus(400)
   }
 }

@@ -7,7 +7,14 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
 import auth from './middleware/auth'
-import { register, login, generateInvite } from './controllers/user'
+import {
+  register,
+  login,
+  generateInvite,
+  changePassword,
+  initiatePasswordReset,
+  finalisePasswordReset,
+} from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
   uploadTorrent,
@@ -79,11 +86,15 @@ app.get('/', (req, res) => res.send('sqtracker running').status(200))
 // auth routes
 app.post('/register', register)
 app.post('/login', login)
+app.post('/reset-password/initiate', initiatePasswordReset)
+app.post('/reset-password/finalise', finalisePasswordReset)
 
+// everything from here on requires user auth
 app.use(auth)
 
 // user routes
-app.get('/generate-invite', generateInvite)
+app.get('/user/generate-invite', generateInvite)
+app.post('/user/change-password', changePassword)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)
@@ -92,5 +103,5 @@ app.get('/torrent/info/:infoHash', fetchTorrent)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
-  console.log(`sqtracker running  http://localhost:${port}`)
+  console.log(`■ sqtracker running http://localhost:${port}`)
 })
