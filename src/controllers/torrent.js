@@ -8,7 +8,7 @@ import { hexToBinary } from '../middleware/announce'
 export const uploadTorrent = async (req, res) => {
   if (req.body.torrent && req.body.name && req.body.description) {
     try {
-      const torrent = Buffer.from(req.body.torrent, 'binary')
+      const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
 
       const infoHash = crypto
@@ -16,7 +16,7 @@ export const uploadTorrent = async (req, res) => {
         .update(bencode.encode(parsed.info))
         .digest('hex')
 
-      const existingTorrent = Torrent.findOne({ infoHash }).lean()
+      const existingTorrent = await Torrent.findOne({ infoHash }).lean()
 
       if (existingTorrent) {
         res.status(409).send('Torrent with this info hash already exists')
@@ -59,7 +59,7 @@ export const downloadTorrent = async (req, res) => {
 
   const torrent = await Torrent.findOne({ infoHash }).lean()
   const { binary } = torrent
-  const parsed = bencode.decode(Buffer.from(binary, 'binary'))
+  const parsed = bencode.decode(Buffer.from(binary, 'base64'))
 
   parsed.announce = `${process.env.SQ_BASE_URL}/tracker/${uid}/announce`
 

@@ -88,7 +88,7 @@ app.get('/generate-invite', generateInvite)
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/download/:infoHash', downloadTorrent)
-app.get('/torrent/:infoHash', fetchTorrent)
+app.get('/torrent/info/:infoHash', fetchTorrent)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
