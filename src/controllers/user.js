@@ -162,7 +162,7 @@ export const generateInvite = async (req, res) => {
 export const changePassword = async (req, res) => {
   if (req.body.password && req.body.newPassword) {
     try {
-      const user = await User.findOne({ _id: req.userId })
+      const user = await User.findOne({ _id: req.userId }).lean()
 
       if (!user) {
         res.status(404).send('User does not exist')
@@ -195,7 +195,7 @@ export const changePassword = async (req, res) => {
 export const initiatePasswordReset = async (req, res) => {
   if (req.body.email) {
     try {
-      const user = await User.findOne({ email: req.body.email })
+      const user = await User.findOne({ email: req.body.email }).lean()
 
       if (!user) {
         res.status(404).send('User does not exist')
@@ -227,7 +227,7 @@ export const initiatePasswordReset = async (req, res) => {
 export const finalisePasswordReset = async (req, res) => {
   if (req.body.email && req.body.newPassword && req.body.token) {
     try {
-      const user = await User.findOne({ email: req.body.email })
+      const user = await User.findOne({ email: req.body.email }).lean()
 
       if (!user) {
         res.status(404).send('User does not exist')

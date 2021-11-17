@@ -23,6 +23,18 @@ export const uploadTorrent = async (req, res) => {
         return
       }
 
+      if (!parsed.announce || parsed['announce-list']) {
+        res.status(400).send('One and only one announce URL must be set')
+        return
+      }
+
+      const user = await User.findOne({ _id: req.userId }).lean()
+
+      if (!parsed.announce.toString().endsWith(`/sq/${user.uid}/announce`)) {
+        res.status(400).send('Announce URL is invalid')
+        return
+      }
+
       const newTorrent = new Torrent({
         name: req.body.name,
         description: req.body.description,
