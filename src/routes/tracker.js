@@ -12,7 +12,7 @@ export const userTrackerRoutes = createProxyMiddleware({
   changeOrigin: true,
   selfHandleResponse: true,
   pathRewrite: {
-    '^/tracker/(.*)/': '',
+    '^/sq/(.*)/': '',
   },
   onProxyRes: responseInterceptor(async (responseBuffer) => {
     const trackerResponse = bencode.decode(responseBuffer)

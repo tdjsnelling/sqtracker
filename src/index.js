@@ -70,11 +70,11 @@ app.use(
 )
 
 // custom logic implementing user tracking, ratio control etc
-app.use('/tracker/*/announce', handleAnnounce)
+app.use('/sq/*/announce', handleAnnounce)
 
 // proxy and manipulate tracker routes
-app.use('/tracker/*/announce', userTrackerRoutes)
-app.use('/tracker/*/scrape', userTrackerRoutes)
+app.use('/sq/*/announce', userTrackerRoutes)
+app.use('/sq/*/scrape', userTrackerRoutes)
 app.use('/stats', otherTrackerRoutes)
 
 app.use(bodyParser.json())

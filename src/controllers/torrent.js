@@ -61,7 +61,7 @@ export const downloadTorrent = async (req, res) => {
   const { binary } = torrent
   const parsed = bencode.decode(Buffer.from(binary, 'base64'))
 
-  parsed.announce = `${process.env.SQ_BASE_URL}/tracker/${uid}/announce`
+  parsed.announce = `${process.env.SQ_BASE_URL}/sq/${uid}/announce`
 
   res.setHeader('Content-Type', 'application/x-bittorrent')
   res.setHeader(
