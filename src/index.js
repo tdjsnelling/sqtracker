@@ -20,6 +20,7 @@ import {
   uploadTorrent,
   downloadTorrent,
   fetchTorrent,
+  addComment,
 } from './controllers/torrent'
 
 dotenv.config()
@@ -100,6 +101,7 @@ app.post('/user/change-password', changePassword)
 app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
+app.post('/torrent/:infoHash/comment', addComment)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

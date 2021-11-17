@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import fetch from 'node-fetch'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
+import Comment from '../schema/comment'
 import { hexToBinary } from '../middleware/announce'
 
 export const uploadTorrent = async (req, res) => {
@@ -122,5 +123,34 @@ export const fetchTorrent = async (req, res) => {
     })
   } catch (e) {
     res.status(500).send(e.message)
+  }
+}
+
+export const addComment = async (req, res) => {
+  if (req.body.comment) {
+    try {
+      const { infoHash } = req.params
+
+      const torrent = await Torrent.findOne({ infoHash })
+
+      if (!torrent) {
+        res.status(404).send('Torrent does not exist')
+        return
+      }
+
+      const comment = new Comment({
+        torrentId: torrent._id,
+        userId: req.userId,
+        comment: req.body.comment,
+        created: Date.now(),
+      })
+      await comment.save()
+
+      res.sendStatus(200)
+    } catch (err) {
+      res.status(500).send(err.message)
+    }
+  } else {
+    res.sendStatus(400)
   }
 }
