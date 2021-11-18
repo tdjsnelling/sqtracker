@@ -3,6 +3,7 @@ import querystring from 'querystring'
 import dotenv from 'dotenv'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
+import Progress from '../schema/progress'
 
 dotenv.config()
 
@@ -43,7 +44,7 @@ const handleAnnounce = async (req, res, next) => {
   console.log(`[DEBUG] query: ${JSON.stringify(params)}`)
   console.log(`[DEBUG] infoHash: ${infoHash}`)
 
-  const torrent = await Torrent.findOne({ infoHash })
+  const torrent = await Torrent.findOne({ infoHash }).lean()
 
   // if torrent info hash is not in the database, deny announce
   if (!torrent) {
@@ -55,10 +56,11 @@ const handleAnnounce = async (req, res, next) => {
   let totalUp = 0
   let totalDown = 0
 
-  for (const userInfoHash in user.torrents) {
-    const torrent = user.torrents[userInfoHash]
-    totalUp += Number(torrent.uploaded)
-    totalDown += Number(torrent.downloaded)
+  const userTorrents = await Progress.find({ userId: user._id }).lean()
+
+  for (const userTorrent of userTorrents) {
+    totalUp += Number(userTorrent.uploaded)
+    totalDown += Number(userTorrent.downloaded)
   }
 
   const ratio = totalDown === 0 ? -1 : Number((totalUp / totalDown).toFixed(2))
@@ -76,17 +78,18 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
-  await User.findOneAndUpdate(
-    { uid: req.userId },
+  await Progress.findOneAndUpdate(
+    { userId: user._id, infoHash },
     {
       $set: {
-        [`torrents.${infoHash}`]: {
-          uploaded: params.uploaded,
-          downloaded: params.downloaded,
-          left: params.left,
-        },
+        userId: user._id,
+        infoHash,
+        uploaded: params.uploaded,
+        downloaded: params.downloaded,
+        left: params.left,
       },
-    }
+    },
+    { upsert: true }
   )
 
   next()
