@@ -7,20 +7,18 @@ import Comment from '../schema/comment'
 import { hexToBinary } from '../middleware/announce'
 
 export const uploadTorrent = async (req, res) => {
-  if (req.body.torrent && req.body.name && req.body.description) {
+  if (
+    req.body.torrent &&
+    req.body.name &&
+    req.body.description &&
+    req.body.type
+  ) {
     try {
       const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
 
-      const infoHash = crypto
-        .createHash('sha1')
-        .update(bencode.encode(parsed.info))
-        .digest('hex')
-
-      const existingTorrent = await Torrent.findOne({ infoHash }).lean()
-
-      if (existingTorrent) {
-        res.status(409).send('Torrent with this info hash already exists')
+      if (parsed.info.private !== 1) {
+        res.status(400).send('Torrent must be set to private')
         return
       }
 
@@ -36,11 +34,28 @@ export const uploadTorrent = async (req, res) => {
         return
       }
 
+      const infoHash = crypto
+        .createHash('sha1')
+        .update(bencode.encode(parsed.info))
+        .digest('hex')
+
+      const existingTorrent = await Torrent.findOne({ infoHash }).lean()
+
+      if (existingTorrent) {
+        res.status(409).send('Torrent with this info hash already exists')
+        return
+      }
+
       const newTorrent = new Torrent({
         name: req.body.name,
         description: req.body.description,
+        type: req.body.type,
         infoHash: infoHash,
         binary: req.body.torrent,
+        uploadedBy: req.userId,
+        downloads: 0,
+        anonymous: false,
+        created: Date.now(),
       })
 
       await newTorrent.save()
@@ -75,6 +90,8 @@ export const downloadTorrent = async (req, res) => {
   const parsed = bencode.decode(Buffer.from(binary, 'base64'))
 
   parsed.announce = `${process.env.SQ_BASE_URL}/sq/${uid}/announce`
+
+  await Torrent.findOneAndUpdate({ infoHash }, { $inc: { downloads: 1 } })
 
   res.setHeader('Content-Type', 'application/x-bittorrent')
   res.setHeader(
