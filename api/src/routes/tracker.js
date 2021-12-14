@@ -5,7 +5,7 @@ import {
 import bencode from 'bencode'
 import dotenv from 'dotenv'
 
-dotenv.config()
+dotenv.config({ path: '../.env' })
 
 export const userTrackerRoutes = createProxyMiddleware({
   target: process.env.SQ_TRACKER_URL,

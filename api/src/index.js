@@ -1,7 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
 import chalk from 'chalk'
-import dotenv from 'dotenv'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
@@ -23,10 +22,8 @@ import {
   addComment,
 } from './controllers/torrent'
 
-dotenv.config()
-
 const connectToDb = () => {
-  console.log('initiating db connection...')
+  console.log('[sq] initiating db connection...')
   mongoose
     .connect(process.env.SQ_MONGO_URL, {
       useNewUrlParser: true,
@@ -34,14 +31,14 @@ const connectToDb = () => {
       useUnifiedTopology: true,
     })
     .catch((e) => {
-      console.error(`error on initial db connection: ${e.message}`)
+      console.error(`[sq] error on initial db connection: ${e.message}`)
       setTimeout(connectToDb, 5000)
     })
 }
 connectToDb()
 
 mongoose.connection.once('open', () => {
-  console.log('connected to mongodb successfully')
+  console.log('[sq] connected to mongodb successfully')
 })
 
 const app = express()
@@ -105,5 +102,5 @@ app.post('/torrent/:infoHash/comment', addComment)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
-  console.log(`■ sqtracker running http://localhost:${port}`)
+  console.log(`[sq] ■ sqtracker running http://localhost:${port}`)
 })

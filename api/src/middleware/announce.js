@@ -1,14 +1,11 @@
 import memoize from 'memoizee'
 import querystring from 'querystring'
-import dotenv from 'dotenv'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
 
-dotenv.config()
-
 const userLookup = async (userId) => {
-  return User.findOne({ uid: userId })
+  return User.findOne({ uid: userId }).lean()
 }
 
 const userLookupMemo = memoize(userLookup)

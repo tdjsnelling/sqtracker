@@ -1,11 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import dotenv from 'dotenv'
 import User from '../schema/user'
 import Invite from '../schema/invite'
-
-dotenv.config()
 
 export const register = async (req, res) => {
   if (

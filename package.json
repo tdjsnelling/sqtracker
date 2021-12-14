@@ -1,35 +1,13 @@
 {
   "name": "sqtracker",
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "api",
+    "client"
+  ],
   "scripts": {
-    "dev": "nodemon --exec babel-node src/index.js",
-    "start": "babel-node src/index.js"
-  },
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "bencode": "^2.0.1",
-    "body-parser": "^1.19.0",
-    "chalk": "^4.1.1",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "http-proxy-middleware": "^2.0.1",
-    "jsonwebtoken": "^8.5.1",
-    "memoizee": "^0.4.15",
-    "mongoose": "^5.13.2",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.2",
-    "node-fetch": "^2.6.1",
-    "querystring": "^0.2.1"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.14.6",
-    "@babel/node": "^7.14.7",
-    "@babel/preset-env": "^7.14.7",
-    "eslint": "^7.30.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "nodemon": "^2.0.9",
-    "prettier": "^2.3.2"
+    "api:dev": "yarn workspace @sqtracker/api dev",
+    "client:dev": "yarn workspace @sqtracker/client dev"
   }
 }
