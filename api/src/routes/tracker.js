@@ -3,9 +3,13 @@ import {
   responseInterceptor,
 } from 'http-proxy-middleware'
 import bencode from 'bencode'
-import dotenv from 'dotenv'
 
-dotenv.config({ path: '../.env' })
+import config from '../../../config'
+process.env = {
+  ...process.env,
+  ...config.envs,
+  ...config.secrets,
+}
 
 export const userTrackerRoutes = createProxyMiddleware({
   target: process.env.SQ_TRACKER_URL,

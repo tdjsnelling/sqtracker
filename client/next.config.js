@@ -1,9 +1,13 @@
-require('dotenv').config({ path: '../.env' })
+const config = require('../config')
 
 module.exports = {
   reactStrictMode: true,
   poweredByHeader: false,
-  env: {
-    SQ_SITE_NAME: process.env.SQ_SITE_NAME,
+  publicRuntimeConfig: {
+    ...config.envs,
+  },
+  serverRuntimeConfig: {
+    ...config.envs,
+    ...config.secrets,
   },
 }

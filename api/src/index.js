@@ -79,7 +79,9 @@ app.use(bodyParser.json())
 app.use(cors())
 
 // root
-app.get('/', (req, res) => res.send('sqtracker running').status(200))
+app.get('/', (req, res) =>
+  res.send(`■ sqtracker running: ${process.env.SQ_SITE_NAME}`).status(200)
+)
 
 // auth routes
 app.post('/register', register)

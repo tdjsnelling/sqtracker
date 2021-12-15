@@ -1,13 +1,13 @@
 FROM node:16-alpine AS builder
 WORKDIR /app
-COPY package.json package.json
+COPY config.js /config.js
+COPY client/ .
 RUN yarn install
-COPY . .
-ARG SQ_SITE_NAME
-RUN yarn build
+RUN ./node_modules/.bin/next build
 
 FROM node:16-alpine
 WORKDIR /app
+COPY --from=builder /config.js /config.js
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next

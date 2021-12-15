@@ -12,7 +12,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./conf/nginx.conf.production:/etc/nginx/nginx.conf
+      - ./conf/nginx.production.conf:/etc/nginx/nginx.conf
   database:
     container_name: sq_mongodb
     image: mongo:latest
@@ -23,16 +23,19 @@ services:
   api:
     container_name: sq_api
     build:
-      context: ./api
+      context: .
+      dockerfile: ./api/Dockerfile
     ports:
       - "127.0.0.1:44444:44444"
-    env_file: .env.production
+    depends_on:
+      - database
+      - tracker
   client:
     container_name: sq_client
     build:
-      context: ./client
-      args:
-        SQ_SITE_NAME: sqtracker
+      context: .
+      dockerfile: ./client/Dockerfile
     ports:
       - "127.0.0.1:44445:44445"
-    env_file: .env.production
+    depends_on:
+      - api
