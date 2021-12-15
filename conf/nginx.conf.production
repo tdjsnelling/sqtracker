@@ -1,0 +1,26 @@
+events {
+  worker_connections 1024;
+}
+
+http {
+  server {
+    listen 80;
+    server_name localhost;
+
+    location = /api {
+      proxy_pass http://sq_api:44444/;
+    }
+
+    location /api/ {
+      proxy_pass http://sq_api:44444/;
+    }
+
+    location /sq/ {
+      proxy_pass http://sq_api:44444/sq/;
+    }
+
+    location / {
+      proxy_pass http://sq_client:44445;
+    }
+  }
+}

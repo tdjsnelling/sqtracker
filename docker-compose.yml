@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  tracker:
+    container_name: sq_opentracker
+    image: lednerb/opentracker-docker:latest
+    ports:
+      - "127.0.0.1:6969:6969"
+  nginx:
+    container_name: sq_nginx_proxy
+    image: nginx:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./conf/nginx.conf.production:/etc/nginx/nginx.conf
+  database:
+    container_name: sq_mongodb
+    image: mongo:latest
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - ./data:/data/db
+  api:
+    container_name: sq_api
+    build:
+      context: ./api
+    ports:
+      - "127.0.0.1:44444:44444"
+    env_file: .env.production
+  client:
+    container_name: sq_client
+    build:
+      context: ./client
+      args:
+        SQ_SITE_NAME: sqtracker
+    ports:
+      - "127.0.0.1:44445:44445"
+    env_file: .env.production
