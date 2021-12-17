@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@styled-system/css": "^5.1.5",
     "dotenv": "^10.0.0",
     "next": "12.0.4",
     "react": "17.0.2",
-    "react-dom": "17.0.2"
+    "react-dom": "17.0.2",
+    "styled-components": "^5.3.3",
+    "styled-system": "^5.1.5"
   },
   "devDependencies": {
     "eslint": "7",
