@@ -40,7 +40,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
           <button>Reset password</button>
         </form>
       ) : (
-        <p>Error: {tokenError}</p>
+        <p>Token error: {tokenError}</p>
       )}
     </>
   )
@@ -50,6 +50,7 @@ export const getServerSideProps = async ({ query: { token } }) => {
   const {
     serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+  if (!token) return { props: { tokenError: 'Token not provided' } }
   try {
     const decoded = await jwt.verify(token, SQ_JWT_SECRET)
     if (decoded.validUntil < Date.now()) {

@@ -147,7 +147,10 @@ export const generateInvite = async (req, res) => {
     claimed: false,
   })
 
-  invite.token = jwt.sign({ id: invite._id }, process.env.SQ_JWT_SECRET)
+  invite.token = jwt.sign(
+    { id: invite._id, validUntil },
+    process.env.SQ_JWT_SECRET
+  )
 
   const createdInvite = await invite.save()
 
