@@ -1,12 +1,14 @@
 import React from 'react'
 import Head from 'next/head'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
+import Box from '../components/Box'
+import Text from '../components/Text'
 
 const theme = {
   breakpoints: ['768px', '1400px'],
   colors: {
     primary: '#2ecc71',
-    white: '#fcfcfc',
+    white: '#ffffff',
     black: '#202224',
     grey: '#aac',
     error: '#f33',
@@ -47,16 +49,15 @@ const GlobalStyle = createGlobalStyle(
     background: ${colors.white};
   }
   #__next {
-    min-height: 100vh;
     color: ${colors.black};
     font-family: ${fonts.body};
     line-height: ${lineHeights.body};
+  }
+  #__next main {
+    min-height: calc(100vh - 55px);
     max-width: ${sizes.body};
     margin: 0 auto;
     padding: ${space[4]}px ${space[3]}px;
-  }
-  a {
-    text-decoration: none;
   }
 `
 )
@@ -74,7 +75,22 @@ const SqTracker = ({ Component, pageProps }) => {
       </Head>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Component {...pageProps} />
+        <main>
+          <Component {...pageProps} />
+        </main>
+        <footer>
+          <Box p={3}>
+            <Text fontFamily="mono" fontSize={1} textAlign="center">
+              Powered by{' '}
+              <a
+                href="https://github.com/tdjsnelling/sqtracker"
+                target="_blank"
+              >
+                ■ sqtracker
+              </a>
+            </Text>
+          </Box>
+        </footer>
       </ThemeProvider>
     </>
   )
