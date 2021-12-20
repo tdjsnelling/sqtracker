@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
+import SEO from '../../components/SEO'
 
 const InitiatePasswordReset = () => {
   const [error, setError] = useState()
@@ -32,6 +33,7 @@ const InitiatePasswordReset = () => {
 
   return (
     <>
+      <SEO title="Reset password" />
       <h1>{SQ_SITE_NAME}</h1>
       <form onSubmit={handleInitiate}>
         <input name="email" />

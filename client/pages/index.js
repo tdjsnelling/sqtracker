@@ -4,6 +4,7 @@ import Link from 'next/link'
 import withAuth from '../utils/withAuth'
 import Box from '../components/Box'
 import Text from '../components/Text'
+import SEO from '../components/SEO'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -40,11 +41,15 @@ const Index = ({ token }) => {
 
   if (!token)
     return (
-      <PublicLanding name={SQ_SITE_NAME} allowRegister={SQ_ALLOW_REGISTER} />
+      <>
+        <SEO />
+        <PublicLanding name={SQ_SITE_NAME} allowRegister={SQ_ALLOW_REGISTER} />
+      </>
     )
 
   return (
     <>
+      <SEO title="Home" />
       <h1>Logged in</h1>
       <Link href="/logout">
         <a>Log out</a>

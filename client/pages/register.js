@@ -3,6 +3,7 @@ import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
 import jwt from 'jsonwebtoken'
+import SEO from '../components/SEO'
 
 const Register = ({ token: inviteToken, tokenError }) => {
   const [error, setError] = useState()
@@ -48,6 +49,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
   if (SQ_ALLOW_REGISTER !== 'open' && SQ_ALLOW_REGISTER !== 'invite') {
     return (
       <>
+        <SEO title="Register" />
         <h1>{SQ_SITE_NAME}</h1>
         <p>Registration is closed.</p>
       </>
@@ -56,6 +58,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
 
   return (
     <>
+      <SEO title="Register" />
       <h1>{SQ_SITE_NAME}</h1>
       {!tokenError ? (
         <form onSubmit={handleRegister}>

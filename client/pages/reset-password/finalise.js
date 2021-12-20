@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
 import jwt from 'jsonwebtoken'
+import SEO from '../../components/SEO'
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
   const [error, setError] = useState()
@@ -32,6 +33,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
 
   return (
     <>
+      <SEO title="Reset password" />
       <h1>{SQ_SITE_NAME}</h1>
       <p>{email}</p>
       {!tokenError ? (

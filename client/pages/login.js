@@ -3,6 +3,7 @@ import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useCookies } from 'react-cookie'
+import SEO from '../components/SEO'
 
 const Login = () => {
   const [error, setError] = useState()
@@ -45,6 +46,7 @@ const Login = () => {
 
   return (
     <>
+      <SEO title="Log in" />
       <h1>{SQ_SITE_NAME}</h1>
       <form onSubmit={handleLogin}>
         <input name="username" />
