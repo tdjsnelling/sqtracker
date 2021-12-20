@@ -9,7 +9,7 @@ import SEO from '../components/SEO'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
-    minHeight="calc(100vh - 116px)"
+    minHeight="calc(100vh - 173px)"
     display="flex"
     alignItems="center"
     justifyContent="center"
@@ -51,13 +51,7 @@ const Index = ({ token, latest }) => {
   return (
     <>
       <SEO title="Home" />
-      <h1>Logged in</h1>
-      <Link href="/upload">
-        <a>Upload</a>
-      </Link>
-      <Link href="/logout">
-        <a>Log out</a>
-      </Link>
+      <h1>Home</h1>
       <pre>{JSON.stringify(latest, null, 2)}</pre>
     </>
   )

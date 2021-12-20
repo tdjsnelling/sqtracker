@@ -7,7 +7,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
   const [error, setError] = useState()
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL },
+    publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
 
   const handleInitiate = async (e) => {
@@ -34,7 +34,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
   return (
     <>
       <SEO title="Reset password" />
-      <h1>{SQ_SITE_NAME}</h1>
+      <h1>Reset password</h1>
       <p>{email}</p>
       {!tokenError ? (
         <form onSubmit={handleInitiate}>

@@ -93,6 +93,7 @@ export const register = async (req, res) => {
             token: createdUser.token,
             id: createdUser._id,
             uid: createdUser.uid,
+            username: createdUser.username,
           })
         } else {
           res.status(500).send('User could not be created')
@@ -121,6 +122,7 @@ export const login = async (req, res) => {
             token: user.token,
             id: user._id,
             uid: user.uid,
+            username: user.username,
           })
         } else {
           res.sendStatus(401)

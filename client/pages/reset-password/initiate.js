@@ -6,7 +6,7 @@ const InitiatePasswordReset = () => {
   const [error, setError] = useState()
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL },
+    publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
 
   const handleInitiate = async (e) => {
@@ -34,7 +34,7 @@ const InitiatePasswordReset = () => {
   return (
     <>
       <SEO title="Reset password" />
-      <h1>{SQ_SITE_NAME}</h1>
+      <h1>Reset password</h1>
       <form onSubmit={handleInitiate}>
         <input name="email" />
         <button>Reset password</button>

@@ -12,7 +12,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
   const router = useRouter()
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_ALLOW_REGISTER },
+    publicRuntimeConfig: { SQ_API_URL, SQ_ALLOW_REGISTER },
   } = getConfig()
 
   const handleRegister = async (e) => {
@@ -33,12 +33,13 @@ const Register = ({ token: inviteToken, tokenError }) => {
         }),
       })
 
-      const { token, uid } = await res.json()
+      const { token, uid, username } = await res.json()
 
       const expires = new Date()
       expires.setTime(expires.getTime() + 60 * 60 * 24 * 14 * 1000) // 14 days
       setCookie('token', token, { path: '/', expires })
       setCookie('userId', uid, { path: '/', expires })
+      setCookie('username', username, { path: '/', expires })
 
       router.push('/')
     } catch (e) {
@@ -50,7 +51,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
     return (
       <>
         <SEO title="Register" />
-        <h1>{SQ_SITE_NAME}</h1>
+        <h1>Register</h1>
         <p>Registration is closed.</p>
       </>
     )
@@ -59,7 +60,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
   return (
     <>
       <SEO title="Register" />
-      <h1>{SQ_SITE_NAME}</h1>
+      <h1>Register</h1>
       {!tokenError ? (
         <form onSubmit={handleRegister}>
           <input name="email" />
