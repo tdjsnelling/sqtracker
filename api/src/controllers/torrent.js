@@ -148,7 +148,7 @@ export const addComment = async (req, res) => {
     try {
       const { infoHash } = req.params
 
-      const torrent = await Torrent.findOne({ infoHash })
+      const torrent = await Torrent.findOne({ infoHash }).lean()
 
       if (!torrent) {
         res.status(404).send('Torrent does not exist')
@@ -169,5 +169,31 @@ export const addComment = async (req, res) => {
     }
   } else {
     res.sendStatus(400)
+  }
+}
+
+export const listLatest = async (req, res) => {
+  let { count } = req.query
+  count = parseInt(count) || 25
+  count = Math.min(count, 100)
+  try {
+    const torrents = await Torrent.find(
+      {},
+      {
+        infoHash: 1,
+        name: 1,
+        description: 1,
+        type: 1,
+        downloads: 1,
+        created: 1,
+      },
+      {
+        sort: { created: -1 },
+        limit: count,
+      }
+    ).lean()
+    res.json(torrents)
+  } catch (e) {
+    res.status(500).send(e.message)
   }
 }

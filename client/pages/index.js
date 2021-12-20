@@ -2,6 +2,7 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import withAuth from '../utils/withAuth'
+import getReqCookies from '../utils/getReqCookies'
 import Box from '../components/Box'
 import Text from '../components/Text'
 import SEO from '../components/SEO'
@@ -34,7 +35,7 @@ const PublicLanding = ({ name, allowRegister }) => (
   </Box>
 )
 
-const Index = ({ token }) => {
+const Index = ({ token, latest }) => {
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
   } = getConfig()
@@ -54,8 +55,32 @@ const Index = ({ token }) => {
       <Link href="/logout">
         <a>Log out</a>
       </Link>
+      <pre>{JSON.stringify(latest, null, 2)}</pre>
     </>
   )
+}
+
+export const getServerSideProps = async ({ req }) => {
+  const { token } = getReqCookies(req)
+
+  if (!token) return { props: {} }
+
+  const {
+    publicRuntimeConfig: { SQ_API_URL },
+  } = getConfig()
+
+  try {
+    const latestRes = await fetch(`${SQ_API_URL}/torrents/latest`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const latest = await latestRes.json()
+    return { props: { latest } }
+  } catch (e) {
+    return { props: {} }
+  }
 }
 
 export default withAuth(Index, true)
