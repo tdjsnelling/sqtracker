@@ -18,7 +18,9 @@ const withAuth = (Component, noRedirect = false) => {
       return <Redirect path="/login" />
     }
 
-    return <Component token={cookies.token} {...props} />
+    return (
+      <Component token={cookies.token} userId={cookies.userId} {...props} />
+    )
   }
 
   if (Component.getInitialProps) {

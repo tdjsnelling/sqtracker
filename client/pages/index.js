@@ -52,6 +52,9 @@ const Index = ({ token, latest }) => {
     <>
       <SEO title="Home" />
       <h1>Logged in</h1>
+      <Link href="/upload">
+        <a>Upload</a>
+      </Link>
       <Link href="/logout">
         <a>Log out</a>
       </Link>

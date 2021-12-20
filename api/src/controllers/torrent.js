@@ -29,7 +29,10 @@ export const uploadTorrent = async (req, res) => {
 
       const user = await User.findOne({ _id: req.userId }).lean()
 
-      if (!parsed.announce.toString().endsWith(`/sq/${user.uid}/announce`)) {
+      if (
+        parsed.announce.toString() !==
+        `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
+      ) {
         res.status(400).send('Announce URL is invalid')
         return
       }
