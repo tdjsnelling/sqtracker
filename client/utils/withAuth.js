@@ -10,11 +10,11 @@ const Redirect = ({ path }) => {
   return <></>
 }
 
-const withAuth = (Component) => {
+const withAuth = (Component, noRedirect = false) => {
   const Auth = (props) => {
     const [cookies] = useCookies()
 
-    if (!cookies.token) {
+    if (!cookies.token && !noRedirect) {
       return <Redirect path="/login" />
     }
 

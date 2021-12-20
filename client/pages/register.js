@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
+import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
 import jwt from 'jsonwebtoken'
 
 const Register = ({ token: inviteToken, tokenError }) => {
   const [error, setError] = useState()
   const [, setCookie] = useCookies()
+
+  const router = useRouter()
 
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_ALLOW_REGISTER },
@@ -35,6 +38,8 @@ const Register = ({ token: inviteToken, tokenError }) => {
       expires.setTime(expires.getTime() + 60 * 60 * 24 * 14 * 1000) // 14 days
       setCookie('token', token, { path: '/', expires })
       setCookie('userId', uid, { path: '/', expires })
+
+      router.push('/')
     } catch (e) {
       setError(e.message)
     }

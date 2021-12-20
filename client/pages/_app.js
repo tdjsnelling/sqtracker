@@ -59,6 +59,9 @@ const GlobalStyle = createGlobalStyle(
     margin: 0 auto;
     padding: ${space[4]}px ${space[3]}px;
   }
+  a, a:visited {
+    color: ${colors.primary};
+  }
 `
 )
 
