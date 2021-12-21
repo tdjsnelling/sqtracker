@@ -22,6 +22,7 @@ import {
   fetchTorrent,
   addComment,
   listLatest,
+  searchTorrents,
 } from './controllers/torrent'
 
 const connectToDb = () => {
@@ -105,6 +106,7 @@ app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
 app.post('/torrent/comment/:infoHash', addComment)
 app.get('/torrents/latest', listLatest)
+app.get('/torrents/search/:query', searchTorrents)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

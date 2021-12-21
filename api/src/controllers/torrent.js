@@ -126,7 +126,7 @@ export const fetchTorrent = async (req, res) => {
           ],
         },
       },
-      { $unwind: { path: '$uploadedBy' } },
+      { $unwind: { path: '$uploadedBy', preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
           from: 'comments',
@@ -174,6 +174,58 @@ export const fetchTorrent = async (req, res) => {
   }
 }
 
+const getTorrentsPage = async (skip = 0, limit = 25, query) =>
+  await Torrent.aggregate([
+    {
+      $project: {
+        infoHash: 1,
+        name: 1,
+        description: 1,
+        type: 1,
+        downloads: 1,
+        created: 1,
+      },
+    },
+    ...(query
+      ? [
+          {
+            $match: {
+              $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } },
+              ],
+            },
+          },
+        ]
+      : []),
+    {
+      $sort: { created: -1 },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+    {
+      $lookup: {
+        from: 'comments',
+        as: 'comments',
+        let: { torrentId: '$_id' },
+        pipeline: [
+          { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
+          { $count: 'count' },
+        ],
+      },
+    },
+    {
+      $unwind: {
+        path: '$comments',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ])
+
 export const addComment = async (req, res) => {
   if (req.body.comment) {
     try {
@@ -208,40 +260,17 @@ export const listLatest = async (req, res) => {
   count = parseInt(count) || 20
   count = Math.min(count, 100)
   try {
-    const torrents = await Torrent.aggregate([
-      {
-        $project: {
-          infoHash: 1,
-          name: 1,
-          description: 1,
-          type: 1,
-          downloads: 1,
-          created: 1,
-        },
-      },
-      {
-        $sort: { created: -1 },
-      },
-      {
-        $limit: count,
-      },
-      {
-        $lookup: {
-          from: 'comments',
-          as: 'comments',
-          let: { torrentId: '$_id' },
-          pipeline: [
-            { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
-            { $count: 'count' },
-          ],
-        },
-      },
-      {
-        $unwind: {
-          path: '$comments',
-        },
-      },
-    ])
+    const torrents = await getTorrentsPage(0, count)
+    res.json(torrents)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const searchTorrents = async (req, res) => {
+  const { query } = req.params
+  try {
+    const torrents = await getTorrentsPage(0, 25, query)
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)
