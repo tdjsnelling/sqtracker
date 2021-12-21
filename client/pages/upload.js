@@ -1,9 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import getConfig from 'next/config'
+import { useRouter } from 'next/router'
 import withAuth from '../utils/withAuth'
 import SEO from '../components/SEO'
+import Text from '../components/Text'
 
 const Upload = ({ token, userId }) => {
+  const [error, setError] = useState()
+
+  const router = useRouter()
+
   const {
     publicRuntimeConfig: {
       SQ_BASE_URL,
@@ -38,12 +44,18 @@ const Upload = ({ token, userId }) => {
             torrent: b64,
           }),
         })
-        const infoHash = await uploadRes.text()
-        console.log(infoHash)
+        if (uploadRes.ok) {
+          const infoHash = await uploadRes.text()
+          router.push(`/torrent/${infoHash}`)
+        } else {
+          const text = await uploadRes.text()
+          setError(text)
+        }
       }
       reader.readAsArrayBuffer(torrent)
     } catch (e) {
       console.error(e)
+      setError(e.message)
     }
   }
 
@@ -70,6 +82,7 @@ const Upload = ({ token, userId }) => {
           </label>
         )}
         <button>Upload</button>
+        {error && <Text color="error">Error: {error}</Text>}
       </form>
     </>
   )

@@ -68,7 +68,7 @@ export const uploadTorrent = async (req, res) => {
       res.status(500).send(e.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Form is incomplete')
   }
 }
 
