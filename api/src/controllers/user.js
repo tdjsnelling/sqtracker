@@ -301,7 +301,12 @@ export const fetchUser = async (req, res) => {
           as: 'torrents',
           let: { userId: '$_id' },
           pipeline: [
-            { $match: { $expr: { $eq: ['$uploadedBy', '$$userId'] } } },
+            {
+              $match: {
+                $expr: { $eq: ['$uploadedBy', '$$userId'] },
+                anonymous: false,
+              },
+            },
             { $project: { binary: 0 } },
           ],
         },

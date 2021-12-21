@@ -142,6 +142,8 @@ export const fetchTorrent = async (req, res) => {
       return
     }
 
+    if (torrent.anonymous) delete torrent.uploadedBy
+
     const binaryInfoHash = hexToBinary(infoHash)
     const encodedInfoHash = escape(binaryInfoHash)
 
