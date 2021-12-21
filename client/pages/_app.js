@@ -75,7 +75,7 @@ const SqTracker = ({ Component, pageProps }) => {
     <>
       <Head>
         <title>sqtracker</title>
-        <link rel="icon" href="favicon.png" type="image/png" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Code+Pro:wght@400;500;700&display=swap"

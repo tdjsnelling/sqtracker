@@ -74,17 +74,11 @@ export const uploadTorrent = async (req, res) => {
 
 export const downloadTorrent = async (req, res) => {
   const { infoHash } = req.params
-  const { uid } = req.query
 
-  if (!uid) {
-    res.status(401).send('Missing user ID')
-    return
-  }
-
-  const user = await User.findOne({ uid }).lean()
+  const user = await User.findOne({ _id: req.userId }).lean()
 
   if (!user) {
-    res.status(401).send(`User ID "${uid}" does not exist`)
+    res.status(401).send(`User does not exist`)
     return
   }
 
@@ -92,7 +86,7 @@ export const downloadTorrent = async (req, res) => {
   const { binary } = torrent
   const parsed = bencode.decode(Buffer.from(binary, 'base64'))
 
-  parsed.announce = `${process.env.SQ_BASE_URL}/sq/${uid}/announce`
+  parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
 
   await Torrent.findOneAndUpdate({ infoHash }, { $inc: { downloads: 1 } })
 
@@ -116,6 +110,11 @@ export const fetchTorrent = async (req, res) => {
       return
     }
 
+    const uploader = await User.findOne(
+      { _id: torrent.uploadedBy },
+      { username: 1, created: 1 }
+    ).lean()
+
     const binaryInfoHash = hexToBinary(infoHash)
     const encodedInfoHash = escape(binaryInfoHash)
 
@@ -136,10 +135,18 @@ export const fetchTorrent = async (req, res) => {
     const scrapeForInfoHash =
       scrape.files[Buffer.from(binaryInfoHash, 'binary')]
 
+    const comments = await Comment.find({ torrentId: torrent._id }, null, {
+      sort: { created: -1 },
+    })
+
+    delete torrent.binary
+
     res.json({
       ...torrent,
+      uploadedBy: uploader,
       seeders: scrapeForInfoHash?.complete,
       leechers: scrapeForInfoHash?.incomplete,
+      comments,
     })
   } catch (e) {
     res.status(500).send(e.message)
