@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import mongoose from 'mongoose'
 import User from '../schema/user'
 import Invite from '../schema/invite'
 
@@ -276,5 +277,52 @@ export const finalisePasswordReset = async (req, res) => {
     }
   } else {
     res.sendStatus(400)
+  }
+}
+
+export const fetchUser = async (req, res) => {
+  try {
+    const { username } = req.params
+
+    const [user] = await User.aggregate([
+      {
+        $match: { username },
+      },
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          created: 1,
+        },
+      },
+      {
+        $lookup: {
+          from: 'torrents',
+          as: 'torrents',
+          let: { userId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$uploadedBy', '$$userId'] } } },
+            { $project: { binary: 0 } },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'comments',
+        },
+      },
+    ])
+
+    if (!username) {
+      res.status(404).send('User does not exist')
+      return
+    }
+
+    res.json(user)
+  } catch (e) {
+    res.status(500).send(e.message)
   }
 }

@@ -13,6 +13,7 @@ import {
   changePassword,
   initiatePasswordReset,
   finalisePasswordReset,
+  fetchUser,
 } from './controllers/user'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
@@ -93,9 +94,10 @@ app.post('/reset-password/finalise', finalisePasswordReset)
 // everything from here on requires user auth
 app.use(auth)
 
-// user routes
-app.get('/user/generate-invite', generateInvite)
-app.post('/user/change-password', changePassword)
+// user/account routes
+app.get('/account/generate-invite', generateInvite)
+app.post('/account/change-password', changePassword)
+app.get('/user/:username', fetchUser)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)

@@ -103,17 +103,44 @@ export const fetchTorrent = async (req, res) => {
   const { infoHash } = req.params
 
   try {
-    const torrent = await Torrent.findOne({ infoHash }).lean()
+    const [torrent] = await Torrent.aggregate([
+      {
+        $match: { infoHash },
+      },
+      {
+        $project: { binary: 0 },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          as: 'uploadedBy',
+          let: { userId: '$uploadedBy' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$_id', '$$userId'] } } },
+            {
+              $project: {
+                username: 1,
+                created: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: '$uploadedBy' } },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'torrentId',
+          as: 'comments',
+        },
+      },
+    ])
 
     if (!torrent) {
       res.status(404).send(`Torrent with info hash ${infoHash} does not exist`)
       return
     }
-
-    const uploader = await User.findOne(
-      { _id: torrent.uploadedBy },
-      { username: 1, created: 1 }
-    ).lean()
 
     const binaryInfoHash = hexToBinary(infoHash)
     const encodedInfoHash = escape(binaryInfoHash)
@@ -135,18 +162,10 @@ export const fetchTorrent = async (req, res) => {
     const scrapeForInfoHash =
       scrape.files[Buffer.from(binaryInfoHash, 'binary')]
 
-    const comments = await Comment.find({ torrentId: torrent._id }, null, {
-      sort: { created: -1 },
-    })
-
-    delete torrent.binary
-
     res.json({
       ...torrent,
-      uploadedBy: uploader,
       seeders: scrapeForInfoHash?.complete,
       leechers: scrapeForInfoHash?.incomplete,
-      comments,
     })
   } catch (e) {
     res.status(500).send(e.message)
@@ -184,24 +203,43 @@ export const addComment = async (req, res) => {
 
 export const listLatest = async (req, res) => {
   let { count } = req.query
-  count = parseInt(count) || 25
+  count = parseInt(count) || 20
   count = Math.min(count, 100)
   try {
-    const torrents = await Torrent.find(
-      {},
+    const torrents = await Torrent.aggregate([
       {
-        infoHash: 1,
-        name: 1,
-        description: 1,
-        type: 1,
-        downloads: 1,
-        created: 1,
+        $project: {
+          infoHash: 1,
+          name: 1,
+          description: 1,
+          type: 1,
+          downloads: 1,
+          created: 1,
+        },
       },
       {
-        sort: { created: -1 },
-        limit: count,
-      }
-    ).lean()
+        $sort: { created: -1 },
+      },
+      {
+        $limit: count,
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          as: 'comments',
+          let: { torrentId: '$_id' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
+            { $count: 'count' },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: '$comments',
+        },
+      },
+    ])
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)
