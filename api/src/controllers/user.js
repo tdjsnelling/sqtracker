@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import mongoose from 'mongoose'
 import User from '../schema/user'
 import Invite from '../schema/invite'
+import { getUserRatio } from '../utils/ratio'
 
 export const register = async (req, res) => {
   if (
@@ -319,15 +319,52 @@ export const fetchUser = async (req, res) => {
           as: 'comments',
         },
       },
+      {
+        $lookup: {
+          from: 'progresses',
+          as: 'downloaded',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$userId', '$$userId'] },
+                downloaded: { $gt: 0 },
+              },
+            },
+            { $count: 'count' },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'progresses',
+          as: 'uploaded',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$userId', '$$userId'] },
+                uploaded: { $gt: 0 },
+              },
+            },
+            { $count: 'count' },
+          ],
+        },
+      },
+      { $unwind: { path: '$downloaded', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$uploaded', preserveNullAndEmptyArrays: true } },
     ])
 
-    if (!username) {
+    if (!user) {
       res.status(404).send('User does not exist')
       return
     }
 
+    user.ratio = await getUserRatio(user._id)
+
     res.json(user)
   } catch (e) {
+    console.error(e)
     res.status(500).send(e.message)
   }
 }

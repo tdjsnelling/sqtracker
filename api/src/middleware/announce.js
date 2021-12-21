@@ -3,6 +3,7 @@ import querystring from 'querystring'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
+import { getUserRatio } from '../utils/ratio'
 
 const userLookup = async (userId) => {
   return User.findOne({ uid: userId }).lean()
@@ -50,17 +51,7 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
-  let totalUp = 0
-  let totalDown = 0
-
-  const userTorrents = await Progress.find({ userId: user._id }).lean()
-
-  for (const userTorrent of userTorrents) {
-    totalUp += Number(userTorrent.uploaded)
-    totalDown += Number(userTorrent.downloaded)
-  }
-
-  const ratio = totalDown === 0 ? -1 : Number((totalUp / totalDown).toFixed(2))
+  const ratio = await getUserRatio(user._id)
 
   console.log(`[DEBUG] user ratio: ${ratio}`)
 

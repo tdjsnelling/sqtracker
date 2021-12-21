@@ -1,10 +1,12 @@
 import React from 'react'
 import getConfig from 'next/config'
+import SEO from '../../components/SEO'
 import getReqCookies from '../../utils/getReqCookies'
 
 const User = ({ user }) => {
   return (
     <>
+      <SEO title={`${user.username}’s profile`} />
       <h1>{user.username}</h1>
       <pre>{JSON.stringify(user, null, 2)}</pre>
     </>
