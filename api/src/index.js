@@ -10,6 +10,7 @@ import {
   register,
   login,
   generateInvite,
+  fetchInvites,
   changePassword,
   initiatePasswordReset,
   finalisePasswordReset,
@@ -96,6 +97,7 @@ app.post('/reset-password/finalise', finalisePasswordReset)
 app.use(auth)
 
 // user/account routes
+app.get('/account/invites', fetchInvites)
 app.get('/account/generate-invite', generateInvite)
 app.post('/account/change-password', changePassword)
 app.get('/user/:username', fetchUser)

@@ -2,6 +2,8 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import getConfig from 'next/config'
 import getReqCookies from '../../utils/getReqCookies'
+import withAuth from '../../utils/withAuth'
+import SEO from '../../components/SEO'
 
 const Category = ({ results }) => {
   const router = useRouter()
@@ -17,6 +19,7 @@ const Category = ({ results }) => {
 
   return (
     <>
+      <SEO title={`Browse ${category.name}`} />
       <h1>Browse {category.name}</h1>
       <pre>{JSON.stringify(results, null, 2)}</pre>
     </>
@@ -49,4 +52,4 @@ export const getServerSideProps = async ({ req, query: { category } }) => {
   }
 }
 
-export default Category
+export default withAuth(Category)

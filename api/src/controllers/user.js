@@ -162,6 +162,17 @@ export const generateInvite = async (req, res) => {
   }
 }
 
+export const fetchInvites = async (req, res) => {
+  try {
+    const invites = await Invite.find({ invitingUser: req.userId }, null, {
+      sort: { created: -1 },
+    }).lean()
+    res.json(invites)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
 export const changePassword = async (req, res) => {
   if (req.body.password && req.body.newPassword) {
     try {
@@ -308,15 +319,23 @@ export const fetchUser = async (req, res) => {
               },
             },
             { $project: { binary: 0 } },
+            { $sort: { created: -1 } },
           ],
         },
       },
       {
         $lookup: {
           from: 'comments',
-          localField: '_id',
-          foreignField: 'userId',
           as: 'comments',
+          let: { userId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$userId', '$$userId'] },
+              },
+            },
+            { $sort: { created: -1 } },
+          ],
         },
       },
       {

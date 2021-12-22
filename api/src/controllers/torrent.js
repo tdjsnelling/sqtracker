@@ -130,9 +130,16 @@ export const fetchTorrent = async (req, res) => {
       {
         $lookup: {
           from: 'comments',
-          localField: '_id',
-          foreignField: 'torrentId',
           as: 'comments',
+          let: { torrentId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$torrentId', '$$torrentId'] },
+              },
+            },
+            { $sort: { created: -1 } },
+          ],
         },
       },
     ])

@@ -1,6 +1,8 @@
 import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
+import withAuth from '../../utils/withAuth'
+import SEO from '../../components/SEO'
 
 const Categories = () => {
   const {
@@ -9,6 +11,7 @@ const Categories = () => {
 
   return (
     <>
+      <SEO title="Categories" />
       <h1>Categories</h1>
       <ul>
         {SQ_TORRENT_CATEGORIES.map((category) => (
@@ -23,4 +26,4 @@ const Categories = () => {
   )
 }
 
-export default Categories
+export default withAuth(Categories)

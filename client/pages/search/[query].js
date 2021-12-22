@@ -58,4 +58,4 @@ export const getServerSideProps = async ({ req, query: { query } }) => {
   }
 }
 
-export default withAuth(Search, true)
+export default withAuth(Search)

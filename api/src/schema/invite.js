@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const Invite = new mongoose.Schema({
-  invitingUser: String,
+  invitingUser: mongoose.Schema.ObjectId,
   created: Number,
   validUntil: Number,
   claimed: Boolean,
