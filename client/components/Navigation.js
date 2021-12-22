@@ -38,6 +38,9 @@ const Navigation = () => {
         </Link>
         {cookies.token && (
           <Box display="grid" gridAutoFlow="column" gridGap={3}>
+            <Link href="/categories">
+              <a>Browse</a>
+            </Link>
             <Link href="/upload">
               <a>Upload</a>
             </Link>

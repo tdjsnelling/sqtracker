@@ -174,7 +174,7 @@ export const fetchTorrent = async (req, res) => {
   }
 }
 
-const getTorrentsPage = async (skip = 0, limit = 25, query) =>
+const getTorrentsPage = async (skip = 0, limit = 25, query, category) =>
   await Torrent.aggregate([
     {
       $project: {
@@ -194,6 +194,15 @@ const getTorrentsPage = async (skip = 0, limit = 25, query) =>
                 { name: { $regex: query, $options: 'i' } },
                 { description: { $regex: query, $options: 'i' } },
               ],
+            },
+          },
+        ]
+      : []),
+    ...(category
+      ? [
+          {
+            $match: {
+              type: category,
             },
           },
         ]
@@ -268,9 +277,9 @@ export const listLatest = async (req, res) => {
 }
 
 export const searchTorrents = async (req, res) => {
-  const { query } = req.params
+  const { query, category, page } = req.query
   try {
-    const torrents = await getTorrentsPage(0, 25, query)
+    const torrents = await getTorrentsPage(page || 0, 25, query, category)
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)

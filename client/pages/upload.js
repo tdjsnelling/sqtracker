@@ -71,7 +71,9 @@ const Upload = ({ token, userId }) => {
         <input name="name" />
         <select name="category">
           {SQ_TORRENT_CATEGORIES.map((category) => (
-            <option value={category}>{category}</option>
+            <option key={category.slug} value={category.slug}>
+              {category.name}
+            </option>
           ))}
         </select>
         <textarea name="description" rows="10" />

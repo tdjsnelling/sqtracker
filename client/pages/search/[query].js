@@ -42,12 +42,15 @@ export const getServerSideProps = async ({ req, query: { query } }) => {
   } = getConfig()
 
   try {
-    const searchRes = await fetch(`${SQ_API_URL}/torrents/search/${query}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    const searchRes = await fetch(
+      `${SQ_API_URL}/torrents/search?query=${encodeURIComponent(query)}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
     const results = await searchRes.json()
     return { props: { results } }
   } catch (e) {
