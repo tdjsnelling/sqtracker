@@ -1,6 +1,7 @@
 import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
 import Box from '../components/Box'
@@ -40,6 +41,8 @@ const Index = ({ token, latest }) => {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
   } = getConfig()
 
+  const router = useRouter()
+
   if (!token)
     return (
       <>
@@ -48,10 +51,21 @@ const Index = ({ token, latest }) => {
       </>
     )
 
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+    const query = form.get('query')
+    if (query) router.push(`/search/${encodeURIComponent(query)}`)
+  }
+
   return (
     <>
       <SEO title="Home" />
       <h1>Home</h1>
+      <form onSubmit={handleSearch}>
+        <input name="query" />
+        <button>Search</button>
+      </form>
       <pre>{JSON.stringify(latest, null, 2)}</pre>
     </>
   )

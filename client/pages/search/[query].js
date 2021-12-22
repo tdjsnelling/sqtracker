@@ -1,14 +1,32 @@
 import React from 'react'
 import getConfig from 'next/config'
+import { useRouter } from 'next/router'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 import SEO from '../../components/SEO'
 
 const Search = ({ results }) => {
+  const router = useRouter()
+  let {
+    query: { query },
+  } = router
+  query = decodeURIComponent(query)
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+    const query = form.get('query')
+    if (query) router.push(`/search/${encodeURIComponent(query)}`)
+  }
+
   return (
     <>
-      <SEO title="Results" />
-      <h1>Results</h1>
+      <SEO title={`Search results for “${query}”`} />
+      <h1>Search results for “{query}”</h1>
+      <form onSubmit={handleSearch}>
+        <input name="query" defaultValue={query} />
+        <button>Search</button>
+      </form>
       <pre>{JSON.stringify(results, null, 2)}</pre>
     </>
   )
