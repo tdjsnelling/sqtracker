@@ -3,21 +3,21 @@ import Head from 'next/head'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
-import Text from '../components/Text'
 
 const theme = {
   breakpoints: ['768px', '1400px'],
   colors: {
-    primary: '#2ecc71',
+    primary: '#f45d48',
     white: '#ffffff',
+    offWhite: '#f8f8f8',
     black: '#202224',
     grey: '#aac',
     error: '#f33',
     border: '#deebf1',
   },
-  space: [2, 4, 8, 16, 32, 64, 128, 256],
+  space: [0, 2, 4, 8, 16, 32, 64, 128, 256],
   sizes: {
-    body: '800px',
+    body: '1100px',
   },
   fonts: {
     heading: 'Inter, system-ui, sans-serif',
@@ -57,8 +57,8 @@ const GlobalStyle = createGlobalStyle(
   #__next main {
     min-height: calc(100vh - 109px);
     max-width: ${sizes.body};
-    margin: 0 auto;
-    padding: ${space[4]}px ${space[3]}px;
+    margin-left: calc((100vw - ${sizes.body}) / 2);
+    padding: ${space[5]}px;
   }
   a, a:visited {
     color: ${colors.primary};
@@ -67,6 +67,9 @@ const GlobalStyle = createGlobalStyle(
   a:hover {
     text-decoration: underline;
   }
+  ul, ol {
+    padding-left: 20px;
+  }s
 `
 )
 
@@ -84,17 +87,27 @@ const SqTracker = ({ Component, pageProps }) => {
       <ThemeProvider theme={theme}>
         <GlobalStyle />
         <Navigation />
+        <Box
+          width="100%"
+          height="60px"
+          borderBottom="1px solid"
+          borderColor="border"
+        >
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="flex-end"
+            maxWidth="body"
+            height="60px"
+            ml={`calc((100vw - ${theme.sizes.body}) / 2)`}
+            px={5}
+          >
+            <p>Search</p>
+          </Box>
+        </Box>
         <main>
           <Component {...pageProps} />
         </main>
-        <Box as="footer" borderTop="1px solid" borderColor="border" p={3}>
-          <Text fontFamily="mono" fontSize={1} textAlign="center">
-            Powered by{' '}
-            <a href="https://github.com/tdjsnelling/sqtracker" target="_blank">
-              ■ sqtracker
-            </a>
-          </Text>
-        </Box>
       </ThemeProvider>
     </>
   )

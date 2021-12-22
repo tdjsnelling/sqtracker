@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@styled-icons/boxicons-regular": "^10.38.0",
+    "@styled-icons/boxicons-solid": "^10.38.0",
     "@styled-system/css": "^5.1.5",
     "dotenv": "^10.0.0",
     "jsonwebtoken": "^8.5.1",

@@ -10,7 +10,7 @@ const Search = ({ results }) => {
   let {
     query: { query },
   } = router
-  query = decodeURIComponent(query)
+  query = query ? decodeURIComponent(query) : ''
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -22,7 +22,7 @@ const Search = ({ results }) => {
   return (
     <>
       <SEO title={`Search results for “${query}”`} />
-      <h1>Search results for “{query}”</h1>
+      <h1>{query ? `Search results for “${query}”` : 'Search'}</h1>
       <form onSubmit={handleSearch}>
         <input name="query" defaultValue={query} />
         <button>Search</button>
@@ -35,7 +35,7 @@ const Search = ({ results }) => {
 export const getServerSideProps = async ({ req, query: { query } }) => {
   const { token } = getReqCookies(req)
 
-  if (!token) return { props: {} }
+  if (!token || !query) return { props: {} }
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
