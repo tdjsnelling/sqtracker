@@ -2,11 +2,16 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import moment from 'moment'
+import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
+import { Download } from '@styled-icons/boxicons-regular/Download'
+import { Chat } from '@styled-icons/boxicons-solid/Chat'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
 import Box from '../components/Box'
 import Text from '../components/Text'
 import SEO from '../components/SEO'
+import List from '../components/List'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -38,7 +43,11 @@ const PublicLanding = ({ name, allowRegister }) => (
 
 const Index = ({ token, latest }) => {
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
+    publicRuntimeConfig: {
+      SQ_SITE_NAME,
+      SQ_ALLOW_REGISTER,
+      SQ_TORRENT_CATEGORIES,
+    },
   } = getConfig()
 
   const router = useRouter()
@@ -61,12 +70,57 @@ const Index = ({ token, latest }) => {
   return (
     <>
       <SEO title="Home" />
-      <h1>Home</h1>
-      <form onSubmit={handleSearch}>
+      <Text as="h1" mb={5}>
+        Home
+      </Text>
+      <Box as="form" onSubmit={handleSearch} mb={5}>
         <input name="query" />
         <button>Search</button>
-      </form>
-      <pre>{JSON.stringify(latest, null, 2)}</pre>
+      </Box>
+      <Text as="h2" mb={4}>
+        Latest torrents
+      </Text>
+      <List
+        data={latest.map((torrent) => ({
+          ...torrent,
+          href: `/torrent/${torrent.infoHash}`,
+        }))}
+        columns={[
+          {
+            accessor: 'name',
+            cell: ({ value }) => <Text>{value}</Text>,
+            gridWidth: '2fr',
+          },
+          {
+            accessor: 'type',
+            cell: ({ value }) => (
+              <Text icon={ListUl}>
+                {SQ_TORRENT_CATEGORIES.find((c) => c.slug === value).name}
+              </Text>
+            ),
+            gridWidth: '2fr',
+          },
+          {
+            accessor: 'downloads',
+            cell: ({ value }) => <Text icon={Download}>{value}</Text>,
+            gridWidth: '1fr',
+          },
+          {
+            accessor: 'comments.count',
+            cell: ({ value }) => <Text icon={Chat}>{value}</Text>,
+            gridWidth: '1fr',
+          },
+          {
+            accessor: 'created',
+            cell: ({ value }) => (
+              <Text textAlign="right">
+                {moment(value).format('Do MMM YYYY')}
+              </Text>
+            ),
+            gridWidth: '1fr',
+          },
+        ]}
+      />
     </>
   )
 }

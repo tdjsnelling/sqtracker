@@ -11,7 +11,7 @@ const theme = {
     white: '#ffffff',
     offWhite: '#f8f8f8',
     black: '#202224',
-    grey: '#aac',
+    grey: '#aaa',
     error: '#f33',
     border: '#deebf1',
   },
@@ -67,9 +67,6 @@ const GlobalStyle = createGlobalStyle(
   a:hover {
     text-decoration: underline;
   }
-  ul, ol {
-    padding-left: 20px;
-  }s
 `
 )
 
