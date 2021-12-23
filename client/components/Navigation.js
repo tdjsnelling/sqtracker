@@ -8,6 +8,7 @@ import css from '@styled-system/css'
 import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
 import { Search } from '@styled-icons/boxicons-regular/Search'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
+import { News } from '@styled-icons/boxicons-regular/News'
 import { User } from '@styled-icons/boxicons-regular/User'
 import { Exit } from '@styled-icons/boxicons-regular/Exit'
 import Box from './Box'
@@ -108,6 +109,12 @@ const Navigation = () => {
                 <Upload size={24} />
               </NavLink>
             </Link>
+            <Link href="/announcements" passHref>
+              <NavLink>
+                Announcements
+                <News size={24} />
+              </NavLink>
+            </Link>
             <Link href={`/user/${username}`} passHref>
               <NavLink>
                 {username}
@@ -133,7 +140,7 @@ const Navigation = () => {
         borderColor="border"
         p={4}
       >
-        <Text fontFamily="mono" fontSize={1}>
+        <Text color="grey" fontSize={1}>
           Powered by{' '}
           <a href="https://github.com/tdjsnelling/sqtracker" target="_blank">
             ■ sqtracker

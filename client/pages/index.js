@@ -11,6 +11,8 @@ import getReqCookies from '../utils/getReqCookies'
 import Box from '../components/Box'
 import Text from '../components/Text'
 import SEO from '../components/SEO'
+import Input from '../components/Input'
+import Button from '../components/Button'
 import List from '../components/List'
 
 const PublicLanding = ({ name, allowRegister }) => (
@@ -73,9 +75,9 @@ const Index = ({ token, latest }) => {
       <Text as="h1" mb={5}>
         Home
       </Text>
-      <Box as="form" onSubmit={handleSearch} mb={5}>
-        <input name="query" />
-        <button>Search</button>
+      <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
+        <Input placeholder="Search torrents" name="query" mr={3} required />
+        <Button>Search</Button>
       </Box>
       <Text as="h2" mb={4}>
         Latest torrents

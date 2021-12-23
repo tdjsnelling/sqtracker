@@ -58,7 +58,7 @@ const List = ({ data, columns }) => {
                 .map((col) => col.gridWidth)
                 .join(' ')}
               gridGap={4}
-              p={3}
+              p={4}
             >
               {columns.map((col) =>
                 col.cell({ value: getIn(row, col.accessor), row })

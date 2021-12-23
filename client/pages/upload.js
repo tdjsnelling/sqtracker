@@ -1,9 +1,14 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
+import { Link as LinkIcon } from '@styled-icons/boxicons-regular/Link'
 import withAuth from '../utils/withAuth'
 import SEO from '../components/SEO'
+import Box from '../components/Box'
 import Text from '../components/Text'
+import Input from '../components/Input'
+import Select from '../components/Select'
+import Button from '../components/Button'
 
 const Upload = ({ token, userId }) => {
   const [error, setError] = useState()
@@ -62,28 +67,50 @@ const Upload = ({ token, userId }) => {
   return (
     <>
       <SEO title="Upload" />
-      <h1>Upload</h1>
-      <p>
-        {SQ_BASE_URL}/sq/{userId}/announce
-      </p>
+      <Text as="h1" mb={4}>
+        Upload
+      </Text>
+      <Box mb={5}>
+        <Text icon={LinkIcon} iconColor="primary">
+          Announce URL must be set to{' '}
+          <Text as="span" fontFamily="mono" css={{ userSelect: 'all' }}>
+            {SQ_BASE_URL}/sq/{userId}/announce
+          </Text>
+        </Text>
+      </Box>
       <form onSubmit={handleUpload}>
-        <input type="file" name="torrent" accept="application/x-bittorrent" />
-        <input name="name" />
-        <select name="category">
+        <Input
+          name="torrent"
+          type="file"
+          accept="application/x-bittorrent"
+          label="Torrent file"
+          mb={4}
+          required
+        />
+        <Input name="name" label="Name" mb={4} required />
+        <Select name="category" label="Category" mb={4} required>
           {SQ_TORRENT_CATEGORIES.map((category) => (
             <option key={category.slug} value={category.slug}>
               {category.name}
             </option>
           ))}
-        </select>
-        <textarea name="description" rows="10" />
+        </Select>
+        <Input
+          name="description"
+          label="Description"
+          rows="10"
+          mb={4}
+          required
+        />
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
           <label>
             <input type="checkbox" name="anonymous" />
             Anonymous upload
           </label>
         )}
-        <button>Upload</button>
+        <Button display="block" ml="auto" mt={5}>
+          Upload
+        </Button>
         {error && <Text color="error">Error: {error}</Text>}
       </form>
     </>

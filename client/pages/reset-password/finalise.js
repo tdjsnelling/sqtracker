@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import getConfig from 'next/config'
 import jwt from 'jsonwebtoken'
 import SEO from '../../components/SEO'
+import Text from '../../components/Text'
+import Input from '../../components/Input'
+import Button from '../../components/Button'
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
   const [error, setError] = useState()
@@ -34,12 +37,20 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
   return (
     <>
       <SEO title="Reset password" />
-      <h1>Reset password</h1>
+      <Text as="h1" mb={5}>
+        Reset password
+      </Text>
       <p>{email}</p>
       {!tokenError ? (
         <form onSubmit={handleInitiate}>
-          <input name="newPassword" />
-          <button>Reset password</button>
+          <Input
+            name="newPassword"
+            type="password"
+            label="New password"
+            mb={4}
+            required
+          />
+          <Button>Reset password</Button>
         </form>
       ) : (
         <p>Token error: {tokenError}</p>

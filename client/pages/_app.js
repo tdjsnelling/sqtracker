@@ -3,6 +3,7 @@ import Head from 'next/head'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
+import Input from '../components/Input'
 
 const theme = {
   breakpoints: ['768px', '1400px'],
@@ -99,7 +100,7 @@ const SqTracker = ({ Component, pageProps }) => {
             ml={`calc((100vw - ${theme.sizes.body}) / 2)`}
             px={5}
           >
-            <p>Search</p>
+            <Input placeholder="Search" maxWidth="300px" />
           </Box>
         </Box>
         <main>

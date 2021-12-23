@@ -4,6 +4,9 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { useCookies } from 'react-cookie'
 import SEO from '../components/SEO'
+import Text from '../components/Text'
+import Input from '../components/Input'
+import Button from '../components/Button'
 
 const Login = () => {
   const [error, setError] = useState()
@@ -48,14 +51,24 @@ const Login = () => {
   return (
     <>
       <SEO title="Log in" />
-      <h1>Log in</h1>
+      <Text as="h1" mb={5}>
+        Log in
+      </Text>
       <form onSubmit={handleLogin}>
-        <input name="username" />
-        <input name="password" />
-        <button>Log in</button>
+        <Input name="username" label="Username" mb={4} required />
+        <Input
+          name="password"
+          type="password"
+          label="Password"
+          mb={4}
+          required
+        />
+        <Button>Log in</Button>
       </form>
-      <Link href="/reset-password/initiate">
-        <a>Reset password</a>
+      <Link href="/reset-password/initiate" passHref>
+        <Text as="a" display="inline-block" mt={5}>
+          Reset password
+        </Text>
       </Link>
     </>
   )

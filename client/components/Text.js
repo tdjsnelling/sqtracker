@@ -37,7 +37,7 @@ const Text = ({
 }) =>
   Icon ? (
     <Box display="flex" alignItems="center">
-      <Box display="flex" alignItems="center" color={iconColor} mr={3}>
+      <Box display="flex" alignItems="center" color={iconColor} mr={2}>
         <Icon size={iconSize} />
       </Box>
       <StyledText {...rest}>{children}</StyledText>

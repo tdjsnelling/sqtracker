@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
 import SEO from '../../components/SEO'
+import Text from '../../components/Text'
+import Input from '../../components/Input'
+import Button from '../../components/Button'
 
 const InitiatePasswordReset = () => {
   const [error, setError] = useState()
@@ -34,10 +37,12 @@ const InitiatePasswordReset = () => {
   return (
     <>
       <SEO title="Reset password" />
-      <h1>Reset password</h1>
+      <Text as="h1" mb={5}>
+        Reset password
+      </Text>
       <form onSubmit={handleInitiate}>
-        <input name="email" />
-        <button>Reset password</button>
+        <Input name="email" type="email" label="Email" mb={4} required />
+        <Button>Reset password</Button>
       </form>
     </>
   )

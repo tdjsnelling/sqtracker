@@ -4,6 +4,9 @@ import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
 import jwt from 'jsonwebtoken'
 import SEO from '../components/SEO'
+import Text from '../components/Text'
+import Input from '../components/Input'
+import Button from '../components/Button'
 
 const Register = ({ token: inviteToken, tokenError }) => {
   const [error, setError] = useState()
@@ -60,13 +63,21 @@ const Register = ({ token: inviteToken, tokenError }) => {
   return (
     <>
       <SEO title="Register" />
-      <h1>Register</h1>
+      <Text as="h1" mb={5}>
+        Register
+      </Text>
       {!tokenError ? (
         <form onSubmit={handleRegister}>
-          <input name="email" />
-          <input name="username" />
-          <input name="password" />
-          <button>Register</button>
+          <Input name="email" type="email" label="Email" mb={4} required />
+          <Input name="username" label="Username" mb={4} required />
+          <Input
+            name="password"
+            type="password"
+            label="Password"
+            mb={4}
+            required
+          />
+          <Button>Register</Button>
         </form>
       ) : (
         <p>Token error: {tokenError}</p>
