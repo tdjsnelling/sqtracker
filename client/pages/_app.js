@@ -1,8 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
+import { Menu } from '@styled-icons/boxicons-regular'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
+import Button from '../components/Button'
 import Input from '../components/Input'
 
 const theme = {
@@ -41,7 +43,7 @@ const theme = {
 }
 
 const GlobalStyle = createGlobalStyle(
-  ({ theme: { fonts, colors, lineHeights, sizes, space } }) => `
+  ({ theme: { breakpoints, fonts, colors, lineHeights, sizes, space } }) => `
   * {
     margin: 0;
     padding: 0;
@@ -58,8 +60,13 @@ const GlobalStyle = createGlobalStyle(
   #__next main {
     min-height: calc(100vh - 109px);
     max-width: ${sizes.body};
-    margin-left: calc((100vw - ${sizes.body}) / 2);
-    padding: ${space[5]}px;
+    padding: ${space[4]}px;
+  }
+  @media screen and (min-width: ${breakpoints[0]}) {
+    #__next main {
+      margin-left: max(calc((100vw - ${sizes.body}) / 2), 200px);
+      padding: ${space[5]}px;
+    }
   }
   a, a:visited {
     color: ${colors.primary};
@@ -72,6 +79,17 @@ const GlobalStyle = createGlobalStyle(
 )
 
 const SqTracker = ({ Component, pageProps }) => {
+  const [isMobile, setIsMobile] = useState(false)
+  const [menuIsOpen, setMenuIsOpen] = useState(false)
+
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 767px)')
+    setIsMobile(query.matches)
+    query.addEventListener('change', ({ matches }) => {
+      setIsMobile(matches)
+    })
+  }, [])
+
   return (
     <>
       <Head>
@@ -84,7 +102,11 @@ const SqTracker = ({ Component, pageProps }) => {
       </Head>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Navigation />
+        <Navigation
+          isMobile={isMobile}
+          menuIsOpen={menuIsOpen}
+          setMenuIsOpen={setMenuIsOpen}
+        />
         <Box
           width="100%"
           height="60px"
@@ -94,13 +116,21 @@ const SqTracker = ({ Component, pageProps }) => {
           <Box
             display="flex"
             alignItems="center"
-            justifyContent="flex-end"
+            justifyContent={['space-between', 'flex-end']}
             maxWidth="body"
             height="60px"
-            ml={`calc((100vw - ${theme.sizes.body}) / 2)`}
-            px={5}
+            ml={[0, `max(calc((100vw - ${theme.sizes.body}) / 2), 200px)`]}
+            px={[4, 5]}
           >
-            <Input placeholder="Search" maxWidth="300px" />
+            <Button
+              onClick={() => setMenuIsOpen(true)}
+              display={['block', 'none']}
+              px={1}
+              py={1}
+            >
+              <Menu size={24} />
+            </Button>
+            <Input placeholder="Search" maxWidth="300px" ml={4} />
           </Box>
         </Box>
         <main>
