@@ -1,14 +1,14 @@
 import styled from 'styled-components'
 import { layout, space, variant } from 'styled-system'
 import css from '@styled-system/css'
-import { darken } from 'polished'
+import { darken, getLuminance } from 'polished'
 
 const StyledButton = styled.button(
   ({ theme }) =>
     css({
       appearance: 'none',
       bg: 'primary',
-      color: 'background',
+      color: getLuminance(theme.colors.primary) >= 0.5 ? '#000' : '#fff',
       border: '2px solid',
       borderColor: 'primary',
       borderRadius: 1,
