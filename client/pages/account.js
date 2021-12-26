@@ -1,8 +1,14 @@
 import React from 'react'
-import SEO from '../components/SEO'
-import withAuth from '../utils/withAuth'
 import getConfig from 'next/config'
+import moment from 'moment'
+import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
+import SEO from '../components/SEO'
+import Box from '../components/Box'
+import Text from '../components/Text'
+import Input from '../components/Input'
+import Button from '../components/Button'
+import List from '../components/List'
 
 const Account = ({ token, invites }) => {
   const {
@@ -51,15 +57,81 @@ const Account = ({ token, invites }) => {
   return (
     <>
       <SEO title="My account" />
-      <h1>My account</h1>
-      <h2>Invites</h2>
-      <button onClick={handleGenerateInvite}>Generate invite</button>
-      <pre>{JSON.stringify(invites, null, 2)}</pre>
-      <h2>Change password</h2>
+      <Text as="h1" mb={5}>
+        My account
+      </Text>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={4}
+      >
+        <Text as="h2">Invites</Text>
+        <Button onClick={handleGenerateInvite}>Generate invite</Button>
+      </Box>
+      <List
+        data={invites}
+        columns={[
+          {
+            accessor: 'token',
+            cell: ({ value }) => (
+              <Text
+                fontFamily="monospace"
+                overflow="hidden"
+                css={{ textOverflow: 'ellipsis' }}
+              >
+                {value}
+              </Text>
+            ),
+            gridWidth: '1fr',
+          },
+          {
+            accessor: 'claimed',
+            cell: ({ value }) => (
+              <Text>{value ? 'Claimed' : 'Not claimed'}</Text>
+            ),
+            gridWidth: '0.5fr',
+          },
+          {
+            accessor: 'validUntil',
+            cell: ({ value }) => (
+              <Text textAlign="right">
+                Valid until {moment(value).format('Do MMM YYYY')}
+              </Text>
+            ),
+            gridWidth: '1fr',
+          },
+          {
+            accessor: 'created',
+            cell: ({ value }) => (
+              <Text textAlign="right">
+                Created {moment(value).format('Do MMM YYYY')}
+              </Text>
+            ),
+            gridWidth: '1fr',
+          },
+        ]}
+        mb={5}
+      />
+      <Text as="h2" mb={4}>
+        Change password
+      </Text>
       <form onSubmit={handleChangePassword}>
-        <input name="password" />
-        <input name="newPassword" />
-        <button>Change password</button>
+        <Input
+          name="password"
+          type="password"
+          label="Current password"
+          mb={4}
+          required
+        />
+        <Input
+          name="newPassword"
+          type="password"
+          label="New password"
+          mb={4}
+          required
+        />
+        <Button>Change password</Button>
       </form>
     </>
   )

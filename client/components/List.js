@@ -46,9 +46,9 @@ const ListItem = ({ children }) => {
   )
 }
 
-const List = ({ data, columns }) => {
+const List = ({ data, columns, ...rest }) => {
   return (
-    <Box as="ul" css={{ listStyle: 'none' }}>
+    <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
       {data.map((row) => (
         <ListItem>
           <WrapLink href={row.href}>
@@ -58,6 +58,7 @@ const List = ({ data, columns }) => {
                 .map((col) => col.gridWidth)
                 .join(' ')}
               gridGap={4}
+              alignItems="center"
               p={4}
             >
               {columns.map((col) =>
