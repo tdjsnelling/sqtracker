@@ -8,6 +8,7 @@ import Box from '../components/Box'
 import Text from '../components/Text'
 import Input from '../components/Input'
 import Select from '../components/Select'
+import Checkbox from '../components/Checkbox'
 import Button from '../components/Button'
 
 const Upload = ({ token, userId }) => {
@@ -103,10 +104,7 @@ const Upload = ({ token, userId }) => {
           required
         />
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
-          <label>
-            <input type="checkbox" name="anonymous" />
-            Anonymous upload
-          </label>
+          <Checkbox name="anonymous" label="Anonymous upload" />
         )}
         <Button display="block" ml="auto" mt={5}>
           Upload

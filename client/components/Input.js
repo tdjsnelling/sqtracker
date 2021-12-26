@@ -28,9 +28,9 @@ const StyledInput = styled.input(shared, layout, space, typography)
 
 const StyledTextarea = styled.textarea(shared, layout, space, typography)
 
-export const WrapLabel = ({ label, children }) =>
+export const WrapLabel = ({ label, children, ...rest }) =>
   label ? (
-    <Box as="label">
+    <Box as="label" display="block" {...rest}>
       <Text
         fontWeight={600}
         fontSize={1}
@@ -45,9 +45,9 @@ export const WrapLabel = ({ label, children }) =>
     children
   )
 
-const Input = ({ label, rows, ...rest }) => {
+const Input = ({ label, rows, my, mt, mb, ...rest }) => {
   return (
-    <WrapLabel label={label}>
+    <WrapLabel label={label} my={my} mt={mt} mb={mb}>
       {rows ? <StyledTextarea rows={rows} /> : <StyledInput {...rest} />}
     </WrapLabel>
   )

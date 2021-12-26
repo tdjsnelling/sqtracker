@@ -5,6 +5,7 @@ import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
 import styled, { ThemeContext } from 'styled-components'
 import css from '@styled-system/css'
+import { Home } from '@styled-icons/boxicons-regular/Home'
 import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
 import { Search } from '@styled-icons/boxicons-regular/Search'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
@@ -18,7 +19,7 @@ const NavLink = styled.a(({ theme, href, mt = 0 }) => {
   const router = useRouter()
   const { asPath } = router
 
-  const active = asPath.startsWith(href)
+  const active = href === '/' ? asPath === '/' : asPath.startsWith(href)
 
   return css({
     display: 'flex',
@@ -35,6 +36,9 @@ const NavLink = styled.a(({ theme, href, mt = 0 }) => {
     px: 4,
     py: 3,
     mt,
+    p: {
+      display: ['none', 'none', 'block'],
+    },
     svg: {
       ml: 3,
     },
@@ -91,39 +95,45 @@ const Navigation = () => {
       <Box as="nav" maxWidth="300px" ml="auto" py={4}>
         {cookies.token && (
           <Box display="grid" gridAutoFlow="row" gridGap={0}>
+            <Link href="/" passHref>
+              <NavLink>
+                <Text>Home</Text>
+                <Home size={24} />
+              </NavLink>
+            </Link>
             <Link href="/categories" passHref>
               <NavLink>
-                Browse
+                <Text>Browse</Text>
                 <ListUl size={24} />
               </NavLink>
             </Link>
             <Link href="/search" passHref>
               <NavLink>
-                Search
+                <Text>Search</Text>
                 <Search size={24} />
               </NavLink>
             </Link>
             <Link href="/upload" passHref>
               <NavLink>
-                Upload
+                <Text>Upload</Text>
                 <Upload size={24} />
               </NavLink>
             </Link>
             <Link href="/announcements" passHref>
               <NavLink>
-                Announcements
+                <Text>Announcements</Text>
                 <News size={24} />
               </NavLink>
             </Link>
             <Link href={`/user/${username}`} passHref>
               <NavLink>
-                {username}
+                <Text>{username}</Text>
                 <User size={24} />
               </NavLink>
             </Link>
             <Link href="/logout" passHref>
               <NavLink mt={5}>
-                Log out
+                <Text>Log out</Text>
                 <Exit size={24} />
               </NavLink>
             </Link>

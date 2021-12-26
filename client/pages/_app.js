@@ -18,7 +18,7 @@ const theme = {
   },
   space: [0, 2, 4, 8, 16, 32, 64, 128, 256],
   sizes: {
-    body: '1100px',
+    body: '1000px',
   },
   fonts: {
     heading: 'Inter, system-ui, sans-serif',

@@ -350,7 +350,13 @@ export const fetchUser = async (req, res) => {
                 downloaded: { $gt: 0 },
               },
             },
-            { $count: 'count' },
+            {
+              $group: {
+                _id: 'downloaded',
+                bytes: { $sum: '$downloaded' },
+                count: { $sum: 1 },
+              },
+            },
           ],
         },
       },
@@ -366,7 +372,13 @@ export const fetchUser = async (req, res) => {
                 uploaded: { $gt: 0 },
               },
             },
-            { $count: 'count' },
+            {
+              $group: {
+                _id: 'uploaded',
+                bytes: { $sum: '$uploaded' },
+                count: { $sum: 1 },
+              },
+            },
           ],
         },
       },

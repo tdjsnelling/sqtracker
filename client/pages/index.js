@@ -33,7 +33,7 @@ const PublicLanding = ({ name, allowRegister }) => (
         </Link>
       </Box>
       {allowRegister && (
-        <Box ml={3}>
+        <Box ml={4}>
           <Link href="/register">
             <a>Register</a>
           </Link>

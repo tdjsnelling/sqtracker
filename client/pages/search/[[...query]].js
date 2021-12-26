@@ -4,6 +4,10 @@ import { useRouter } from 'next/router'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 import SEO from '../../components/SEO'
+import Text from '../../components/Text'
+import Input from '../../components/Input'
+import Button from '../../components/Button'
+import Box from '../../components/Box'
 
 const Search = ({ results }) => {
   const router = useRouter()
@@ -22,11 +26,13 @@ const Search = ({ results }) => {
   return (
     <>
       <SEO title={`Search results for “${query}”`} />
-      <h1>{query ? `Search results for “${query}”` : 'Search'}</h1>
-      <form onSubmit={handleSearch}>
-        <input name="query" defaultValue={query} />
-        <button>Search</button>
-      </form>
+      <Text as="h1" mb={5}>
+        {query ? `Search results for “${query}”` : 'Search'}
+      </Text>
+      <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
+        <Input placeholder="Search torrents" name="query" mr={3} required />
+        <Button>Search</Button>
+      </Box>
       <pre>{JSON.stringify(results, null, 2)}</pre>
     </>
   )
