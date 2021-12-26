@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import moment from 'moment'
+import { Comment as CommentIcon } from '@styled-icons/boxicons-regular/Comment'
 import Box from './Box'
 import Text from './Text'
 
@@ -24,7 +25,7 @@ const Comment = ({ comment }) => {
         mb={3}
       >
         {comment.user?.username ? (
-          <Text color="grey">
+          <Text color="grey" icon={CommentIcon}>
             Comment by{' '}
             <Link href={`/user/${comment.user.username}`} passHref>
               <Text as="a">{comment.user.username}</Text>

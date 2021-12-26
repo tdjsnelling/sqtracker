@@ -4,6 +4,9 @@ import Link from 'next/link'
 import { useCookies } from 'react-cookie'
 import moment from 'moment'
 import prettyBytes from 'pretty-bytes'
+import { BarChartSquare } from '@styled-icons/boxicons-regular/BarChartSquare'
+import { Upload } from '@styled-icons/boxicons-regular/Upload'
+import { Download } from '@styled-icons/boxicons-regular/Download'
 import getReqCookies from '../../utils/getReqCookies'
 import withAuth from '../../utils/withAuth'
 import SEO from '../../components/SEO'
@@ -51,6 +54,8 @@ const User = ({ user }) => {
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
+            icon={BarChartSquare}
+            iconColor="black"
           >
             Ratio
           </Text>
@@ -64,6 +69,8 @@ const User = ({ user }) => {
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
+            icon={Download}
+            iconColor="black"
           >
             Downloaded
           </Text>
@@ -81,6 +88,8 @@ const User = ({ user }) => {
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
+            icon={Upload}
+            iconColor="black"
           >
             Uploaded
           </Text>
@@ -93,6 +102,9 @@ const User = ({ user }) => {
           </Text>
         </Box>
       </Box>
+      <Text as="h2" mb={4}>
+        Uploaded
+      </Text>
       <Text as="h2" mb={4}>
         Comments
       </Text>
