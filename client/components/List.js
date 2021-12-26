@@ -18,10 +18,10 @@ const WrapLink = ({ href, children }) =>
       <Text
         as="a"
         display="block"
-        color="black"
+        color="text"
         css={{
-          '&:visited': { color: 'black' },
-          '&:hover': { bg: 'offWhite', textDecoration: 'none' },
+          '&:visited': { color: 'text' },
+          '&:hover': { bg: 'sidebar', textDecoration: 'none' },
         }}
       >
         {children}

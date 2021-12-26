@@ -113,6 +113,7 @@ const Account = ({ token, invites }) => {
           {
             cell: ({ row }) => (
               <Button
+                variant="secondary"
                 onClick={() => {
                   copy(`${SQ_SITE_URL}/register?token=${row.token}`)
                   alert('Invite link copied to clipboard')

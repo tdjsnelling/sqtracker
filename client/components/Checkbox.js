@@ -38,7 +38,7 @@ const Container = styled.label(
         display: 'inline-flex',
         bg: 'grey9',
         border: '2px solid',
-        borderColor: 'black',
+        borderColor: 'text',
         borderRadius: 1,
         width: '20px',
         height: '20px',

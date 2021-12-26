@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { layout, space } from 'styled-system'
+import { layout, space, variant } from 'styled-system'
 import css from '@styled-system/css'
 import { darken } from 'polished'
 
@@ -8,7 +8,7 @@ const StyledButton = styled.button(
     css({
       appearance: 'none',
       bg: 'primary',
-      color: 'white',
+      color: 'background',
       border: '2px solid',
       borderColor: 'primary',
       borderRadius: 1,
@@ -23,6 +23,23 @@ const StyledButton = styled.button(
       '&:focus, &:active': {
         bg: darken(0.1, theme.colors.primary),
         borderColor: darken(0.1, theme.colors.primary),
+      },
+    }),
+  ({ theme }) =>
+    variant({
+      variants: {
+        secondary: {
+          bg: 'sidebar',
+          color: 'text',
+          borderColor: 'sidebar',
+          '&:hover': {
+            borderColor: darken(0.1, theme.colors.sidebar),
+          },
+          '&:focus, &:active': {
+            bg: darken(0.1, theme.colors.sidebar),
+            borderColor: darken(0.1, theme.colors.sidebar),
+          },
+        },
       },
     }),
   layout,

@@ -1,23 +1,41 @@
 import React, { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
-import { Menu } from '@styled-icons/boxicons-regular'
+import { Menu } from '@styled-icons/boxicons-regular/Menu'
+import { Sun } from '@styled-icons/boxicons-regular/Sun'
+import { Moon } from '@styled-icons/boxicons-regular/Moon'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
 
-const theme = {
+const getThemeColours = (theme) => {
+  switch (theme) {
+    case 'light':
+      return {
+        primary: '#f45d48',
+        background: '#ffffff',
+        sidebar: '#f8f8f8',
+        text: '#202224',
+        grey: '#aaa',
+        error: '#f33',
+        border: '#deebf1',
+      }
+    case 'dark':
+      return {
+        primary: '#f45d48',
+        background: '#1f2023',
+        sidebar: '#27282b',
+        text: '#f8f8f8',
+        grey: '#aaa',
+        error: '#f33',
+        border: '#303236',
+      }
+  }
+}
+
+const baseTheme = {
   breakpoints: ['768px', '1400px'],
-  colors: {
-    primary: '#f45d48',
-    white: '#ffffff',
-    offWhite: '#f8f8f8',
-    black: '#202224',
-    grey: '#aaa',
-    error: '#f33',
-    border: '#deebf1',
-  },
   space: [0, 2, 4, 8, 16, 32, 64, 128, 256],
   sizes: {
     body: '1000px',
@@ -50,10 +68,10 @@ const GlobalStyle = createGlobalStyle(
     box-sizing: border-box;
   }
   body {
-    background: ${colors.white};
+    background: ${colors.background};
   }
   #__next {
-    color: ${colors.black};
+    color: ${colors.text};
     font-family: ${fonts.body};
     line-height: ${lineHeights.body};
   }
@@ -81,6 +99,7 @@ const GlobalStyle = createGlobalStyle(
 const SqTracker = ({ Component, pageProps }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [menuIsOpen, setMenuIsOpen] = useState(false)
+  const [theme, setTheme] = useState('dark')
 
   useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)')
@@ -89,6 +108,8 @@ const SqTracker = ({ Component, pageProps }) => {
       setIsMobile(matches)
     })
   }, [])
+
+  const appTheme = { ...baseTheme, colors: getThemeColours(theme) }
 
   return (
     <>
@@ -100,7 +121,7 @@ const SqTracker = ({ Component, pageProps }) => {
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Code+Pro:wght@400;500;700&display=swap"
         />
       </Head>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={appTheme}>
         <GlobalStyle />
         <Navigation
           isMobile={isMobile}
@@ -119,7 +140,7 @@ const SqTracker = ({ Component, pageProps }) => {
             justifyContent={['space-between', 'flex-end']}
             maxWidth="body"
             height="60px"
-            ml={[0, `max(calc((100vw - ${theme.sizes.body}) / 2), 200px)`]}
+            ml={[0, `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`]}
             px={[4, 5]}
           >
             <Button
@@ -130,7 +151,19 @@ const SqTracker = ({ Component, pageProps }) => {
             >
               <Menu size={24} />
             </Button>
-            <Input placeholder="Search" maxWidth="300px" ml={4} />
+            <Box display="flex">
+              <Input placeholder="Search" maxWidth="300px" ml={4} />
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  setTheme((t) => (t === 'light' ? 'dark' : 'light'))
+                }
+                px={3}
+                ml={3}
+              >
+                {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
+              </Button>
+            </Box>
           </Box>
         </Box>
         <main>

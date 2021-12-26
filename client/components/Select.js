@@ -11,9 +11,10 @@ const StyledSelect = styled.select(
     css({
       appearance: 'none',
       display: 'block',
-      bg: 'offWhite',
+      bg: 'sidebar',
+      color: 'text',
       border: '2px solid',
-      borderColor: 'offWhite',
+      borderColor: 'sidebar',
       borderRadius: 1,
       fontFamily: 'body',
       fontSize: 2,

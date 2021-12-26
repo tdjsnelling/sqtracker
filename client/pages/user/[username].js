@@ -48,14 +48,14 @@ const User = ({ user }) => {
         gridGap={4}
         mb={5}
       >
-        <Box bg="offWhite" borderRadius={2} p={4}>
+        <Box bg="sidebar" borderRadius={2} p={4}>
           <Text
             fontWeight={600}
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
             icon={BarChartSquare}
-            iconColor="black"
+            iconColor="text"
           >
             Ratio
           </Text>
@@ -63,14 +63,14 @@ const User = ({ user }) => {
             {user.ratio === -1 ? '∞' : user.ratio.toFixed(2)}
           </Text>
         </Box>
-        <Box bg="offWhite" borderRadius={2} p={4}>
+        <Box bg="sidebar" borderRadius={2} p={4}>
           <Text
             fontWeight={600}
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
             icon={Download}
-            iconColor="black"
+            iconColor="text"
           >
             Downloaded
           </Text>
@@ -82,14 +82,14 @@ const User = ({ user }) => {
             </Text>
           </Text>
         </Box>
-        <Box bg="offWhite" borderRadius={2} p={4}>
+        <Box bg="sidebar" borderRadius={2} p={4}>
           <Text
             fontWeight={600}
             fontSize={1}
             mb={3}
             css={{ textTransform: 'uppercase' }}
             icon={Upload}
-            iconColor="black"
+            iconColor="text"
           >
             Uploaded
           </Text>

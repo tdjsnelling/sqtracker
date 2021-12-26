@@ -31,7 +31,7 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    color: active ? 'primary' : `${theme.colors.black} !important`,
+    color: active ? 'primary' : `${theme.colors.text} !important`,
     background: active
       ? `linear-gradient(to right, rgba(0, 0, 0, 0), ${theme.colors.border})`
       : 'transparent',
@@ -69,7 +69,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       bottom={0}
       width={`calc((100vw - ${theme.sizes.body}) / 2)`}
       minWidth="200px"
-      bg="offWhite"
+      bg="sidebar"
       borderRight="1px solid"
       borderColor="border"
       textAlign="right"
@@ -99,8 +99,8 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             as="a"
             fontSize={3}
             fontWeight={600}
-            color="black"
-            css={{ textDecoration: 'none', '&:visited': { color: 'black' } }}
+            color="text"
+            css={{ textDecoration: 'none', '&:visited': { color: 'text' } }}
           >
             {SQ_SITE_NAME}
           </Text>

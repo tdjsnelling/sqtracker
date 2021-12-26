@@ -10,7 +10,7 @@ import Text from '../../components/Text'
 
 const CategoryItem = styled.li(() =>
   css({
-    bg: 'offWhite',
+    bg: 'sidebar',
     height: '150px',
     borderRadius: 2,
     a: {
