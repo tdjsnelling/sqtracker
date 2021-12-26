@@ -138,6 +138,31 @@ export const fetchTorrent = async (req, res) => {
                 $expr: { $eq: ['$torrentId', '$$torrentId'] },
               },
             },
+            {
+              $lookup: {
+                from: 'users',
+                as: 'user',
+                let: { userId: '$userId' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ['$_id', '$$userId'] },
+                    },
+                  },
+                  {
+                    $project: {
+                      username: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: '$user',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
             { $sort: { created: -1 } },
           ],
         },

@@ -3,6 +3,11 @@ import getConfig from 'next/config'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 import SEO from '../../components/SEO'
+import Box from '../../components/Box'
+import Text from '../../components/Text'
+import Button from '../../components/Button'
+import Input from '../../components/Input'
+import Comment from '../../components/Comment'
 
 const Torrent = ({ token, torrent }) => {
   const {
@@ -62,16 +67,32 @@ const Torrent = ({ token, torrent }) => {
   return (
     <>
       <SEO title={torrent.name} />
-      <h1>{torrent.name}</h1>
-      <pre>{JSON.stringify(torrent, null, 2)}</pre>
-      <button type="button" onClick={handleDownload}>
-        Download
-      </button>
-      <h2>Comments</h2>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        mb={5}
+      >
+        <Text as="h1">{torrent.name}</Text>
+        <Button onClick={handleDownload}>Download</Button>
+      </Box>
+      <Box as="pre" mb={5}>
+        {JSON.stringify(torrent, null, 2)}
+      </Box>
+      <Text as="h2" mb={4}>
+        Comments
+      </Text>
       <form onSubmit={handleComment}>
-        <textarea name="comment" rows="10" />
-        <button>Post</button>
+        <Input name="comment" label="Post a comment" rows="5" mb={4} />
+        <Button>Post</Button>
       </form>
+      {!!torrent.comments?.length && (
+        <Box mt={5}>
+          {torrent.comments.map((comment) => (
+            <Comment comment={comment} />
+          ))}
+        </Box>
+      )}
     </>
   )
 }

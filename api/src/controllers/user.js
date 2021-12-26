@@ -334,6 +334,27 @@ export const fetchUser = async (req, res) => {
                 $expr: { $eq: ['$userId', '$$userId'] },
               },
             },
+            {
+              $lookup: {
+                from: 'torrents',
+                as: 'torrent',
+                let: { torrentId: '$torrentId' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ['$_id', '$$torrentId'] },
+                    },
+                  },
+                  { $project: { name: 1, infoHash: 1 } },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: '$torrent',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
             { $sort: { created: -1 } },
           ],
         },

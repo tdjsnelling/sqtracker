@@ -17,11 +17,15 @@ import Box from './Box'
 import Text from './Text'
 import Button from './Button'
 
-const NavLink = styled.a(({ theme, href, mt = 0 }) => {
+const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   const router = useRouter()
   const { asPath } = router
 
-  const active = href === '/' ? asPath === '/' : asPath.startsWith(href)
+  const active =
+    href === '/'
+      ? asPath === '/'
+      : asPath.startsWith(href) ||
+        highlights.some((link) => asPath.startsWith(link))
 
   return css({
     display: 'flex',
@@ -136,7 +140,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
               </NavLink>
             </Link>
             <Link href={`/user/${username}`} passHref>
-              <NavLink>
+              <NavLink highlights={['/account']}>
                 <Text>{username}</Text>
                 <User size={24} />
               </NavLink>

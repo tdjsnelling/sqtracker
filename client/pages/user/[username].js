@@ -10,6 +10,7 @@ import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import Button from '../../components/Button'
+import Comment from '../../components/Comment'
 
 const User = ({ user }) => {
   const [cookies] = useCookies()
@@ -40,8 +41,8 @@ const User = ({ user }) => {
       </Text>
       <Box
         display="grid"
-        gridTemplateColumns="repeat(3, 1fr)"
-        gridGap={5}
+        gridTemplateColumns={['1fr', 'repeat(3, 1fr)']}
+        gridGap={4}
         mb={5}
       >
         <Box bg="offWhite" borderRadius={2} p={4}>
@@ -53,7 +54,9 @@ const User = ({ user }) => {
           >
             Ratio
           </Text>
-          <Text fontSize={5}>{user.ratio === -1 ? '∞' : user.ratio}</Text>
+          <Text fontSize={5}>
+            {user.ratio === -1 ? '∞' : user.ratio.toFixed(2)}
+          </Text>
         </Box>
         <Box bg="offWhite" borderRadius={2} p={4}>
           <Text
@@ -90,6 +93,18 @@ const User = ({ user }) => {
           </Text>
         </Box>
       </Box>
+      <Text as="h2" mb={4}>
+        Comments
+      </Text>
+      {!!user.comments?.length && (
+        <Box>
+          {user.comments.map((comment) => (
+            <Comment
+              comment={{ ...comment, user: { username: user.username } }}
+            />
+          ))}
+        </Box>
+      )}
       <pre>{JSON.stringify(user, null, 2)}</pre>
     </>
   )
