@@ -1,6 +1,8 @@
 import React from 'react'
 import getConfig from 'next/config'
 import moment from 'moment'
+import copy from 'copy-to-clipboard'
+import { Copy } from '@styled-icons/boxicons-regular/Copy'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
 import SEO from '../components/SEO'
@@ -12,7 +14,7 @@ import List from '../components/List'
 
 const Account = ({ token, invites }) => {
   const {
-    publicRuntimeConfig: { SQ_API_URL },
+    publicRuntimeConfig: { SQ_API_URL, SQ_SITE_URL },
   } = getConfig()
 
   const handleGenerateInvite = async () => {
@@ -95,20 +97,33 @@ const Account = ({ token, invites }) => {
           {
             accessor: 'validUntil',
             cell: ({ value }) => (
-              <Text textAlign="right">
-                Valid until {moment(value).format('Do MMM YYYY')}
+              <Text>
+                Valid until {moment(value).format('HH:mm Do MMM YYYY')}
               </Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '1.2fr',
           },
           {
             accessor: 'created',
             cell: ({ value }) => (
-              <Text textAlign="right">
-                Created {moment(value).format('Do MMM YYYY')}
-              </Text>
+              <Text>Created {moment(value).format('Do MMM YYYY')}</Text>
             ),
             gridWidth: '1fr',
+          },
+          {
+            cell: ({ row }) => (
+              <Button
+                onClick={() => {
+                  copy(`${SQ_SITE_URL}/register?token=${row.token}`)
+                  alert('Invite link copied to clipboard')
+                }}
+                px={1}
+                py={1}
+              >
+                <Copy size={24} />
+              </Button>
+            ),
+            gridWidth: '32px',
           },
         ]}
         mb={5}

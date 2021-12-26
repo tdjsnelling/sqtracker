@@ -62,7 +62,10 @@ const List = ({ data, columns, ...rest }) => {
               p={4}
             >
               {columns.map((col) =>
-                col.cell({ value: getIn(row, col.accessor), row })
+                col.cell({
+                  value: col.accessor ? getIn(row, col.accessor) : null,
+                  row,
+                })
               )}
             </Box>
           </WrapLink>
