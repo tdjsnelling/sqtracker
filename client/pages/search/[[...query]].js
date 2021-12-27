@@ -8,6 +8,7 @@ import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
 import Box from '../../components/Box'
+import TorrentList from '../../components/TorrentList'
 
 const Search = ({ results }) => {
   const router = useRouter()
@@ -15,6 +16,10 @@ const Search = ({ results }) => {
     query: { query },
   } = router
   query = query ? decodeURIComponent(query) : ''
+
+  const {
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+  } = getConfig()
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -33,7 +38,11 @@ const Search = ({ results }) => {
         <Input placeholder="Search torrents" name="query" mr={3} required />
         <Button>Search</Button>
       </Box>
-      <pre>{JSON.stringify(results, null, 2)}</pre>
+      {results?.length ? (
+        <TorrentList torrents={results} categories={SQ_TORRENT_CATEGORIES} />
+      ) : (
+        <Text color="grey">No results.</Text>
+      )}
     </>
   )
 }

@@ -318,6 +318,23 @@ export const fetchUser = async (req, res) => {
                 anonymous: false,
               },
             },
+            {
+              $lookup: {
+                from: 'comments',
+                as: 'comments',
+                let: { torrentId: '$_id' },
+                pipeline: [
+                  { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
+                  { $count: 'count' },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: '$comments',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
             { $project: { binary: 0 } },
             { $sort: { created: -1 } },
           ],

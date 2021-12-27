@@ -13,10 +13,15 @@ import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import Button from '../../components/Button'
+import TorrentList from '../../components/TorrentList'
 import Comment from '../../components/Comment'
 
 const User = ({ user }) => {
   const [cookies] = useCookies()
+
+  const {
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+  } = getConfig()
 
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(' ')
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(' ')
@@ -105,6 +110,12 @@ const User = ({ user }) => {
       <Text as="h2" mb={4}>
         Uploaded
       </Text>
+      <Box mb={5}>
+        <TorrentList
+          torrents={user.torrents}
+          categories={SQ_TORRENT_CATEGORIES}
+        />
+      </Box>
       <Text as="h2" mb={4}>
         Comments
       </Text>
@@ -117,7 +128,6 @@ const User = ({ user }) => {
           ))}
         </Box>
       )}
-      <pre>{JSON.stringify(user, null, 2)}</pre>
     </>
   )
 }

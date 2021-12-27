@@ -2,10 +2,6 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import moment from 'moment'
-import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
-import { Download } from '@styled-icons/boxicons-regular/Download'
-import { Chat } from '@styled-icons/boxicons-solid/Chat'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
 import Box from '../components/Box'
@@ -13,7 +9,7 @@ import Text from '../components/Text'
 import SEO from '../components/SEO'
 import Input from '../components/Input'
 import Button from '../components/Button'
-import List from '../components/List'
+import TorrentList from '../components/TorrentList'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -82,47 +78,7 @@ const Index = ({ token, latest }) => {
       <Text as="h2" mb={4}>
         Latest torrents
       </Text>
-      <List
-        data={latest.map((torrent) => ({
-          ...torrent,
-          href: `/torrent/${torrent.infoHash}`,
-        }))}
-        columns={[
-          {
-            accessor: 'name',
-            cell: ({ value }) => <Text>{value}</Text>,
-            gridWidth: '2fr',
-          },
-          {
-            accessor: 'type',
-            cell: ({ value }) => (
-              <Text icon={ListUl}>
-                {SQ_TORRENT_CATEGORIES.find((c) => c.slug === value).name}
-              </Text>
-            ),
-            gridWidth: '2fr',
-          },
-          {
-            accessor: 'downloads',
-            cell: ({ value }) => <Text icon={Download}>{value}</Text>,
-            gridWidth: '1fr',
-          },
-          {
-            accessor: 'comments.count',
-            cell: ({ value }) => <Text icon={Chat}>{value}</Text>,
-            gridWidth: '1fr',
-          },
-          {
-            accessor: 'created',
-            cell: ({ value }) => (
-              <Text textAlign="right">
-                {moment(value).format('Do MMM YYYY')}
-              </Text>
-            ),
-            gridWidth: '1fr',
-          },
-        ]}
-      />
+      <TorrentList torrents={latest} categories={SQ_TORRENT_CATEGORIES} />
     </>
   )
 }

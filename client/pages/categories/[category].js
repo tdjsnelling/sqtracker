@@ -4,6 +4,8 @@ import getConfig from 'next/config'
 import getReqCookies from '../../utils/getReqCookies'
 import withAuth from '../../utils/withAuth'
 import SEO from '../../components/SEO'
+import Text from '../../components/Text'
+import TorrentList from '../../components/TorrentList'
 
 const Category = ({ results }) => {
   const router = useRouter()
@@ -20,8 +22,14 @@ const Category = ({ results }) => {
   return (
     <>
       <SEO title={`Browse ${category.name}`} />
-      <h1>Browse {category.name}</h1>
-      <pre>{JSON.stringify(results, null, 2)}</pre>
+      <Text as="h1" mb={5}>
+        Browse {category.name}
+      </Text>
+      {results.length ? (
+        <TorrentList torrents={results} categories={SQ_TORRENT_CATEGORIES} />
+      ) : (
+        <Text color="grey">No results.</Text>
+      )}
     </>
   )
 }
