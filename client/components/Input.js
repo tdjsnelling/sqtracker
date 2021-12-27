@@ -11,6 +11,7 @@ const shared = () =>
     display: 'block',
     width: '100%',
     bg: 'sidebar',
+    color: 'text',
     border: '2px solid',
     borderColor: 'sidebar',
     borderRadius: 1,
@@ -48,7 +49,11 @@ export const WrapLabel = ({ label, children, as = 'label', ...rest }) =>
 const Input = ({ label, rows, my, mt, mb, ...rest }) => {
   return (
     <WrapLabel label={label} my={my} mt={mt} mb={mb}>
-      {rows ? <StyledTextarea rows={rows} /> : <StyledInput {...rest} />}
+      {rows ? (
+        <StyledTextarea rows={rows} {...rest} />
+      ) : (
+        <StyledInput {...rest} />
+      )}
     </WrapLabel>
   )
 }

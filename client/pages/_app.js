@@ -99,13 +99,21 @@ const GlobalStyle = createGlobalStyle(
 const SqTracker = ({ Component, pageProps }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [menuIsOpen, setMenuIsOpen] = useState(false)
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('light')
 
   useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)')
     setIsMobile(query.matches)
     query.addEventListener('change', ({ matches }) => {
       setIsMobile(matches)
+    })
+
+    const themeQuery = window.matchMedia('(prefers-color-scheme: light)')
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme) setTheme(savedTheme)
+    else setTheme(themeQuery.matches ? 'light' : 'dark')
+    themeQuery.addEventListener('change', ({ matches }) => {
+      setTheme(matches ? 'light' : 'dark')
     })
   }, [])
 
@@ -155,9 +163,13 @@ const SqTracker = ({ Component, pageProps }) => {
               <Input placeholder="Search" maxWidth="300px" ml={4} />
               <Button
                 variant="secondary"
-                onClick={() =>
-                  setTheme((t) => (t === 'light' ? 'dark' : 'light'))
-                }
+                onClick={() => {
+                  setTheme((t) => {
+                    const newTheme = t === 'light' ? 'dark' : 'light'
+                    localStorage.setItem('theme', newTheme)
+                    return newTheme
+                  })
+                }}
                 px={3}
                 ml={3}
               >
