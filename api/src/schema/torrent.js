@@ -10,6 +10,7 @@ const Torrent = new mongoose.Schema({
   image: String,
   downloads: Number,
   anonymous: Boolean,
+  size: Number,
   created: Number,
 })
 

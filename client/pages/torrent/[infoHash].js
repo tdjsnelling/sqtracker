@@ -2,6 +2,7 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import moment from 'moment'
+import prettyBytes from 'pretty-bytes'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import withAuth from '../../utils/withAuth'
@@ -136,7 +137,7 @@ const Torrent = ({ token, torrent }) => {
               {torrent.infoHash}
             </Text>
           ),
-          Size: 'N/A',
+          Size: prettyBytes(torrent.size),
           Downloads: torrent.downloads,
           Seeders: torrent.seeders,
           Leechers: torrent.leechers,

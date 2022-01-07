@@ -58,6 +58,11 @@ export const uploadTorrent = async (req, res) => {
         uploadedBy: req.userId,
         downloads: 0,
         anonymous: false,
+        size:
+          parsed.info.length ||
+          parsed.info.files.reduce((acc, cur) => {
+            return acc + cur.length
+          }, 0),
         created: Date.now(),
       })
 
@@ -191,8 +196,8 @@ export const fetchTorrent = async (req, res) => {
       return
     }
 
-    const bencoded = await trackerRes.text()
-    const scrape = bencode.decode(Buffer.from(bencoded, 'binary'))
+    const bencoded = await trackerRes.arrayBuffer()
+    const scrape = bencode.decode(bencoded)
     const scrapeForInfoHash =
       scrape.files[Buffer.from(binaryInfoHash, 'binary')]
 
