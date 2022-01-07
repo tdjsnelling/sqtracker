@@ -29,15 +29,14 @@ const Comment = ({ comment }) => {
             Comment by{' '}
             <Link href={`/user/${comment.user.username}`} passHref>
               <Text as="a">{comment.user.username}</Text>
-            </Link>
-            {comment.torrent && (
-              <>
-                {' '}
-                on{' '}
-                <Link href={`/torrent/${comment.torrent.infoHash}`} passHref>
-                  <Text as="a">{comment.torrent.name}</Text>
-                </Link>
-              </>
+            </Link>{' '}
+            on{' '}
+            {comment.torrent ? (
+              <Link href={`/torrent/${comment.torrent.infoHash}`} passHref>
+                <Text as="a">{comment.torrent.name}</Text>
+              </Link>
+            ) : (
+              'deleted torrent'
             )}
           </Text>
         ) : (

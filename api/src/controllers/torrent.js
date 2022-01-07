@@ -211,7 +211,13 @@ export const fetchTorrent = async (req, res) => {
   }
 }
 
-const getTorrentsPage = async (skip = 0, limit = 25, query, category) => {
+export const getTorrentsPage = async ({
+  skip = 0,
+  limit = 25,
+  query,
+  category,
+  userId,
+}) => {
   const torrents = await Torrent.aggregate([
     {
       $project: {
@@ -220,6 +226,7 @@ const getTorrentsPage = async (skip = 0, limit = 25, query, category) => {
         description: 1,
         type: 1,
         downloads: 1,
+        uploadedBy: 1,
         created: 1,
       },
     },
@@ -240,6 +247,15 @@ const getTorrentsPage = async (skip = 0, limit = 25, query, category) => {
           {
             $match: {
               type: category,
+            },
+          },
+        ]
+      : []),
+    ...(userId
+      ? [
+          {
+            $match: {
+              uploadedBy: userId,
             },
           },
         ]
@@ -338,7 +354,7 @@ export const listLatest = async (req, res) => {
   count = parseInt(count) || 20
   count = Math.min(count, 100)
   try {
-    const torrents = await getTorrentsPage(0, count)
+    const torrents = await getTorrentsPage({ limit: count })
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)
@@ -348,7 +364,12 @@ export const listLatest = async (req, res) => {
 export const searchTorrents = async (req, res) => {
   const { query, category, page } = req.query
   try {
-    const torrents = await getTorrentsPage(page || 0, 25, query, category)
+    const torrents = await getTorrentsPage({
+      skip: page || 0,
+      limit: 25,
+      query,
+      category,
+    })
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)

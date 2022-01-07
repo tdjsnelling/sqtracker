@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import User from '../schema/user'
 import Invite from '../schema/invite'
+import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
 
 export const register = async (req, res) => {
@@ -308,40 +309,6 @@ export const fetchUser = async (req, res) => {
       },
       {
         $lookup: {
-          from: 'torrents',
-          as: 'torrents',
-          let: { userId: '$_id' },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ['$uploadedBy', '$$userId'] },
-                anonymous: false,
-              },
-            },
-            {
-              $lookup: {
-                from: 'comments',
-                as: 'comments',
-                let: { torrentId: '$_id' },
-                pipeline: [
-                  { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
-                  { $count: 'count' },
-                ],
-              },
-            },
-            {
-              $unwind: {
-                path: '$comments',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            { $project: { binary: 0 } },
-            { $sort: { created: -1 } },
-          ],
-        },
-      },
-      {
-        $lookup: {
           from: 'comments',
           as: 'comments',
           let: { userId: '$_id' },
@@ -430,6 +397,7 @@ export const fetchUser = async (req, res) => {
     }
 
     user.ratio = await getUserRatio(user._id)
+    user.torrents = await getTorrentsPage({ userId: user._id })
 
     res.json(user)
   } catch (e) {
