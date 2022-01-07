@@ -198,8 +198,8 @@ export const fetchTorrent = async (req, res) => {
 
     res.json({
       ...torrent,
-      seeders: scrapeForInfoHash?.complete,
-      leechers: scrapeForInfoHash?.incomplete,
+      seeders: scrapeForInfoHash?.complete || 0,
+      leechers: scrapeForInfoHash?.incomplete || 0,
     })
   } catch (e) {
     res.status(500).send(e.message)
