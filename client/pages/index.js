@@ -100,7 +100,7 @@ export const getServerSideProps = async ({ req }) => {
       },
     })
     const latest = await latestRes.json()
-    return { props: { latest } }
+    return { props: { latest, token } }
   } catch (e) {
     return { props: {} }
   }
