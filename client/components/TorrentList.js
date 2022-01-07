@@ -34,7 +34,7 @@ const TorrentList = ({ torrents, categories }) => (
       },
       {
         accessor: 'comments.count',
-        cell: ({ value }) => <Text icon={Chat}>{value}</Text>,
+        cell: ({ value }) => <Text icon={Chat}>{value || 0}</Text>,
         gridWidth: '1fr',
       },
       {
