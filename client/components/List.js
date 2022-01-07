@@ -48,29 +48,52 @@ const ListItem = ({ children }) => {
 
 const List = ({ data, columns, ...rest }) => {
   return (
-    <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
-      {data.map((row) => (
-        <ListItem>
-          <WrapLink href={row.href}>
-            <Box
-              display="grid"
-              gridTemplateColumns={columns
-                .map((col) => col.gridWidth)
-                .join(' ')}
-              gridGap={4}
-              alignItems="center"
-              p={4}
-            >
-              {columns.map((col) =>
-                col.cell({
-                  value: col.accessor ? getIn(row, col.accessor) : null,
-                  row,
-                })
-              )}
-            </Box>
-          </WrapLink>
-        </ListItem>
-      ))}
+    <Box>
+      <Box
+        display="grid"
+        gridTemplateColumns={columns.map((col) => col.gridWidth).join(' ')}
+        gridGap={4}
+        alignItems="center"
+        px={4}
+        mb={3}
+      >
+        {columns.map((col) => (
+          <Text
+            fontWeight={600}
+            fontSize={1}
+            textAlign={col.rightAlign ? 'right' : 'left'}
+            css={{ textTransform: 'uppercase' }}
+          >
+            {col.header}
+          </Text>
+        ))}
+      </Box>
+      <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
+        {data.map((row) => (
+          <ListItem>
+            <WrapLink href={row.href}>
+              <Box
+                display="grid"
+                gridTemplateColumns={columns
+                  .map((col) => col.gridWidth)
+                  .join(' ')}
+                gridGap={4}
+                alignItems="center"
+                p={4}
+              >
+                {columns.map((col) => (
+                  <Box textAlign={col.rightAlign ? 'right' : 'left'}>
+                    {col.cell({
+                      value: col.accessor ? getIn(row, col.accessor) : null,
+                      row,
+                    })}
+                  </Box>
+                ))}
+              </Box>
+            </WrapLink>
+          </ListItem>
+        ))}
+      </Box>
     </Box>
   )
 }

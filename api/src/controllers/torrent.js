@@ -211,8 +211,8 @@ export const fetchTorrent = async (req, res) => {
   }
 }
 
-const getTorrentsPage = async (skip = 0, limit = 25, query, category) =>
-  await Torrent.aggregate([
+const getTorrentsPage = async (skip = 0, limit = 25, query, category) => {
+  const torrents = await Torrent.aggregate([
     {
       $project: {
         infoHash: 1,
@@ -271,6 +271,38 @@ const getTorrentsPage = async (skip = 0, limit = 25, query, category) =>
       },
     },
   ])
+
+  let q = ''
+  torrents.forEach((torrent, i) => {
+    q += `${i === 0 ? '?' : '&'}info_hash=${escape(
+      hexToBinary(torrent.infoHash)
+    )}`
+  })
+
+  const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/scrape${q}`)
+
+  if (!trackerRes.ok) {
+    const body = await trackerRes.text()
+    throw new Error(
+      `Error performing tracker scrape: ${trackerRes.status} ${body}`
+    )
+  }
+
+  const bencoded = await trackerRes.arrayBuffer()
+  const scrape = bencode.decode(bencoded)
+
+  const torrentsWithScrape = torrents.map((torrent) => {
+    const scrapeForInfoHash =
+      scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
+    return {
+      ...torrent,
+      seeders: scrapeForInfoHash?.complete || 0,
+      leechers: scrapeForInfoHash?.incomplete || 0,
+    }
+  })
+
+  return torrentsWithScrape
+}
 
 export const addComment = async (req, res) => {
   if (req.body.comment) {

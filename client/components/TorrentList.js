@@ -1,6 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
+import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
 import { Chat } from '@styled-icons/boxicons-solid/Chat'
 import List from './List'
@@ -14,11 +15,13 @@ const TorrentList = ({ torrents, categories }) => (
     }))}
     columns={[
       {
+        header: 'Name',
         accessor: 'name',
         cell: ({ value }) => <Text>{value}</Text>,
         gridWidth: '2fr',
       },
       {
+        header: 'Category',
         accessor: 'type',
         cell: ({ value }) => (
           <Text icon={ListUl}>
@@ -28,21 +31,29 @@ const TorrentList = ({ torrents, categories }) => (
         gridWidth: '2fr',
       },
       {
-        accessor: 'downloads',
+        header: 'Seeders',
+        accessor: 'seeders',
+        cell: ({ value }) => <Text icon={Upload}>{value}</Text>,
+        gridWidth: '1fr',
+      },
+      {
+        header: 'Leechers',
+        accessor: 'leechers',
         cell: ({ value }) => <Text icon={Download}>{value}</Text>,
         gridWidth: '1fr',
       },
       {
+        header: 'Comments',
         accessor: 'comments.count',
         cell: ({ value }) => <Text icon={Chat}>{value || 0}</Text>,
         gridWidth: '1fr',
       },
       {
+        header: 'Uploaded',
         accessor: 'created',
-        cell: ({ value }) => (
-          <Text textAlign="right">{moment(value).format('Do MMM YYYY')}</Text>
-        ),
+        cell: ({ value }) => <Text>{moment(value).format('Do MMM YYYY')}</Text>,
         gridWidth: '1fr',
+        rightAlign: true,
       },
     ]}
   />
