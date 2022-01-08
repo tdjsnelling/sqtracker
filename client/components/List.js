@@ -69,30 +69,38 @@ const List = ({ data, columns, ...rest }) => {
         ))}
       </Box>
       <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
-        {data.map((row) => (
+        {data.length ? (
+          data.map((row) => (
+            <ListItem>
+              <WrapLink href={row.href}>
+                <Box
+                  display="grid"
+                  gridTemplateColumns={columns
+                    .map((col) => col.gridWidth)
+                    .join(' ')}
+                  gridGap={4}
+                  alignItems="center"
+                  p={4}
+                >
+                  {columns.map((col) => (
+                    <Box textAlign={col.rightAlign ? 'right' : 'left'}>
+                      {col.cell({
+                        value: col.accessor ? getIn(row, col.accessor) : null,
+                        row,
+                      })}
+                    </Box>
+                  ))}
+                </Box>
+              </WrapLink>
+            </ListItem>
+          ))
+        ) : (
           <ListItem>
-            <WrapLink href={row.href}>
-              <Box
-                display="grid"
-                gridTemplateColumns={columns
-                  .map((col) => col.gridWidth)
-                  .join(' ')}
-                gridGap={4}
-                alignItems="center"
-                p={4}
-              >
-                {columns.map((col) => (
-                  <Box textAlign={col.rightAlign ? 'right' : 'left'}>
-                    {col.cell({
-                      value: col.accessor ? getIn(row, col.accessor) : null,
-                      row,
-                    })}
-                  </Box>
-                ))}
-              </Box>
-            </WrapLink>
+            <Box p={4}>
+              <Text color="grey">No items to show.</Text>
+            </Box>
           </ListItem>
-        ))}
+        )}
       </Box>
     </Box>
   )

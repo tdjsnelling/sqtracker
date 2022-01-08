@@ -119,7 +119,7 @@ const User = ({ user }) => {
       <Text as="h2" mb={4}>
         Comments
       </Text>
-      {!!user.comments?.length && (
+      {user.comments?.length ? (
         <Box>
           {user.comments.map((comment) => (
             <Comment
@@ -127,6 +127,8 @@ const User = ({ user }) => {
             />
           ))}
         </Box>
+      ) : (
+        <Text color="grey">No comments.</Text>
       )}
     </>
   )

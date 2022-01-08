@@ -7,7 +7,7 @@ import { Chat } from '@styled-icons/boxicons-solid/Chat'
 import List from './List'
 import Text from './Text'
 
-const TorrentList = ({ torrents, categories }) => (
+const TorrentList = ({ torrents = [], categories }) => (
   <List
     data={torrents.map((torrent) => ({
       ...torrent,
@@ -25,7 +25,7 @@ const TorrentList = ({ torrents, categories }) => (
         accessor: 'type',
         cell: ({ value }) => (
           <Text icon={ListUl}>
-            {categories.find((c) => c.slug === value).name}
+            {categories.find((c) => c.slug === value)?.name || 'None'}
           </Text>
         ),
         gridWidth: '2fr',

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import getConfig from 'next/config'
 import moment from 'moment'
 import copy from 'copy-to-clipboard'
@@ -13,6 +13,8 @@ import Button from '../components/Button'
 import List from '../components/List'
 
 const Account = ({ token, invites }) => {
+  const [invitesList, setInvitesList] = useState(invites)
+
   const {
     publicRuntimeConfig: { SQ_API_URL, SQ_SITE_URL },
   } = getConfig()
@@ -25,7 +27,11 @@ const Account = ({ token, invites }) => {
         },
       })
       const invite = await inviteRes.json()
-      console.log(invite)
+      setInvitesList((cur) => {
+        const currentInvitesList = [...cur]
+        currentInvitesList.unshift(invite)
+        return currentInvitesList
+      })
     } catch (e) {
       console.error(e)
     }
@@ -72,17 +78,13 @@ const Account = ({ token, invites }) => {
         <Button onClick={handleGenerateInvite}>Generate invite</Button>
       </Box>
       <List
-        data={invites}
+        data={invitesList}
         columns={[
           {
             accessor: 'token',
             cell: ({ value }) => (
-              <Text
-                fontFamily="monospace"
-                overflow="hidden"
-                css={{ textOverflow: 'ellipsis' }}
-              >
-                {value}
+              <Text fontFamily="monospace">
+                {value.slice(0, 10)}...{value.slice(value.length - 10)}
               </Text>
             ),
             gridWidth: '1fr',
