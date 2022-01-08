@@ -1,4 +1,4 @@
-# sqtracker ■
+# ■ sqtracker
 
 *sqtracker* (or squaretracker, tracker²) is a front-end for BitTorrent trackers such as [opentracker](https://erdgeist.org/arts/software/opentracker/) that adds things like account management and ratio tracking. It's tracking the tracker, hence the name.
 
@@ -9,17 +9,24 @@ As *sqtracker* just sits in front of a BitTorrent tracker, it should theoretical
 ## Features
 
 * Accounts
-  * registration (closed or open),
+  * registration (open/closed/invite only),
   * log in,
   * password resets etc.
 * Torrent management
-  * uploading and storing torrent files,
+  * uploading torrents,
   * user submitted metadata (titles, descriptions etc.),
   * downloading torrent files with user-specific announce URLs,
-  * track active seeders & leechers of a torrent
+  * track active seeders & leechers of a torrent,
+  * freeleech options
 * Upload/download tracking
   * track how much content each user has uploaded/downloaded,
   * track ratios,
   * limit up/downloading per user based on ratio
-    
-All you need to do is build the interface!
+* User interaction
+  * commenting on torrents,
+  * up/down voting torrents
+* Moderation
+  * staff/admin privileges,
+  * reporting torrents,
+  * detailed stats available to admins,
+  * announcements/news posts
