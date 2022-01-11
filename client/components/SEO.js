@@ -7,7 +7,7 @@ const SEO = ({ title, noTitleTemplate }) => {
   const { asPath } = useRouter()
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_SITE_DESCRIPTION, SQ_SITE_URL },
+    publicRuntimeConfig: { SQ_SITE_NAME, SQ_SITE_DESCRIPTION, SQ_BASE_URL },
   } = getConfig()
 
   const formattedTitle = title
@@ -24,7 +24,7 @@ const SEO = ({ title, noTitleTemplate }) => {
       <meta property="og:description" content={SQ_SITE_DESCRIPTION} />
       <meta property="og:site_name" content={SQ_SITE_NAME} />
       <meta property="og:type" content="website" />
-      <meta property="og:url" content={SQ_SITE_URL + asPath} />
+      <meta property="og:url" content={SQ_BASE_URL + asPath} />
     </Head>
   )
 }

@@ -16,7 +16,7 @@ const Account = ({ token, invites }) => {
   const [invitesList, setInvitesList] = useState(invites)
 
   const {
-    publicRuntimeConfig: { SQ_API_URL, SQ_SITE_URL },
+    publicRuntimeConfig: { SQ_API_URL, SQ_BASE_URL },
   } = getConfig()
 
   const handleGenerateInvite = async () => {
@@ -117,7 +117,7 @@ const Account = ({ token, invites }) => {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  copy(`${SQ_SITE_URL}/register?token=${row.token}`)
+                  copy(`${SQ_BASE_URL}/register?token=${row.token}`)
                   alert('Invite link copied to clipboard')
                 }}
                 px={1}

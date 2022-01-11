@@ -5,17 +5,22 @@ services:
     image: lednerb/opentracker-docker:latest
     ports:
       - "127.0.0.1:6969:6969"
-  nginx:
-    container_name: sq_nginx_proxy
-    image: nginx:latest
+  traefik:
+    image: "traefik:v2.5"
+    container_name: "sq_traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
-      - "443:443"
+      - "8080:8080"
     volumes:
-      - ./conf/nginx.production.conf:/etc/nginx/nginx.conf
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   database:
     container_name: sq_mongodb
-    image: mongo:latest
+    image: mongo:4.4
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
@@ -27,6 +32,13 @@ services:
       dockerfile: ./api/Dockerfile
     ports:
       - "127.0.0.1:44444:44444"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`, `/sq`)"
+      - "traefik.http.services.api.loadbalancer.server.port=44444"
+      - "traefik.http.middlewares.api-prefix.stripprefix.prefixes=/api"
+      - "traefik.http.routers.api.middlewares=api-prefix"
     depends_on:
       - database
       - tracker
@@ -37,5 +49,10 @@ services:
       dockerfile: ./client/Dockerfile
     ports:
       - "127.0.0.1:44445:44445"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.entrypoints=web"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+      - "traefik.http.services.client.loadbalancer.server.port=44445"
     depends_on:
       - api
