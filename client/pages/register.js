@@ -90,7 +90,7 @@ export const getServerSideProps = async ({ query: { token } }) => {
   const {
     serverRuntimeConfig: { SQ_JWT_SECRET, SQ_ALLOW_REGISTER },
   } = getConfig()
-  if (SQ_ALLOW_REGISTER === 'open') return { props: {} }
+
   if (!token && SQ_ALLOW_REGISTER === 'invite')
     return { props: { tokenError: 'Invite token not provided' } }
   try {

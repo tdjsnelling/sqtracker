@@ -2,30 +2,41 @@ import React, { useState } from 'react'
 import getConfig from 'next/config'
 import moment from 'moment'
 import copy from 'copy-to-clipboard'
+import jwt from 'jsonwebtoken'
 import { Copy } from '@styled-icons/boxicons-regular/Copy'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
 import SEO from '../components/SEO'
 import Box from '../components/Box'
 import Text from '../components/Text'
+import Infobox from '../components/Infobox'
 import Input from '../components/Input'
+import Select from '../components/Select'
 import Button from '../components/Button'
 import List from '../components/List'
 
-const Account = ({ token, invites }) => {
+const Account = ({ token, invites, userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
 
-  const handleGenerateInvite = async () => {
+  const handleGenerateInvite = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
     try {
-      const inviteRes = await fetch(`${SQ_API_URL}/account/generate-invite`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      const inviteRes = await fetch(
+        `${SQ_API_URL}/account/generate-invite?role=${
+          form.get('role') || 'user'
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       const invite = await inviteRes.json()
       setInvitesList((cur) => {
         const currentInvitesList = [...cur]
@@ -68,6 +79,11 @@ const Account = ({ token, invites }) => {
       <Text as="h1" mb={5}>
         My account
       </Text>
+      {userRole === 'admin' && (
+        <Infobox mb={5}>
+          <Text>This is an admin account.</Text>
+        </Infobox>
+      )}
       <Box
         display="flex"
         alignItems="center"
@@ -75,44 +91,63 @@ const Account = ({ token, invites }) => {
         mb={4}
       >
         <Text as="h2">Invites</Text>
-        <Button onClick={handleGenerateInvite}>Generate invite</Button>
+        <form onSubmit={handleGenerateInvite}>
+          <Box display="flex" alignItems="center">
+            {userRole === 'admin' && (
+              <Select name="role" required mr={3}>
+                <option value="user">Role: user</option>
+                <option value="admin">Role: admin</option>
+              </Select>
+            )}
+            <Button>Generate invite</Button>
+          </Box>
+        </form>
       </Box>
       <List
         data={invitesList}
         columns={[
           {
+            header: 'Token',
             accessor: 'token',
             cell: ({ value }) => (
               <Text fontFamily="monospace">
-                {value.slice(0, 10)}...{value.slice(value.length - 10)}
+                ...{value.slice(value.length - 16)}
               </Text>
             ),
             gridWidth: '1fr',
           },
           {
+            header: 'Claimed',
             accessor: 'claimed',
-            cell: ({ value }) => (
-              <Text>{value ? 'Claimed' : 'Not claimed'}</Text>
-            ),
+            cell: ({ value }) => <Text>{value ? 'Yes' : 'No'}</Text>,
             gridWidth: '0.5fr',
           },
           {
+            header: 'Valid until',
             accessor: 'validUntil',
             cell: ({ value }) => (
-              <Text>
-                Valid until {moment(value).format('HH:mm Do MMM YYYY')}
-              </Text>
+              <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
             gridWidth: '1.2fr',
           },
           {
+            header: 'Created',
             accessor: 'created',
             cell: ({ value }) => (
-              <Text>Created {moment(value).format('Do MMM YYYY')}</Text>
+              <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
             gridWidth: '1fr',
           },
           {
+            header: 'Role',
+            accessor: 'role',
+            cell: ({ value }) => (
+              <Text css={{ textTransform: 'capitalize' }}>{value}</Text>
+            ),
+            gridWidth: '0.6fr',
+          },
+          {
+            header: 'Copy',
             cell: ({ row }) => (
               <Button
                 variant="secondary"
@@ -128,7 +163,8 @@ const Account = ({ token, invites }) => {
                 <Copy size={24} />
               </Button>
             ),
-            gridWidth: '32px',
+            rightAlign: true,
+            gridWidth: '42px',
           },
         ]}
         mb={5}
@@ -164,7 +200,10 @@ export const getServerSideProps = async ({ req }) => {
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
+    serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+
+  const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
   try {
     const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
@@ -174,7 +213,7 @@ export const getServerSideProps = async ({ req }) => {
       },
     })
     const invites = await invitesRes.json()
-    return { props: { invites } }
+    return { props: { invites, userRole: role } }
   } catch (e) {
     return { props: {} }
   }

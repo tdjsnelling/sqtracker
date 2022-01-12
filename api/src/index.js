@@ -25,6 +25,7 @@ import {
   listLatest,
   searchTorrents,
 } from './controllers/torrent'
+import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
   console.log('[sq] initiating db connection...')
@@ -43,6 +44,7 @@ connectToDb()
 
 mongoose.connection.once('open', () => {
   console.log('[sq] connected to mongodb successfully')
+  createAdminUser()
 })
 
 const app = express()

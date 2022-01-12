@@ -16,6 +16,8 @@ export const register = async (req, res) => {
   }
 
   if (req.body.username && req.body.email && req.body.password) {
+    let invite
+
     if (process.env.SQ_ALLOW_REGISTER === 'invite') {
       if (!req.body.invite) {
         res
@@ -25,12 +27,14 @@ export const register = async (req, res) => {
           )
         return
       }
+    }
 
+    if (req.body.invite) {
       try {
         const decoded = jwt.verify(req.body.invite, process.env.SQ_JWT_SECRET)
         const { id } = decoded
 
-        const invite = await Invite.findOne({ _id: id }).lean()
+        invite = await Invite.findOne({ _id: id }).lean()
         const { claimed, validUntil, invitingUser } = invite
 
         if (claimed) {
@@ -65,6 +69,7 @@ export const register = async (req, res) => {
 
       if (!user) {
         const hash = await bcrypt.hash(req.body.password, 10)
+        const role = invite?.role || 'user'
 
         const newUser = new User({
           username: req.body.username,
@@ -72,6 +77,8 @@ export const register = async (req, res) => {
           password: hash,
           torrents: {},
           created,
+          role,
+          invitedBy: invite?.invitingUser,
         })
 
         newUser.uid = crypto
@@ -83,7 +90,8 @@ export const register = async (req, res) => {
         newUser.token = jwt.sign(
           {
             id: newUser._id,
-            created: created,
+            created,
+            role,
           },
           process.env.SQ_JWT_SECRET
         )
@@ -144,11 +152,14 @@ export const generateInvite = async (req, res) => {
   const created = Date.now()
   const validUntil = created + 48 * 60 * 60 * 1000
 
+  const { role } = req.query
+
   const invite = new Invite({
     invitingUser: req.userId,
     created,
     validUntil,
     claimed: false,
+    role: role || 'user',
   })
 
   invite.token = jwt.sign(

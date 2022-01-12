@@ -10,42 +10,35 @@ import getReqCookies from '../../utils/getReqCookies'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
+import Infobox from '../../components/Infobox'
 import MarkdownBody from '../../components/MarkdownBody'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 
-const Infobox = ({ items }) => (
-  <Box
-    display="grid"
-    gridTemplateColumns="1fr"
-    gridGap={2}
-    bg="sidebar"
-    border="1px solid"
-    borderColor="border"
-    borderRadius={1}
-    p={4}
-    mb={5}
-  >
-    {Object.entries(items).map(([key, val], i) => (
-      <Box
-        key={`infobox-row-${i}`}
-        display="grid"
-        gridTemplateColumns={['1fr', '1fr 2fr']}
-        gridGap={2}
-        alignItems="center"
-      >
-        <Text
-          fontWeight={600}
-          fontSize={1}
-          css={{ textTransform: 'uppercase' }}
+const Info = ({ items }) => (
+  <Infobox mb={5}>
+    <Box display="grid" gridTemplateColumns="1fr" gridGap={2}>
+      {Object.entries(items).map(([key, val], i) => (
+        <Box
+          key={`infobox-row-${i}`}
+          display="grid"
+          gridTemplateColumns={['1fr', '1fr 2fr']}
+          gridGap={2}
+          alignItems="center"
         >
-          {key}
-        </Text>
-        <Text>{val}</Text>
-      </Box>
-    ))}
-  </Box>
+          <Text
+            fontWeight={600}
+            fontSize={1}
+            css={{ textTransform: 'uppercase' }}
+          >
+            {key}
+          </Text>
+          <Text>{val}</Text>
+        </Box>
+      ))}
+    </Box>
+  </Infobox>
 )
 
 const Torrent = ({ token, torrent }) => {
@@ -117,7 +110,7 @@ const Torrent = ({ token, torrent }) => {
         <Text as="h1">{torrent.name}</Text>
         <Button onClick={handleDownload}>Download</Button>
       </Box>
-      <Infobox
+      <Info
         items={{
           'Uploaded by': torrent.anonymous ? (
             'Anonymous'

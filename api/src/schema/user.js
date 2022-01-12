@@ -9,6 +9,8 @@ const User = new mongoose.Schema({
   token: String,
   created: Number,
   banned: Boolean,
+  role: String,
+  invitedBy: mongoose.Schema.ObjectId,
 })
 
 export default mongoose.model('user', User)
