@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
 import { Sun } from '@styled-icons/boxicons-regular/Sun'
@@ -101,6 +102,10 @@ const SqTracker = ({ Component, pageProps }) => {
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [theme, setTheme] = useState('light')
 
+  const router = useRouter()
+
+  const searchRef = useRef()
+
   useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)')
     setIsMobile(query.matches)
@@ -118,6 +123,17 @@ const SqTracker = ({ Component, pageProps }) => {
   }, [])
 
   const appTheme = { ...baseTheme, colors: getThemeColours(theme) }
+
+  const handleSearch = (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+    const query = form.get('query')
+    if (query) {
+      searchRef.current.value = ''
+      searchRef.current.blur()
+      router.push(`/search/${encodeURIComponent(query)}`)
+    }
+  }
 
   return (
     <>
@@ -160,7 +176,14 @@ const SqTracker = ({ Component, pageProps }) => {
               <Menu size={24} />
             </Button>
             <Box display="flex">
-              <Input placeholder="Search" maxWidth="300px" ml={4} />
+              <Box as="form" onSubmit={handleSearch} ml={4}>
+                <Input
+                  name="query"
+                  placeholder="Search"
+                  maxWidth="300px"
+                  ref={searchRef}
+                />
+              </Box>
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -170,7 +193,9 @@ const SqTracker = ({ Component, pageProps }) => {
                     return newTheme
                   })
                 }}
-                px={3}
+                width="40px"
+                px={2}
+                py={2}
                 ml={3}
               >
                 {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}

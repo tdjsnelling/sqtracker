@@ -17,8 +17,8 @@ const shared = () =>
     borderRadius: 1,
     fontFamily: 'body',
     fontSize: 2,
-    px: 4,
-    py: '12px',
+    px: '12px',
+    py: 3,
     '&:focus': {
       borderColor: 'primary',
       outline: 0,
@@ -46,16 +46,18 @@ export const WrapLabel = ({ label, children, as = 'label', ...rest }) =>
     children
   )
 
-const Input = ({ label, rows, my, mt, mb, ...rest }) => {
+const Input = ({ label, rows, my, mt, mb, forwardedRef, ...rest }) => {
   return (
     <WrapLabel label={label} my={my} mt={mt} mb={mb}>
       {rows ? (
-        <StyledTextarea rows={rows} {...rest} />
+        <StyledTextarea ref={forwardedRef} rows={rows} {...rest} />
       ) : (
-        <StyledInput {...rest} />
+        <StyledInput ref={forwardedRef} {...rest} />
       )}
     </WrapLabel>
   )
 }
 
-export default Input
+export default React.forwardRef((props, ref) => (
+  <Input forwardedRef={ref} {...props} />
+))
