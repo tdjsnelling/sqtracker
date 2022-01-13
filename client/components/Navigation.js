@@ -12,7 +12,9 @@ import { Search } from '@styled-icons/boxicons-regular/Search'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { News } from '@styled-icons/boxicons-regular/News'
 import { User } from '@styled-icons/boxicons-regular/User'
-import { Exit } from '@styled-icons/boxicons-regular/Exit'
+import { LogOutCircle } from '@styled-icons/boxicons-regular/LogOutCircle'
+import { LogInCircle } from '@styled-icons/boxicons-regular/LogInCircle'
+import { UserPlus } from '@styled-icons/boxicons-regular/UserPlus'
 import Box from './Box'
 import Text from './Text'
 import Button from './Button'
@@ -56,7 +58,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const theme = useContext(ThemeContext)
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME },
+    publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
   } = getConfig()
 
   if (isMobile && !menuIsOpen) return null
@@ -107,7 +109,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         </Link>
       </Box>
       <Box as="nav" maxWidth="300px" ml="auto" py={4}>
-        {cookies.token && (
+        {cookies.token ? (
           <Box display="grid" gridAutoFlow="row" gridGap={0}>
             <Link href="/" passHref>
               <NavLink>
@@ -148,9 +150,27 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             <Link href="/logout" passHref>
               <NavLink mt={5}>
                 <Text>Log out</Text>
-                <Exit size={24} />
+                <LogOutCircle size={24} />
               </NavLink>
             </Link>
+          </Box>
+        ) : (
+          <Box display="grid" gridAutoFlow="row" gridGap={0}>
+            <Link href="/login" passHref>
+              <NavLink>
+                <Text>Log in</Text>
+                <LogInCircle size={24} />
+              </NavLink>
+            </Link>
+            {(SQ_ALLOW_REGISTER === 'open' ||
+              SQ_ALLOW_REGISTER === 'invite') && (
+              <Link href="/register" passHref>
+                <NavLink>
+                  <Text>Register</Text>
+                  <UserPlus size={24} />
+                </NavLink>
+              </Link>
+            )}
           </Box>
         )}
       </Box>

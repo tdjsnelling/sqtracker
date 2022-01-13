@@ -145,6 +145,7 @@ const Upload = ({ token, userId }) => {
           name="description"
           label="Description"
           rows="10"
+          placeholder="Markdown supported"
           mb={4}
           required
         />

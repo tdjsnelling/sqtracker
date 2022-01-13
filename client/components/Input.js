@@ -18,7 +18,7 @@ const shared = () =>
     fontFamily: 'body',
     fontSize: 2,
     px: 4,
-    py: 3,
+    py: '12px',
     '&:focus': {
       borderColor: 'primary',
       outline: 0,
