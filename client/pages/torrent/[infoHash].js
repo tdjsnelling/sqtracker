@@ -115,9 +115,15 @@ const Torrent = ({ token, torrent }) => {
           'Uploaded by': torrent.anonymous ? (
             'Anonymous'
           ) : (
-            <Link href={`/user/${torrent.uploadedBy.username}`} passHref>
-              <Text as="a">{torrent.uploadedBy.username}</Text>
-            </Link>
+            <>
+              {torrent.uploadedBy ? (
+                <Link href={`/user/${torrent.uploadedBy.username}`} passHref>
+                  <Text as="a">{torrent.uploadedBy.username}</Text>
+                </Link>
+              ) : (
+                'deleted user'
+              )}
+            </>
           ),
           Category: (
             <Link href={`/categories/${category.slug}`} passHref>

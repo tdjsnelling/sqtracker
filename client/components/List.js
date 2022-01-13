@@ -46,7 +46,7 @@ const ListItem = ({ children }) => {
   )
 }
 
-const List = ({ data, columns, ...rest }) => {
+const List = ({ data = [], columns = [], ...rest }) => {
   return (
     <Box>
       <Box

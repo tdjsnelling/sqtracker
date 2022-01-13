@@ -25,6 +25,12 @@ import {
   listLatest,
   searchTorrents,
 } from './controllers/torrent'
+import {
+  createAnnouncement,
+  fetchAnnouncement,
+  getAnnouncements,
+  deleteAnnouncement,
+} from './controllers/announcement'
 import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
@@ -111,6 +117,12 @@ app.get('/torrent/info/:infoHash', fetchTorrent)
 app.post('/torrent/comment/:infoHash', addComment)
 app.get('/torrents/latest', listLatest)
 app.get('/torrents/search', searchTorrents)
+
+// announcement routes
+app.post('/announcements/new', createAnnouncement)
+app.get('/announcements/:slug', fetchAnnouncement)
+app.get('/announcements/page/:page', getAnnouncements)
+app.delete('/announcements/:slug', deleteAnnouncement)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

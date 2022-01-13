@@ -33,7 +33,7 @@ const User = ({ user }) => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        mb={5}
+        mb={3}
       >
         <Text as="h1">{user.username}’s profile</Text>
         {cookies.username === user.username && (
@@ -44,7 +44,7 @@ const User = ({ user }) => {
           </Link>
         )}
       </Box>
-      <Text color="grey" mb={4}>
+      <Text color="grey" mb={5}>
         User since {moment(user.created).format('Do MMM YYYY')}
       </Text>
       <Box
