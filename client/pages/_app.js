@@ -169,6 +169,7 @@ const SqTracker = ({ Component, pageProps }) => {
           >
             <Button
               onClick={() => setMenuIsOpen(true)}
+              variant="noBackground"
               display={['block', 'none']}
               px={1}
               py={1}

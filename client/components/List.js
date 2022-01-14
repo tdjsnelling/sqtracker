@@ -51,8 +51,11 @@ const List = ({ data = [], columns = [], ...rest }) => {
     <Box>
       <Box
         display="grid"
-        gridTemplateColumns={columns.map((col) => col.gridWidth).join(' ')}
-        gridGap={4}
+        gridTemplateColumns={[
+          '1fr',
+          columns.map((col) => col.gridWidth).join(' '),
+        ]}
+        gridGap={[2, 4]}
         alignItems="center"
         px={4}
         mb={3}
@@ -62,7 +65,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
             key={`list-header-col-${i}`}
             fontWeight={600}
             fontSize={1}
-            textAlign={col.rightAlign ? 'right' : 'left'}
+            textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
             css={{ textTransform: 'uppercase' }}
           >
             {col.header}
@@ -76,17 +79,19 @@ const List = ({ data = [], columns = [], ...rest }) => {
               <WrapLink href={row.href}>
                 <Box
                   display="grid"
-                  gridTemplateColumns={columns
-                    .map((col) => col.gridWidth)
-                    .join(' ')}
-                  gridGap={4}
+                  gridTemplateColumns={[
+                    '1fr',
+                    columns.map((col) => col.gridWidth).join(' '),
+                  ]}
+                  gridGap={[2, 4]}
                   alignItems="center"
                   p={4}
                 >
                   {columns.map((col, j) => (
                     <Box
                       key={`list-row-${i}-col-${j}`}
-                      textAlign={col.rightAlign ? 'right' : 'left'}
+                      textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
+                      css={{ whiteSpace: 'nowrap' }}
                     >
                       {col.cell({
                         value: col.accessor ? getIn(row, col.accessor) : null,

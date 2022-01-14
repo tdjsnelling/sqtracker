@@ -40,6 +40,18 @@ const StyledButton = styled.button(
             borderColor: darken(0.1, theme.colors.sidebar),
           },
         },
+        noBackground: {
+          bg: 'transparent',
+          color: 'text',
+          borderColor: 'sidebar',
+          '&:hover': {
+            borderColor: darken(0.1, theme.colors.sidebar),
+          },
+          '&:focus, &:active': {
+            bg: darken(0.1, theme.colors.sidebar),
+            borderColor: darken(0.1, theme.colors.sidebar),
+          },
+        },
       },
     }),
   layout,

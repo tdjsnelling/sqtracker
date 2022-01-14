@@ -82,7 +82,7 @@ export const getServerSideProps = async ({ req }) => {
     },
   })
   const announcements = await announcementsRes.json()
-  return { props: { announcements, userRole: role } }
+  return { props: { announcements, userRole: role || 'user' } }
 }
 
 export default withAuth(Announcements)
