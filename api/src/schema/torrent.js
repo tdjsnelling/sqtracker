@@ -12,6 +12,8 @@ const Torrent = new mongoose.Schema({
   anonymous: Boolean,
   size: Number,
   created: Number,
+  upvotes: Number,
+  downvotes: Number,
 })
 
 export default mongoose.model('torrent', Torrent)

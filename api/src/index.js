@@ -24,6 +24,7 @@ import {
   addComment,
   listLatest,
   searchTorrents,
+  voteOnTorrent,
 } from './controllers/torrent'
 import {
   createAnnouncement,
@@ -115,6 +116,7 @@ app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
 app.post('/torrent/comment/:infoHash', addComment)
+app.post('/torrent/vote/:infoHash/:vote', voteOnTorrent)
 app.get('/torrents/latest', listLatest)
 app.get('/torrents/search', searchTorrents)
 

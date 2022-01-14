@@ -64,6 +64,8 @@ export const uploadTorrent = async (req, res) => {
             return acc + cur.length
           }, 0),
         created: Date.now(),
+        upvotes: 0,
+        downvotes: 0,
       })
 
       await newTorrent.save()
@@ -371,6 +373,30 @@ export const searchTorrents = async (req, res) => {
       category,
     })
     res.json(torrents)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const voteOnTorrent = async (req, res) => {
+  const { infoHash, vote } = req.params
+  try {
+    const torrent = await Torrent.findOne({ infoHash }).lean()
+
+    if (!torrent) {
+      res.sendStatus(404)
+      return
+    }
+
+    if (vote === 'up' || vote === 'down') {
+      await Torrent.findOneAndUpdate(
+        { infoHash },
+        { $inc: { [vote === 'up' ? 'upvotes' : 'downvotes']: 1 } }
+      )
+      res.sendStatus(200)
+    } else {
+      res.status(400).send('Vote must be one of (up, down)')
+    }
   } catch (e) {
     res.status(500).send(e.message)
   }

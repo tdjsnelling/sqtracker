@@ -5,6 +5,8 @@ import moment from 'moment'
 import prettyBytes from 'pretty-bytes'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Like } from '@styled-icons/boxicons-regular/Like'
+import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 import SEO from '../../components/SEO'
@@ -96,6 +98,23 @@ const Torrent = ({ token, torrent }) => {
     }
   }
 
+  const handleVote = async (vote) => {
+    try {
+      const voteRes = await fetch(
+        `${SQ_API_URL}/torrent/vote/${torrent.infoHash}/${vote}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const category = SQ_TORRENT_CATEGORIES.find((c) => c.slug === torrent.type)
 
   return (
@@ -105,10 +124,18 @@ const Torrent = ({ token, torrent }) => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        mb={5}
+        mb={3}
       >
         <Text as="h1">{torrent.name}</Text>
         <Button onClick={handleDownload}>Download</Button>
+      </Box>
+      <Box display="flex" mb={5}>
+        <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
+          <Text icon={Like}>{torrent.upvotes || 0}</Text>
+        </Button>
+        <Button onClick={() => handleVote('down')} variant="noBackground">
+          <Text icon={Dislike}>{torrent.downvotes || 0}</Text>
+        </Button>
       </Box>
       <Info
         items={{
