@@ -57,8 +57,9 @@ const List = ({ data = [], columns = [], ...rest }) => {
         px={4}
         mb={3}
       >
-        {columns.map((col) => (
+        {columns.map((col, i) => (
           <Text
+            key={`list-header-col-${i}`}
             fontWeight={600}
             fontSize={1}
             textAlign={col.rightAlign ? 'right' : 'left'}
@@ -70,8 +71,8 @@ const List = ({ data = [], columns = [], ...rest }) => {
       </Box>
       <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
         {data.length ? (
-          data.map((row) => (
-            <ListItem>
+          data.map((row, i) => (
+            <ListItem key={`list-row-${i}`}>
               <WrapLink href={row.href}>
                 <Box
                   display="grid"
@@ -82,8 +83,11 @@ const List = ({ data = [], columns = [], ...rest }) => {
                   alignItems="center"
                   p={4}
                 >
-                  {columns.map((col) => (
-                    <Box textAlign={col.rightAlign ? 'right' : 'left'}>
+                  {columns.map((col, j) => (
+                    <Box
+                      key={`list-row-${i}-col-${j}`}
+                      textAlign={col.rightAlign ? 'right' : 'left'}
+                    >
                       {col.cell({
                         value: col.accessor ? getIn(row, col.accessor) : null,
                         row,

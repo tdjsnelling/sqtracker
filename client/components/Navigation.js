@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -52,10 +52,15 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
 
 const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const [cookies] = useCookies()
-
-  const { username } = cookies
+  const [isServer, setIsServer] = useState(true)
 
   const theme = useContext(ThemeContext)
+
+  const { username, token } = cookies
+
+  useEffect(() => {
+    setIsServer(false)
+  }, [token])
 
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
@@ -108,72 +113,74 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
           </Text>
         </Link>
       </Box>
-      <Box as="nav" maxWidth="300px" ml="auto" py={4}>
-        {cookies.token ? (
-          <Box display="grid" gridAutoFlow="row" gridGap={0}>
-            <Link href="/" passHref>
-              <NavLink>
-                <Text>Home</Text>
-                <Home size={24} />
-              </NavLink>
-            </Link>
-            <Link href="/categories" passHref>
-              <NavLink>
-                <Text>Browse</Text>
-                <ListUl size={24} />
-              </NavLink>
-            </Link>
-            <Link href="/search" passHref>
-              <NavLink>
-                <Text>Search</Text>
-                <Search size={24} />
-              </NavLink>
-            </Link>
-            <Link href="/upload" passHref>
-              <NavLink>
-                <Text>Upload</Text>
-                <Upload size={24} />
-              </NavLink>
-            </Link>
-            <Link href="/announcements" passHref>
-              <NavLink>
-                <Text>Announcements</Text>
-                <News size={24} />
-              </NavLink>
-            </Link>
-            <Link href={`/user/${username}`} passHref>
-              <NavLink highlights={['/account']}>
-                <Text>{username}</Text>
-                <User size={24} />
-              </NavLink>
-            </Link>
-            <Link href="/logout" passHref>
-              <NavLink mt={5}>
-                <Text>Log out</Text>
-                <LogOutCircle size={24} />
-              </NavLink>
-            </Link>
-          </Box>
-        ) : (
-          <Box display="grid" gridAutoFlow="row" gridGap={0}>
-            <Link href="/login" passHref>
-              <NavLink>
-                <Text>Log in</Text>
-                <LogInCircle size={24} />
-              </NavLink>
-            </Link>
-            {(SQ_ALLOW_REGISTER === 'open' ||
-              SQ_ALLOW_REGISTER === 'invite') && (
-              <Link href="/register" passHref>
+      {!isServer && (
+        <Box as="nav" maxWidth="300px" ml="auto" py={4}>
+          {token ? (
+            <Box display="grid" gridAutoFlow="row" gridGap={0}>
+              <Link href="/" passHref>
                 <NavLink>
-                  <Text>Register</Text>
-                  <UserPlus size={24} />
+                  <Text>Home</Text>
+                  <Home size={24} />
                 </NavLink>
               </Link>
-            )}
-          </Box>
-        )}
-      </Box>
+              <Link href="/categories" passHref>
+                <NavLink>
+                  <Text>Browse</Text>
+                  <ListUl size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/search" passHref>
+                <NavLink>
+                  <Text>Search</Text>
+                  <Search size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/upload" passHref>
+                <NavLink>
+                  <Text>Upload</Text>
+                  <Upload size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/announcements" passHref>
+                <NavLink>
+                  <Text>Announcements</Text>
+                  <News size={24} />
+                </NavLink>
+              </Link>
+              <Link href={`/user/${username}`} passHref>
+                <NavLink highlights={['/account']}>
+                  <Text>{username}</Text>
+                  <User size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/logout" passHref>
+                <NavLink mt={5}>
+                  <Text>Log out</Text>
+                  <LogOutCircle size={24} />
+                </NavLink>
+              </Link>
+            </Box>
+          ) : (
+            <Box display="grid" gridAutoFlow="row" gridGap={0}>
+              <Link href="/login" passHref>
+                <NavLink>
+                  <Text>Log in</Text>
+                  <LogInCircle size={24} />
+                </NavLink>
+              </Link>
+              {(SQ_ALLOW_REGISTER === 'open' ||
+                SQ_ALLOW_REGISTER === 'invite') && (
+                <Link href="/register" passHref>
+                  <NavLink>
+                    <Text>Register</Text>
+                    <UserPlus size={24} />
+                  </NavLink>
+                </Link>
+              )}
+            </Box>
+          )}
+        </Box>
+      )}
       <Box
         as="footer"
         position="absolute"
