@@ -12,6 +12,7 @@ import { Search } from '@styled-icons/boxicons-regular/Search'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { News } from '@styled-icons/boxicons-regular/News'
 import { User } from '@styled-icons/boxicons-regular/User'
+import { Error } from '@styled-icons/boxicons-regular/Error'
 import { LogOutCircle } from '@styled-icons/boxicons-regular/LogOutCircle'
 import { LogInCircle } from '@styled-icons/boxicons-regular/LogInCircle'
 import { UserPlus } from '@styled-icons/boxicons-regular/UserPlus'
@@ -52,19 +53,31 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
 
 const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const [cookies] = useCookies()
+  const [role, setRole] = useState('user')
   const [isServer, setIsServer] = useState(true)
 
   const theme = useContext(ThemeContext)
 
   const { username, token } = cookies
 
+  const {
+    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_ALLOW_REGISTER },
+  } = getConfig()
+
   useEffect(() => {
+    const getUserRole = async () => {
+      const roleRes = await fetch(`${SQ_API_URL}/account/get-role`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const role = await roleRes.text()
+      setRole(role)
+    }
+
+    getUserRole()
     setIsServer(false)
   }, [token])
-
-  const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_ALLOW_REGISTER },
-  } = getConfig()
 
   if (isMobile && !menuIsOpen) return null
 
@@ -154,6 +167,14 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <User size={24} />
                 </NavLink>
               </Link>
+              {role === 'admin' && (
+                <Link href="/reports" passHref>
+                  <NavLink highlights={['/reports']}>
+                    <Text>Reports</Text>
+                    <Error size={24} />
+                  </NavLink>
+                </Link>
+              )}
               <Link href="/logout" passHref>
                 <NavLink mt={5}>
                   <Text>Log out</Text>

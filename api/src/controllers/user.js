@@ -416,3 +416,12 @@ export const fetchUser = async (req, res) => {
     res.status(500).send(e.message)
   }
 }
+
+export const getUserRole = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.userId }).lean()
+    res.send(user.role)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}

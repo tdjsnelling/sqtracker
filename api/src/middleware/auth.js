@@ -13,6 +13,7 @@ const auth = async (req, res, next) => {
         if (user) {
           if (token === user.token) {
             req.userId = user._id
+            req.userRole = user.role
             next()
           } else {
             res.sendStatus(401)

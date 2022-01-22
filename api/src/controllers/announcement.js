@@ -1,13 +1,10 @@
 import slugify from 'slugify'
 import Announcement from '../schema/announcement'
-import User from '../schema/user'
 
 export const createAnnouncement = async (req, res) => {
   if (req.body.title && req.body.body) {
     try {
-      const user = await User.findOne({ _id: req.userId }).lean()
-
-      if (user.role !== 'admin') {
+      if (req.userRole !== 'admin') {
         res
           .status(401)
           .send('You do not have permission to create an announcement')
@@ -138,9 +135,7 @@ export const getAnnouncements = async (req, res) => {
 
 export const deleteAnnouncement = async (req, res) => {
   try {
-    const user = await User.findOne({ _id: req.userId }).lean()
-
-    if (user.role !== 'admin') {
+    if (req.userRole !== 'admin') {
       res
         .status(401)
         .send('You do not have permission to delete an announcement')

@@ -16,6 +16,7 @@ import {
   initiatePasswordReset,
   finalisePasswordReset,
   fetchUser,
+  getUserRole,
 } from './controllers/user'
 import {
   uploadTorrent,
@@ -32,7 +33,7 @@ import {
   getAnnouncements,
   deleteAnnouncement,
 } from './controllers/announcement'
-import { createReport } from './controllers/moderation'
+import { createReport, fetchReport, getReports } from './controllers/moderation'
 import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
@@ -110,6 +111,7 @@ app.use(auth)
 app.get('/account/invites', fetchInvites)
 app.get('/account/generate-invite', generateInvite)
 app.post('/account/change-password', changePassword)
+app.get('/account/get-role', getUserRole)
 app.get('/user/:username', fetchUser)
 
 // torrent routes
@@ -127,6 +129,10 @@ app.post('/announcements/new', createAnnouncement)
 app.get('/announcements/:slug', fetchAnnouncement)
 app.get('/announcements/page/:page', getAnnouncements)
 app.delete('/announcements/:slug', deleteAnnouncement)
+
+// moderation routes
+app.get('/reports/:reportId', fetchReport)
+app.get('/reports/page/:page', getReports)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {
