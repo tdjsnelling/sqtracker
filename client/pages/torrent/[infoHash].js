@@ -19,8 +19,18 @@ import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
 
-const Info = ({ items }) => (
+export const Info = ({ title, items }) => (
   <Infobox mb={5}>
+    {title && (
+      <Text
+        fontWeight={600}
+        fontSize={1}
+        css={{ textTransform: 'uppercase' }}
+        mb={4}
+      >
+        {title}
+      </Text>
+    )}
     <Box display="grid" gridTemplateColumns="1fr" gridGap={2}>
       {Object.entries(items).map(([key, val], i) => (
         <Box

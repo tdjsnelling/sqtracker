@@ -72,7 +72,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
           </Text>
         ))}
       </Box>
-      <Box as="ul" css={{ listStyle: 'none' }} {...rest}>
+      <Box as="ul" pl={0} css={{ listStyle: 'none' }} {...rest}>
         {data.length ? (
           data.map((row, i) => (
             <ListItem key={`list-row-${i}`}>
