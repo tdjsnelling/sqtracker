@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react'
+import App from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
+import { useCookies } from 'react-cookie'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
 import { Sun } from '@styled-icons/boxicons-regular/Sun'
 import { Moon } from '@styled-icons/boxicons-regular/Moon'
@@ -97,14 +99,24 @@ const GlobalStyle = createGlobalStyle(
 `
 )
 
-const SqTracker = ({ Component, pageProps }) => {
+const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [menuIsOpen, setMenuIsOpen] = useState(false)
-  const [theme, setTheme] = useState('light')
+  const [theme, setTheme] = useState(initialTheme || 'light')
 
   const router = useRouter()
 
   const searchRef = useRef()
+
+  const [cookies, setCookie] = useCookies()
+
+  const setThemeAndSave = (theme) => {
+    setTheme(theme)
+    setCookie('theme', theme, {
+      path: '/',
+      expires: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+    })
+  }
 
   useEffect(() => {
     const query = window.matchMedia('(max-width: 767px)')
@@ -113,12 +125,11 @@ const SqTracker = ({ Component, pageProps }) => {
       setIsMobile(matches)
     })
 
+    const { theme: themeCookie } = cookies
     const themeQuery = window.matchMedia('(prefers-color-scheme: light)')
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) setTheme(savedTheme)
-    else setTheme(themeQuery.matches ? 'light' : 'dark')
+    if (!themeCookie) setThemeAndSave(themeQuery.matches ? 'light' : 'dark')
     themeQuery.addEventListener('change', ({ matches }) => {
-      setTheme(matches ? 'light' : 'dark')
+      setThemeAndSave(matches ? 'light' : 'dark')
     })
   }, [])
 
@@ -188,11 +199,7 @@ const SqTracker = ({ Component, pageProps }) => {
               <Button
                 variant="secondary"
                 onClick={() => {
-                  setTheme((t) => {
-                    const newTheme = t === 'light' ? 'dark' : 'light'
-                    localStorage.setItem('theme', newTheme)
-                    return newTheme
-                  })
+                  setThemeAndSave(theme === 'light' ? 'dark' : 'light')
                 }}
                 width="40px"
                 px={2}
@@ -210,6 +217,12 @@ const SqTracker = ({ Component, pageProps }) => {
       </ThemeProvider>
     </>
   )
+}
+
+SqTracker.getInitialProps = async (appContext) => {
+  const { theme } = appContext?.ctx?.req?.cookies || {}
+  const appInitialProps = App.getInitialProps(appContext)
+  return { initialTheme: theme, ...appInitialProps }
 }
 
 export default SqTracker
