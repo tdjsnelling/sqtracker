@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCookies } from 'react-cookie'
 import moment from 'moment'
 import prettyBytes from 'pretty-bytes'
+import jwt from 'jsonwebtoken'
 import { BarChartSquare } from '@styled-icons/boxicons-regular/BarChartSquare'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
@@ -13,10 +14,11 @@ import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import Button from '../../components/Button'
+import Infobox from '../../components/Infobox'
 import TorrentList from '../../components/TorrentList'
 import Comment from '../../components/Comment'
 
-const User = ({ user }) => {
+const User = ({ user, userRole }) => {
   const [cookies] = useCookies()
 
   const {
@@ -47,6 +49,29 @@ const User = ({ user }) => {
       <Text color="grey" mb={5}>
         User since {moment(user.created).format('Do MMM YYYY')}
       </Text>
+      {userRole === 'admin' && (
+        <Infobox mb={5}>
+          <Text
+            fontWeight={600}
+            fontSize={1}
+            mb={3}
+            css={{ textTransform: 'uppercase' }}
+          >
+            Only admins can see this
+          </Text>
+          <ul>
+            {user.email && <li>Email: {user.email}</li>}
+            {user.invitedBy && (
+              <li>
+                Invited by:{' '}
+                <Link href={`/user/${user.invitedBy.username}`}>
+                  <a>{user.invitedBy.username}</a>
+                </Link>
+              </li>
+            )}
+          </ul>
+        </Infobox>
+      )}
       <Box
         display="grid"
         gridTemplateColumns={['1fr', 'repeat(3, 1fr)']}
@@ -141,7 +166,10 @@ export const getServerSideProps = async ({ req, query: { username } }) => {
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
+    serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+
+  const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
   const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
     headers: {
@@ -150,7 +178,7 @@ export const getServerSideProps = async ({ req, query: { username } }) => {
     },
   })
   const user = await userRes.json()
-  return { props: { user } }
+  return { props: { user, userRole: role } }
 }
 
 export default withAuth(User)

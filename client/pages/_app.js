@@ -96,6 +96,9 @@ const GlobalStyle = createGlobalStyle(
   a:hover {
     text-decoration: underline;
   }
+  ul, ol {
+    padding-left: 20px;
+  }
 `
 )
 

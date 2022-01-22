@@ -316,6 +316,7 @@ export const fetchUser = async (req, res) => {
           _id: 1,
           username: 1,
           created: 1,
+          ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
         },
       },
       {
@@ -398,8 +399,28 @@ export const fetchUser = async (req, res) => {
           ],
         },
       },
+      {
+        $lookup: {
+          from: 'users',
+          as: 'invitedBy',
+          let: { invitingUserId: '$invitedBy' },
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$_id', '$$invitingUserId'] },
+              },
+            },
+            {
+              $project: {
+                username: 1,
+              },
+            },
+          ],
+        },
+      },
       { $unwind: { path: '$downloaded', preserveNullAndEmptyArrays: true } },
       { $unwind: { path: '$uploaded', preserveNullAndEmptyArrays: true } },
+      { $unwind: { path: '$invitedBy', preserveNullAndEmptyArrays: true } },
     ])
 
     if (!user) {
