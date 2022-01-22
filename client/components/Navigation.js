@@ -144,7 +144,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
               </Link>
               <Link href="/announcements" passHref>
                 <NavLink>
-                  <Text>Announcements</Text>
+                  <Text>News</Text>
                   <News size={24} />
                 </NavLink>
               </Link>

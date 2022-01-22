@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import moment from 'moment'
@@ -17,6 +17,7 @@ import MarkdownBody from '../../components/MarkdownBody'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import Comment from '../../components/Comment'
+import Modal from '../../components/Modal'
 
 const Info = ({ items }) => (
   <Infobox mb={5}>
@@ -44,6 +45,8 @@ const Info = ({ items }) => (
 )
 
 const Torrent = ({ token, torrent }) => {
+  const [showReportModal, setShowReportModal] = useState(false)
+
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_TORRENT_CATEGORIES },
   } = getConfig()
@@ -115,6 +118,29 @@ const Torrent = ({ token, torrent }) => {
     }
   }
 
+  const handleReport = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+    try {
+      const reportRes = await fetch(
+        `${SQ_API_URL}/torrent/report/${torrent.infoHash}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            reason: form.get('reason'),
+          }),
+        }
+      )
+      if (reportRes.ok) setShowReportModal(false)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   const category = SQ_TORRENT_CATEGORIES.find((c) => c.slug === torrent.type)
 
   return (
@@ -124,18 +150,10 @@ const Torrent = ({ token, torrent }) => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        mb={3}
+        mb={5}
       >
         <Text as="h1">{torrent.name}</Text>
         <Button onClick={handleDownload}>Download</Button>
-      </Box>
-      <Box display="flex" mb={5}>
-        <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
-          <Text icon={Like}>{torrent.upvotes || 0}</Text>
-        </Button>
-        <Button onClick={() => handleVote('down')} variant="noBackground">
-          <Text icon={Dislike}>{torrent.downvotes || 0}</Text>
-        </Button>
       </Box>
       <Info
         items={{
@@ -169,8 +187,7 @@ const Torrent = ({ token, torrent }) => {
           Leechers: torrent.leechers,
         }}
       />
-
-      <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
+      <Box mb={5}>
         <Text
           fontWeight={600}
           fontSize={1}
@@ -185,7 +202,27 @@ const Torrent = ({ token, torrent }) => {
           </ReactMarkdown>
         </MarkdownBody>
       </Box>
-
+      <Box
+        display="flex"
+        borderBottom="1px solid"
+        borderColor="border"
+        pb={5}
+        mb={5}
+      >
+        <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
+          <Text icon={Like}>{torrent.upvotes || 0}</Text>
+        </Button>
+        <Button
+          onClick={() => handleVote('down')}
+          variant="noBackground"
+          mr={2}
+        >
+          <Text icon={Dislike}>{torrent.downvotes || 0}</Text>
+        </Button>
+        <Button onClick={() => setShowReportModal(true)} variant="noBackground">
+          Report
+        </Button>
+      </Box>
       <Text as="h2" mb={4}>
         Comments
       </Text>
@@ -196,9 +233,23 @@ const Torrent = ({ token, torrent }) => {
       {!!torrent.comments?.length && (
         <Box mt={5}>
           {torrent.comments.map((comment) => (
-            <Comment key={comment._id} comment={comment} />
+            <Comment key={comment._id} comment={{ ...comment, torrent }} />
           ))}
         </Box>
+      )}
+      {showReportModal && (
+        <Modal close={() => setShowReportModal(false)}>
+          <form onSubmit={handleReport}>
+            <Input
+              name="reason"
+              label="Reason for report"
+              rows={8}
+              mb={4}
+              required
+            />
+            <Button width="100%">Report</Button>
+          </form>
+        </Modal>
       )}
     </>
   )

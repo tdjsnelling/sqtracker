@@ -6,6 +6,7 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import handleAnnounce from './middleware/announce'
 import auth from './middleware/auth'
+import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
   register,
   login,
@@ -16,7 +17,6 @@ import {
   finalisePasswordReset,
   fetchUser,
 } from './controllers/user'
-import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
 import {
   uploadTorrent,
   downloadTorrent,
@@ -32,6 +32,7 @@ import {
   getAnnouncements,
   deleteAnnouncement,
 } from './controllers/announcement'
+import { createReport } from './controllers/moderation'
 import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
@@ -117,6 +118,7 @@ app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
 app.post('/torrent/comment/:infoHash', addComment)
 app.post('/torrent/vote/:infoHash/:vote', voteOnTorrent)
+app.post('/torrent/report/:infoHash', createReport)
 app.get('/torrents/latest', listLatest)
 app.get('/torrents/search', searchTorrents)
 
