@@ -22,24 +22,24 @@ const Report = ({ report, token }) => {
 
   const router = useRouter()
 
-  // const handleDelete = async () => {
-  //   try {
-  //     const deleteRes = await fetch(
-  //       `${SQ_API_URL}/announcements/${announcement.slug}`,
-  //       {
-  //         method: 'DELETE',
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     )
-  //     if (deleteRes.ok) {
-  //       router.push('/announcements')
-  //     }
-  //   } catch (e) {
-  //     console.error(e)
-  //   }
-  // }
+  const handleResolve = async () => {
+    try {
+      const resolveRes = await fetch(
+        `${SQ_API_URL}/reports/resolve/${report._id}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if (resolveRes.ok) {
+        router.push('/reports')
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   return (
     <>
@@ -51,7 +51,7 @@ const Report = ({ report, token }) => {
         mb={3}
       >
         <Text as="h1">Report on “{report.torrent.name}”</Text>
-        <Button>Mark as solved</Button>
+        <Button onClick={handleResolve}>Mark as solved</Button>
       </Box>
       <Text color="grey" mb={5}>
         Reported {moment(report.created).format('HH:mm Do MMM YYYY')} by{' '}

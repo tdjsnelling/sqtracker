@@ -33,7 +33,12 @@ import {
   getAnnouncements,
   deleteAnnouncement,
 } from './controllers/announcement'
-import { createReport, fetchReport, getReports } from './controllers/moderation'
+import {
+  createReport,
+  fetchReport,
+  getReports,
+  setReportResolved,
+} from './controllers/moderation'
 import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
@@ -131,8 +136,9 @@ app.get('/announcements/page/:page', getAnnouncements)
 app.delete('/announcements/:slug', deleteAnnouncement)
 
 // moderation routes
-app.get('/reports/:reportId', fetchReport)
 app.get('/reports/page/:page', getReports)
+app.post('/reports/resolve/:reportId', setReportResolved)
+app.get('/reports/:reportId', fetchReport)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

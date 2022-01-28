@@ -14,7 +14,7 @@ import List from '../../components/List'
 const Reports = ({ reports }) => {
   return (
     <>
-      <SEO title="Reports" />
+      <SEO title="Unresolved reports" />
       <Text as="h1" mb={5}>
         Reports
       </Text>

@@ -71,6 +71,9 @@ export const getReports = async (req, res) => {
     page = parseInt(page) || 0
     const reports = await Report.aggregate([
       {
+        $match: { solved: false },
+      },
+      {
         $sort: { created: -1 },
       },
       {
@@ -127,6 +130,24 @@ export const getReports = async (req, res) => {
       },
     ])
     res.json(reports)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const setReportResolved = async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      res.status(401).send('You do not have permission to resolve a report')
+      return
+    }
+
+    await Report.findOneAndUpdate(
+      { _id: req.params.reportId },
+      { $set: { solved: true } }
+    )
+
+    res.sendStatus(200)
   } catch (e) {
     res.status(500).send(e.message)
   }
