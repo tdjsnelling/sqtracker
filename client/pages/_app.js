@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import App from 'next/app'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import getConfig from 'next/config'
 import { ThemeProvider, createGlobalStyle } from 'styled-components'
 import { useCookies } from 'react-cookie'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
@@ -12,11 +13,11 @@ import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
 
-const getThemeColours = (theme) => {
+const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
     case 'light':
       return {
-        primary: '#f45d48',
+        primary,
         background: '#ffffff',
         sidebar: '#f8f8f8',
         text: '#202224',
@@ -26,7 +27,7 @@ const getThemeColours = (theme) => {
       }
     case 'dark':
       return {
-        primary: '#f45d48',
+        primary,
         background: '#1f2023',
         sidebar: '#27282b',
         text: '#f8f8f8',
@@ -113,6 +114,10 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
 
   const [cookies, setCookie] = useCookies()
 
+  const {
+    publicRuntimeConfig: { SQ_THEME_COLOUR },
+  } = getConfig()
+
   const setThemeAndSave = (theme) => {
     setTheme(theme)
     setCookie('theme', theme, {
@@ -136,7 +141,10 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
     })
   }, [])
 
-  const appTheme = { ...baseTheme, colors: getThemeColours(theme) }
+  const appTheme = {
+    ...baseTheme,
+    colors: getThemeColours(theme, SQ_THEME_COLOUR),
+  }
 
   const handleSearch = (e) => {
     e.preventDefault()
