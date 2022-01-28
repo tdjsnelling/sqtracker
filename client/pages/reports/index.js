@@ -1,17 +1,18 @@
 import React from 'react'
 import getConfig from 'next/config'
-import Link from 'next/link'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import SEO from '../../components/SEO'
-import Box from '../../components/Box'
 import Text from '../../components/Text'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
-import Button from '../../components/Button'
 import List from '../../components/List'
 
-const Reports = ({ reports }) => {
+const Reports = ({ reports, userRole }) => {
+  if (userRole !== 'admin') {
+    return <Text>You do not have permission to do that.</Text>
+  }
+
   return (
     <>
       <SEO title="Unresolved reports" />
@@ -64,7 +65,12 @@ export const getServerSideProps = async ({ req }) => {
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
+    serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+
+  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+
+  if (role !== 'admin') return { props: { reports: [], userRole: role } }
 
   const reportsRes = await fetch(`${SQ_API_URL}/reports/page/0`, {
     headers: {
@@ -73,7 +79,7 @@ export const getServerSideProps = async ({ req }) => {
     },
   })
   const reports = await reportsRes.json()
-  return { props: { reports } }
+  return { props: { reports, userRole: role } }
 }
 
 export default withAuth(Reports)

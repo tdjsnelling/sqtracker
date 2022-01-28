@@ -2,6 +2,7 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -9,13 +10,12 @@ import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
 import Button from '../../components/Button'
-import Infobox from '../../components/Infobox'
 import MarkdownBody from '../../components/MarkdownBody'
 import { Info } from '../torrent/[infoHash]'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 
-const Report = ({ report, token }) => {
+const Report = ({ report, token, userRole }) => {
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
@@ -39,6 +39,10 @@ const Report = ({ report, token }) => {
     } catch (e) {
       console.error(e)
     }
+  }
+
+  if (userRole !== 'admin') {
+    return <Text>You do not have permission to do that.</Text>
   }
 
   return (
@@ -96,7 +100,12 @@ export const getServerSideProps = async ({ req, query: { id } }) => {
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
+    serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+
+  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+
+  if (role !== 'admin') return { props: { report: null, userRole: role } }
 
   const reportRes = await fetch(`${SQ_API_URL}/reports/${id}`, {
     headers: {
@@ -105,7 +114,7 @@ export const getServerSideProps = async ({ req, query: { id } }) => {
     },
   })
   const report = await reportRes.json()
-  return { props: { report, token } }
+  return { props: { report, token, userRole: role } }
 }
 
 export default withAuth(Report)
