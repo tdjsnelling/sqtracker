@@ -114,6 +114,8 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
 
   const [cookies, setCookie] = useCookies()
 
+  const { token } = cookies
+
   const {
     publicRuntimeConfig: { SQ_THEME_COLOUR },
   } = getConfig()
@@ -198,28 +200,30 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
             >
               <Menu size={24} />
             </Button>
-            <Box display="flex">
-              <Box as="form" onSubmit={handleSearch} ml={4}>
-                <Input
-                  name="query"
-                  placeholder="Search"
-                  maxWidth="300px"
-                  ref={searchRef}
-                />
+            {token && (
+              <Box display="flex">
+                <Box as="form" onSubmit={handleSearch} ml={4}>
+                  <Input
+                    name="query"
+                    placeholder="Search"
+                    maxWidth="300px"
+                    ref={searchRef}
+                  />
+                </Box>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setThemeAndSave(theme === 'light' ? 'dark' : 'light')
+                  }}
+                  width="40px"
+                  px={2}
+                  py={2}
+                  ml={3}
+                >
+                  {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
+                </Button>
               </Box>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setThemeAndSave(theme === 'light' ? 'dark' : 'light')
-                }}
-                width="40px"
-                px={2}
-                py={2}
-                ml={3}
-              >
-                {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
-              </Button>
-            </Box>
+            )}
           </Box>
         </Box>
         <main>

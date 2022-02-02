@@ -9,15 +9,10 @@ const auth = async (req, res, next) => {
 
       if (decoded) {
         const user = await User.findOne({ _id: decoded.id })
-
         if (user) {
-          if (token === user.token) {
-            req.userId = user._id
-            req.userRole = user.role
-            next()
-          } else {
-            res.sendStatus(401)
-          }
+          req.userId = user._id
+          req.userRole = user.role
+          next()
         } else {
           res.sendStatus(404)
         }

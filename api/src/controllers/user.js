@@ -87,20 +87,18 @@ export const register = async (req, res) => {
           .digest('hex')
           .slice(0, 10)
 
-        newUser.token = jwt.sign(
-          {
-            id: newUser._id,
-            created,
-            role,
-          },
-          process.env.SQ_JWT_SECRET
-        )
-
         const createdUser = await newUser.save()
 
         if (createdUser) {
           res.send({
-            token: createdUser.token,
+            token: jwt.sign(
+              {
+                id: newUser._id,
+                created,
+                role,
+              },
+              process.env.SQ_JWT_SECRET
+            ),
             id: createdUser._id,
             uid: createdUser.uid,
             username: createdUser.username,
@@ -129,7 +127,14 @@ export const login = async (req, res) => {
 
         if (matches) {
           res.send({
-            token: user.token,
+            token: jwt.sign(
+              {
+                id: user._id,
+                created: user.created,
+                role: user.role,
+              },
+              process.env.SQ_JWT_SECRET
+            ),
             id: user._id,
             uid: user.uid,
             username: user.username,

@@ -39,7 +39,7 @@ const Categories = () => {
         display="grid"
         gridTemplateColumns="repeat(4, 1fr)"
         gridGap={4}
-        css={{ listStyle: 'none' }}
+        css={{ pl: 0, listStyle: 'none' }}
       >
         {SQ_TORRENT_CATEGORIES.map((category) => (
           <CategoryItem key={category.slug}>

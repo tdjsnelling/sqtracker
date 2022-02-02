@@ -74,8 +74,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       const role = await roleRes.text()
       setRole(role)
     }
-
-    getUserRole()
+    if (token) getUserRole()
     setIsServer(false)
   }, [token])
 
