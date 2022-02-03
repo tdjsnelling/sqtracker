@@ -15,7 +15,7 @@ import Select from '../components/Select'
 import Button from '../components/Button'
 import List from '../components/List'
 
-const Account = ({ token, invites, userRole }) => {
+const Account = ({ token, invites = [], userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
 
   const {

@@ -56,6 +56,15 @@ export const Info = ({ title, items }) => (
 
 const Torrent = ({ token, torrent }) => {
   const [showReportModal, setShowReportModal] = useState(false)
+  const [userVote, setUserVote] = useState(
+    (torrent.userHasUpvoted && 'up') ||
+      (torrent.userHasDownvoted && 'down') ||
+      null
+  )
+  const [votes, setVotes] = useState({
+    up: torrent.upvotes,
+    down: torrent.downvotes,
+  })
 
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_TORRENT_CATEGORIES },
@@ -113,8 +122,31 @@ const Torrent = ({ token, torrent }) => {
 
   const handleVote = async (vote) => {
     try {
+      if (userVote) {
+        if (userVote === vote) {
+          if (vote === 'up') setVotes((v) => ({ up: v.up - 1, down: v.down }))
+          else if (vote === 'down')
+            setVotes((v) => ({ up: v.up, down: v.down - 1 }))
+          setUserVote(null)
+        } else {
+          if (vote === 'up') {
+            setVotes((v) => ({ up: v.up + 1, down: v.down - 1 }))
+          } else if (vote === 'down') {
+            setVotes((v) => ({ up: v.up - 1, down: v.down + 1 }))
+          }
+          setUserVote(vote)
+        }
+      } else {
+        if (vote === 'up') setVotes((v) => ({ up: v.up + 1, down: v.down }))
+        else if (vote === 'down')
+          setVotes((v) => ({ up: v.up, down: v.down + 1 }))
+        setUserVote(vote)
+      }
+
       const voteRes = await fetch(
-        `${SQ_API_URL}/torrent/vote/${torrent.infoHash}/${vote}`,
+        `${SQ_API_URL}/torrent/${userVote !== vote ? 'vote' : 'unvote'}/${
+          torrent.infoHash
+        }/${vote}`,
         {
           method: 'POST',
           headers: {
@@ -220,14 +252,18 @@ const Torrent = ({ token, torrent }) => {
         mb={5}
       >
         <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
-          <Text icon={Like}>{torrent.upvotes || 0}</Text>
+          <Text icon={Like} iconColor={userVote === 'up' && 'green'}>
+            {votes.up || 0}
+          </Text>
         </Button>
         <Button
           onClick={() => handleVote('down')}
           variant="noBackground"
           mr={2}
         >
-          <Text icon={Dislike}>{torrent.downvotes || 0}</Text>
+          <Text icon={Dislike} iconColor={userVote === 'down' && 'red'}>
+            {votes.down || 0}
+          </Text>
         </Button>
         <Button onClick={() => setShowReportModal(true)} variant="noBackground">
           Report

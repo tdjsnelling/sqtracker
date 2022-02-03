@@ -1,6 +1,7 @@
 import bencode from 'bencode'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
+import mongoose from 'mongoose'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Comment from '../schema/comment'
@@ -64,8 +65,8 @@ export const uploadTorrent = async (req, res) => {
             return acc + cur.length
           }, 0),
         created: Date.now(),
-        upvotes: 0,
-        downvotes: 0,
+        upvotes: [],
+        downvotes: [],
       })
 
       await newTorrent.save()
@@ -115,7 +116,21 @@ export const fetchTorrent = async (req, res) => {
         $match: { infoHash },
       },
       {
-        $project: { binary: 0 },
+        $project: {
+          name: 1,
+          description: 1,
+          type: 1,
+          infoHash: 1,
+          uploadedBy: 1,
+          downloads: 1,
+          anonymous: 1,
+          size: 1,
+          created: 1,
+          upvotes: { $size: '$upvotes' },
+          downvotes: { $size: '$downvotes' },
+          userHasUpvoted: { $in: [req.userId, '$upvotes'] },
+          userHasDownvoted: { $in: [req.userId, '$downvotes'] },
+        },
       },
       {
         $lookup: {
@@ -209,6 +224,7 @@ export const fetchTorrent = async (req, res) => {
       leechers: scrapeForInfoHash?.incomplete || 0,
     })
   } catch (e) {
+    console.error(e)
     res.status(500).send(e.message)
   }
 }
@@ -378,7 +394,7 @@ export const searchTorrents = async (req, res) => {
   }
 }
 
-export const voteOnTorrent = async (req, res) => {
+export const addVote = async (req, res) => {
   const { infoHash, vote } = req.params
   try {
     const torrent = await Torrent.findOne({ infoHash }).lean()
@@ -391,7 +407,47 @@ export const voteOnTorrent = async (req, res) => {
     if (vote === 'up' || vote === 'down') {
       await Torrent.findOneAndUpdate(
         { infoHash },
-        { $inc: { [vote === 'up' ? 'upvotes' : 'downvotes']: 1 } }
+        {
+          $addToSet: {
+            [vote === 'up' ? 'upvotes' : 'downvotes']: mongoose.Types.ObjectId(
+              req.userId
+            ),
+          },
+          $pull: {
+            [vote === 'down' ? 'upvotes' : 'downvotes']:
+              mongoose.Types.ObjectId(req.userId),
+          },
+        }
+      )
+      res.sendStatus(200)
+    } else {
+      res.status(400).send('Vote must be one of (up, down)')
+    }
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const removeVote = async (req, res) => {
+  const { infoHash, vote } = req.params
+  try {
+    const torrent = await Torrent.findOne({ infoHash }).lean()
+
+    if (!torrent) {
+      res.sendStatus(404)
+      return
+    }
+
+    if (vote === 'up' || vote === 'down') {
+      await Torrent.findOneAndUpdate(
+        { infoHash },
+        {
+          $pull: {
+            [vote === 'up' ? 'upvotes' : 'downvotes']: mongoose.Types.ObjectId(
+              req.userId
+            ),
+          },
+        }
       )
       res.sendStatus(200)
     } else {
