@@ -1,10 +1,12 @@
 # ■ sqtracker
 
-*sqtracker* (or squaretracker, tracker²) is a front-end for BitTorrent trackers such as [opentracker](https://erdgeist.org/arts/software/opentracker/) that adds things like account management and ratio tracking. It's tracking the tracker, hence the name.
+*sqtracker* is a private BitTorrent tracker service that implements things like user accounts, ratio tracking, commenting, voting, moderation, and more.
 
 This is particularly useful for private tracker communities that want to control who can download, how much they must seed and so on.
 
-As *sqtracker* just sits in front of a BitTorrent tracker, it should theoretically be compatible with any. However opentracker is the most tested and is recommended.
+*sqtracker* works in conjunction with [opentracker](https://erdgeist.org/arts/software/opentracker/), which provides the actual BitTorrent tracker protocol. *sqtracker* can be thought of a sort of front-end built on top of opentracker, providing everything else you need to run a full private tracker platform.
+
+As the BitTorrent tracker protocol has a [proper specification](https://www.bittorrent.org/beps/bep_0003.html), other tracker software that implements the protocol properly should also be compatible with *sqtracker*. However, only opentracker is tested, and opentracker is used in the `docker-compose.yml` file.
 
 ## Features
 
@@ -30,3 +32,7 @@ As *sqtracker* just sits in front of a BitTorrent tracker, it should theoretical
   * reporting torrents,
   * detailed stats available to admins,
   * announcements/news posts
+
+## Deploying
+
+### Configuration
