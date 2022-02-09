@@ -39,6 +39,7 @@ import {
   fetchReport,
   getReports,
   setReportResolved,
+  getStats,
 } from './controllers/moderation'
 import createAdminUser from './setup/createAdminUser'
 
@@ -141,6 +142,7 @@ app.delete('/announcements/:slug', deleteAnnouncement)
 app.get('/reports/page/:page', getReports)
 app.post('/reports/resolve/:reportId', setReportResolved)
 app.get('/reports/:reportId', fetchReport)
+app.get('/admin/stats', getStats)
 
 const port = process.env.SQ_PORT || 44444
 app.listen(port, () => {

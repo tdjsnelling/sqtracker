@@ -20,10 +20,12 @@ const Reports = ({ reports, userRole }) => {
         Reports
       </Text>
       <List
-        data={reports.map((report) => ({
-          ...report,
-          href: `/reports/${report._id}`,
-        }))}
+        data={reports
+          .filter((report) => !!report.torrent?.name)
+          .map((report) => ({
+            ...report,
+            href: `/reports/${report._id}`,
+          }))}
         columns={[
           {
             header: 'Torrent',

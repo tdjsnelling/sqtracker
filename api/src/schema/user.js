@@ -6,7 +6,6 @@ const User = new mongoose.Schema({
   password: String,
   uid: String,
   torrents: Object,
-  token: String,
   created: Number,
   banned: Boolean,
   role: String,

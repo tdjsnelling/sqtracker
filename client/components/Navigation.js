@@ -13,6 +13,7 @@ import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { News } from '@styled-icons/boxicons-regular/News'
 import { User } from '@styled-icons/boxicons-regular/User'
 import { Error } from '@styled-icons/boxicons-regular/Error'
+import { TrendingUp } from '@styled-icons/boxicons-regular/TrendingUp'
 import { LogOutCircle } from '@styled-icons/boxicons-regular/LogOutCircle'
 import { LogInCircle } from '@styled-icons/boxicons-regular/LogInCircle'
 import { UserPlus } from '@styled-icons/boxicons-regular/UserPlus'
@@ -167,12 +168,20 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 </NavLink>
               </Link>
               {role === 'admin' && (
-                <Link href="/reports" passHref>
-                  <NavLink highlights={['/reports']}>
-                    <Text>Reports</Text>
-                    <Error size={24} />
-                  </NavLink>
-                </Link>
+                <>
+                  <Link href="/reports" passHref>
+                    <NavLink highlights={['/reports']}>
+                      <Text>Reports</Text>
+                      <Error size={24} />
+                    </NavLink>
+                  </Link>
+                  <Link href="/stats" passHref>
+                    <NavLink highlights={['/stats']}>
+                      <Text>Stats</Text>
+                      <TrendingUp size={24} />
+                    </NavLink>
+                  </Link>
+                </>
               )}
               <Link href="/logout" passHref>
                 <NavLink mt={5}>

@@ -1,6 +1,7 @@
 import Report from '../schema/report'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
+import Progress from '../schema/progress'
 
 export const createReport = async (req, res) => {
   if (req.body.reason) {
@@ -148,6 +149,24 @@ export const setReportResolved = async (req, res) => {
     )
 
     res.sendStatus(200)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const getStats = async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      res.status(401).send('You do not have permission to view tracker stats')
+      return
+    }
+
+    const registeredUsers = await User.countDocuments()
+    const bannedUsers = await User.countDocuments({ banned: true })
+    const torrents = await Torrent.countDocuments()
+    const completedDownloads = await Progress.countDocuments({ left: 0 })
+
+    res.json({ registeredUsers, bannedUsers, torrents, completedDownloads })
   } catch (e) {
     res.status(500).send(e.message)
   }
