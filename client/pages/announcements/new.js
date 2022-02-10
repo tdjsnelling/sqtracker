@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import Input from '../../components/Input'
+import Checkbox from '../../components/Checkbox'
 import Button from '../../components/Button'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
@@ -36,6 +37,7 @@ const NewAnnouncement = ({ token, userRole }) => {
           body: JSON.stringify({
             title: form.get('title'),
             body: form.get('body'),
+            pinned: !!form.get('pinned'),
           }),
         }
       )
@@ -64,6 +66,7 @@ const NewAnnouncement = ({ token, userRole }) => {
           mb={4}
           required
         />
+        <Checkbox label="Pin this announcement?" name="pinned" mb={4} />
         <Button>Create announcement</Button>
       </form>
     </>

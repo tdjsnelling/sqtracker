@@ -32,7 +32,9 @@ import {
   createAnnouncement,
   fetchAnnouncement,
   getAnnouncements,
+  getPinnedAnnouncements,
   deleteAnnouncement,
+  pinAnnouncement,
 } from './controllers/announcement'
 import {
   createReport,
@@ -134,9 +136,11 @@ app.get('/torrents/search', searchTorrents)
 
 // announcement routes
 app.post('/announcements/new', createAnnouncement)
+app.get('/announcements/pinned', getPinnedAnnouncements)
 app.get('/announcements/:slug', fetchAnnouncement)
 app.get('/announcements/page/:page', getAnnouncements)
 app.delete('/announcements/:slug', deleteAnnouncement)
+app.post('/announcements/pin/:announcementId/:action', pinAnnouncement)
 
 // moderation routes
 app.get('/reports/page/:page', getReports)

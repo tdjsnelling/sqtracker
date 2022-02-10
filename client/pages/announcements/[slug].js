@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -6,6 +6,7 @@ import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Pin } from '@styled-icons/boxicons-regular'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -15,6 +16,8 @@ import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
 
 const Announcement = ({ announcement, token, userRole }) => {
+  const [pinned, setPinned] = useState(announcement.pinned)
+
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
@@ -40,6 +43,27 @@ const Announcement = ({ announcement, token, userRole }) => {
     }
   }
 
+  const handlePin = async () => {
+    try {
+      const pinRes = await fetch(
+        `${SQ_API_URL}/announcements/pin/${announcement._id}/${
+          pinned ? 'unpin' : 'pin'
+        }`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if (pinRes.ok) {
+        setPinned((p) => !p)
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
     <>
       <SEO title={`${announcement.title} | Announcements`} />
@@ -49,8 +73,22 @@ const Announcement = ({ announcement, token, userRole }) => {
         justifyContent="space-between"
         mb={3}
       >
-        <Text as="h1">{announcement.title}</Text>
-        {userRole === 'admin' && <Button onClick={handleDelete}>Delete</Button>}
+        <Box display="flex" alignItems="center">
+          <Text as="h1">{announcement.title}</Text>
+          {pinned && (
+            <Box color="grey" ml={3}>
+              <Pin size={24} />
+            </Box>
+          )}
+        </Box>
+        {userRole === 'admin' && (
+          <Box display="flex" alignItems="center">
+            <Button onClick={handlePin} variant="secondary" mr={3}>
+              {pinned ? 'Unpin' : 'Pin'}
+            </Button>
+            <Button onClick={handleDelete}>Delete</Button>
+          </Box>
+        )}
       </Box>
       <Text color="grey" mb={5}>
         Posted {moment(announcement.created).format('HH:mm Do MMM YYYY')} by{' '}

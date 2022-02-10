@@ -5,6 +5,7 @@ const Announcement = new mongoose.Schema({
   slug: String,
   body: String,
   createdBy: mongoose.Schema.ObjectId,
+  pinned: Boolean,
   created: Number,
 })
 

@@ -81,7 +81,7 @@ const Upload = ({ token, userId }) => {
           name: form.get('name'),
           description: form.get('description'),
           type: form.get('category'),
-          anonymous: form.get('anonymous') || false,
+          anonymous: !!form.get('anonymous'),
           torrent: torrentFile.b64,
         }),
       })

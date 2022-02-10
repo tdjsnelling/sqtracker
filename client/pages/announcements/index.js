@@ -11,7 +11,7 @@ import getReqCookies from '../../utils/getReqCookies'
 import Button from '../../components/Button'
 import List from '../../components/List'
 
-const Announcements = ({ announcements, userRole }) => {
+const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
   return (
     <>
       <SEO title="Announcements" />
@@ -30,6 +30,47 @@ const Announcements = ({ announcements, userRole }) => {
           </Link>
         )}
       </Box>
+      {!!pinnedAnnouncements.length && (
+        <>
+          <Box mb={5}>
+            <Text as="h3" mb={4}>
+              Pinned announcements
+            </Text>
+            <List
+              data={pinnedAnnouncements.map((announcement) => ({
+                ...announcement,
+                href: `/announcements/${announcement.slug}`,
+              }))}
+              columns={[
+                {
+                  header: 'Title',
+                  accessor: 'title',
+                  cell: ({ value }) => <Text>{value}</Text>,
+                  gridWidth: '1fr',
+                },
+                {
+                  header: 'Posted by',
+                  accessor: 'createdBy.username',
+                  cell: ({ value }) => <Text>{value}</Text>,
+                  gridWidth: '1fr',
+                },
+                {
+                  header: 'Created',
+                  accessor: 'created',
+                  cell: ({ value }) => (
+                    <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+                  ),
+                  rightAlign: true,
+                  gridWidth: '1fr',
+                },
+              ]}
+            />
+          </Box>
+          <Text as="h3" mb={4}>
+            Other announcements
+          </Text>
+        </>
+      )}
       <List
         data={announcements.map((announcement) => ({
           ...announcement,
@@ -82,7 +123,21 @@ export const getServerSideProps = async ({ req }) => {
     },
   })
   const announcements = await announcementsRes.json()
-  return { props: { announcements, userRole: role || 'user' } }
+
+  const pinnedAnnouncementsRes = await fetch(
+    `${SQ_API_URL}/announcements/pinned`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  )
+  const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+
+  return {
+    props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
+  }
 }
 
 export default withAuth(Announcements)

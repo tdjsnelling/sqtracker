@@ -29,6 +29,7 @@ export const createAnnouncement = async (req, res) => {
         slug,
         body: req.body.body,
         createdBy: req.userId,
+        pinned: req.body.pinned,
         created: Date.now(),
       })
 
@@ -90,6 +91,9 @@ export const getAnnouncements = async (req, res) => {
 
     const announcements = await Announcement.aggregate([
       {
+        $match: { pinned: { $not: { $eq: true } } },
+      },
+      {
         $sort: { created: -1 },
       },
       {
@@ -97,6 +101,50 @@ export const getAnnouncements = async (req, res) => {
       },
       {
         $limit: pageSize,
+      },
+      {
+        $lookup: {
+          from: 'users',
+          as: 'createdBy',
+          let: { userId: '$createdBy' },
+          pipeline: [
+            {
+              $match: { $expr: { $eq: ['$_id', '$$userId'] } },
+            },
+            {
+              $project: {
+                username: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $project: {
+          body: 0,
+        },
+      },
+      {
+        $unwind: {
+          path: '$createdBy',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
+    res.json(announcements)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const getPinnedAnnouncements = async (req, res) => {
+  try {
+    const announcements = await Announcement.aggregate([
+      {
+        $match: { pinned: true },
+      },
+      {
+        $sort: { created: -1 },
       },
       {
         $lookup: {
@@ -143,6 +191,18 @@ export const deleteAnnouncement = async (req, res) => {
     }
 
     await Announcement.deleteOne({ slug: req.params.slug })
+    res.sendStatus(200)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const pinAnnouncement = async (req, res) => {
+  try {
+    await Announcement.findOneAndUpdate(
+      { _id: req.params.announcementId },
+      { $set: { pinned: req.params.action === 'pin' } }
+    )
     res.sendStatus(200)
   } catch (e) {
     res.status(500).send(e.message)
