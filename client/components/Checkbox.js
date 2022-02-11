@@ -26,8 +26,8 @@ const Container = styled.label(
           '& ~ .check': {
             borderColor: 'primary',
             '.inner': {
-              backgroundImage:
-                "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0ibTEwIDE1LjU4Ni0zLjI5My0zLjI5My0xLjQxNCAxLjQxNEwxMCAxOC40MTRsOS43MDctOS43MDctMS40MTQtMS40MTR6Ij48L3BhdGg+PC9zdmc+')",
+              // prettier-ignore
+              backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill:%23${theme.colors.text.replace('#','')}"><path d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z"></path></svg>')`,
               backgroundPosition: 'center',
               backgroundSize: '18px 18px',
             },

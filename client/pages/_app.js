@@ -21,7 +21,7 @@ const getThemeColours = (theme, primary = '#f45d48') => {
         background: '#ffffff',
         sidebar: '#f8f8f8',
         text: '#202224',
-        grey: '#aaa',
+        grey: '#747474',
         error: '#f33',
         border: '#deebf1',
       }

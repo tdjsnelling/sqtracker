@@ -67,7 +67,9 @@ const NewAnnouncement = ({ token, userRole }) => {
           required
         />
         <Checkbox label="Pin this announcement?" name="pinned" mb={4} />
-        <Button>Create announcement</Button>
+        <Button display="block" ml="auto">
+          Create announcement
+        </Button>
       </form>
     </>
   )

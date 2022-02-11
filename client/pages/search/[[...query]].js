@@ -30,7 +30,7 @@ const Search = ({ results }) => {
 
   return (
     <>
-      <SEO title={`Search results for “${query}”`} />
+      <SEO title={query ? `Search results for “${query}”` : 'Search'} />
       <Text as="h1" mb={5}>
         {query ? `Search results for “${query}”` : 'Search'}
       </Text>

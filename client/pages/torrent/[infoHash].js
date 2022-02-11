@@ -274,7 +274,9 @@ const Torrent = ({ token, torrent }) => {
       </Text>
       <form onSubmit={handleComment}>
         <Input name="comment" label="Post a comment" rows="5" mb={4} />
-        <Button>Post</Button>
+        <Button display="block" ml="auto">
+          Post
+        </Button>
       </form>
       {!!torrent.comments?.length && (
         <Box mt={5}>
