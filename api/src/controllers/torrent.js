@@ -229,6 +229,33 @@ export const fetchTorrent = async (req, res) => {
   }
 }
 
+export const deleteTorrent = async (req, res) => {
+  try {
+    const torrent = await Torrent.findOne({
+      infoHash: req.params.infoHash,
+    }).lean()
+
+    if (!torrent) {
+      res.sendStatus(404)
+      return
+    }
+
+    if (
+      req.userRole !== 'admin' &&
+      req.userId.toString() !== torrent.uploadedBy.toString()
+    ) {
+      res.status(401).send('You do not have permission to delete this torrent')
+      return
+    }
+
+    await Torrent.deleteOne({ infoHash: req.params.infoHash })
+
+    res.sendStatus(200)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
 export const getTorrentsPage = async ({
   skip = 0,
   limit = 25,

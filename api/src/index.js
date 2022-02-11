@@ -22,6 +22,7 @@ import {
   uploadTorrent,
   downloadTorrent,
   fetchTorrent,
+  deleteTorrent,
   addComment,
   listLatest,
   searchTorrents,
@@ -127,6 +128,7 @@ app.get('/user/:username', fetchUser)
 app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
+app.delete('/torrent/delete/:infoHash', deleteTorrent)
 app.post('/torrent/comment/:infoHash', addComment)
 app.post('/torrent/vote/:infoHash/:vote', addVote)
 app.post('/torrent/unvote/:infoHash/:vote', removeVote)

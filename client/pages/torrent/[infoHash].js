@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import moment from 'moment'
 import prettyBytes from 'pretty-bytes'
 import ReactMarkdown from 'react-markdown'
@@ -18,6 +19,7 @@ import Button from '../../components/Button'
 import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
+import jwt from 'jsonwebtoken'
 
 export const Info = ({ title, items }) => (
   <Infobox mb={5}>
@@ -54,8 +56,9 @@ export const Info = ({ title, items }) => (
   </Infobox>
 )
 
-const Torrent = ({ token, torrent }) => {
+const Torrent = ({ token, torrent, userId, userRole }) => {
   const [showReportModal, setShowReportModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [userVote, setUserVote] = useState(
     (torrent.userHasUpvoted && 'up') ||
       (torrent.userHasDownvoted && 'down') ||
@@ -69,6 +72,8 @@ const Torrent = ({ token, torrent }) => {
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_TORRENT_CATEGORIES },
   } = getConfig()
+
+  const router = useRouter()
 
   const handleDownload = async () => {
     try {
@@ -92,6 +97,25 @@ const Torrent = ({ token, torrent }) => {
       downloadLink.click()
 
       window.URL.revokeObjectURL(url)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      const deleteRes = await fetch(
+        `${SQ_API_URL}/torrent/delete/${torrent.infoHash}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if (deleteRes.ok) {
+        router.push('/')
+      }
     } catch (e) {
       console.error(e)
     }
@@ -195,7 +219,18 @@ const Torrent = ({ token, torrent }) => {
         mb={5}
       >
         <Text as="h1">{torrent.name}</Text>
-        <Button onClick={handleDownload}>Download</Button>
+        <Box variant="flex" alignItems="center">
+          {(userRole === 'admin' || userId === torrent.uploadedBy._id) && (
+            <Button
+              onClick={() => setShowDeleteModal(true)}
+              variant="secondary"
+              mr={3}
+            >
+              Delete
+            </Button>
+          )}
+          <Button onClick={handleDownload}>Download</Button>
+        </Box>
       </Box>
       <Info
         items={{
@@ -299,6 +334,23 @@ const Torrent = ({ token, torrent }) => {
           </form>
         </Modal>
       )}
+      {showDeleteModal && (
+        <Modal close={() => setShowDeleteModal(false)}>
+          <Text mb={5}>
+            Are you sure you want to delete this torrent? This cannot be undone.
+          </Text>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              onClick={() => setShowDeleteModal(false)}
+              variant="secondary"
+              mr={3}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete}>Delete</Button>
+          </Box>
+        </Modal>
+      )}
     </>
   )
 }
@@ -310,7 +362,10 @@ export const getServerSideProps = async ({ req, query: { infoHash } }) => {
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
+    serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
+
+  const { id, role } = jwt.verify(token, SQ_JWT_SECRET)
 
   const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
     headers: {
@@ -319,7 +374,7 @@ export const getServerSideProps = async ({ req, query: { infoHash } }) => {
     },
   })
   const torrent = await torrentRes.json()
-  return { props: { torrent } }
+  return { props: { torrent, userId: id, userRole: role } }
 }
 
 export default withAuth(Torrent)
