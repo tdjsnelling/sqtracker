@@ -10,6 +10,7 @@ const User = new mongoose.Schema({
   banned: Boolean,
   role: String,
   invitedBy: mongoose.Schema.ObjectId,
+  remainingInvites: Number,
 })
 
 export default mongoose.model('user', User)

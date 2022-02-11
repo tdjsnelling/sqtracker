@@ -54,6 +54,10 @@ export const register = async (req, res) => {
         }
 
         await Invite.findOneAndUpdate({ _id: id }, { $set: { claimed: true } })
+        await User.findOneAndUpdate(
+          { _id: invite.invitingUser },
+          { $inc: { remainingInvites: -1 } }
+        )
       } catch (err) {
         res.status(500).send(`Error verifying invitation: ${err.message}`)
         return
@@ -79,6 +83,7 @@ export const register = async (req, res) => {
           created,
           role,
           invitedBy: invite?.invitingUser,
+          remainingInvites: 0,
         })
 
         newUser.uid = crypto
@@ -94,6 +99,7 @@ export const register = async (req, res) => {
             token: jwt.sign(
               {
                 id: newUser._id,
+                username: newUser.username,
                 created,
                 role,
               },
@@ -130,6 +136,7 @@ export const login = async (req, res) => {
             token: jwt.sign(
               {
                 id: user._id,
+                username: user.username,
                 created: user.created,
                 role: user.role,
               },
@@ -154,6 +161,12 @@ export const login = async (req, res) => {
 }
 
 export const generateInvite = async (req, res) => {
+  const user = await User.findOne({ _id: req.userId }).lean()
+
+  if (user.remainingInvites < 1) {
+    res.status(403).send('You do not have any remaining invites')
+  }
+
   const created = Date.now()
   const validUntil = created + 48 * 60 * 60 * 1000
 
@@ -322,6 +335,7 @@ export const fetchUser = async (req, res) => {
           username: 1,
           created: 1,
           ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
+          remainingInvites: 1,
         },
       },
       {

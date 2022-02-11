@@ -24,6 +24,16 @@ const StyledButton = styled.button(
         bg: darken(0.1, theme.colors.primary),
         borderColor: darken(0.1, theme.colors.primary),
       },
+      '&[disabled]': {
+        cursor: 'not-allowed',
+        opacity: 0.5,
+        '&:hover': {
+          borderColor: 'primary',
+        },
+        '&:focus, &:active': {
+          bg: 'primary',
+        },
+      },
     }),
   ({ theme }) =>
     variant({
@@ -38,6 +48,14 @@ const StyledButton = styled.button(
           '&:focus, &:active': {
             bg: darken(0.1, theme.colors.sidebar),
             borderColor: darken(0.1, theme.colors.sidebar),
+          },
+          '&[disabled]': {
+            '&:hover': {
+              borderColor: 'sidebar',
+            },
+            '&:focus, &:active': {
+              bg: 'sidebar',
+            },
           },
         },
         noBackground: {
@@ -58,4 +76,12 @@ const StyledButton = styled.button(
   space
 )
 
-export default StyledButton
+const Button = ({ onClick, disabled, ...rest }) => (
+  <StyledButton
+    onClick={disabled ? undefined : onClick}
+    disabled={disabled}
+    {...rest}
+  />
+)
+
+export default Button

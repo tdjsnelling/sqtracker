@@ -14,6 +14,7 @@ const createAdminUser = async () => {
       role: 'admin',
       password: hash,
       created,
+      remainingInvites: Number.MAX_SAFE_INTEGER,
     })
     adminUser.uid = crypto
       .createHash('sha256')

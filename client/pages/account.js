@@ -15,7 +15,7 @@ import Select from '../components/Select'
 import Button from '../components/Button'
 import List from '../components/List'
 
-const Account = ({ token, invites = [], userRole }) => {
+const Account = ({ token, invites = [], user, userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
 
   const {
@@ -92,14 +92,27 @@ const Account = ({ token, invites = [], userRole }) => {
       >
         <Text as="h2">Invites</Text>
         <form onSubmit={handleGenerateInvite}>
-          <Box display="flex" alignItems="center">
+          <Box
+            display="flex"
+            alignItems="center"
+            border="1px solid"
+            borderColor="border"
+            borderRadius={1}
+            p={2}
+            pl={4}
+          >
+            <Text color="grey" mr={4}>
+              {user.remainingInvites} remaining
+            </Text>
             {userRole === 'admin' && (
               <Select name="role" required mr={3}>
                 <option value="user">Role: user</option>
                 <option value="admin">Role: admin</option>
               </Select>
             )}
-            <Button>Generate invite</Button>
+            <Button disabled={user.remainingInvites < 1}>
+              Generate invite
+            </Button>
           </Box>
         </form>
       </Box>
@@ -126,7 +139,13 @@ const Account = ({ token, invites = [], userRole }) => {
             header: 'Valid until',
             accessor: 'validUntil',
             cell: ({ value }) => (
-              <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+              <Text
+                style={{
+                  textDecoration: value < Date.now() ? 'line-through' : 'none',
+                }}
+              >
+                {moment(value).format('HH:mm Do MMM YYYY')}
+              </Text>
             ),
             gridWidth: '1.2fr',
           },
@@ -148,21 +167,25 @@ const Account = ({ token, invites = [], userRole }) => {
           },
           {
             header: 'Copy',
-            cell: ({ row }) => (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  copy(
-                    `${location.protocol}//${location.host}/register?token=${row.token}`
-                  )
-                  alert('Invite link copied to clipboard')
-                }}
-                px={1}
-                py={1}
-              >
-                <Copy size={24} />
-              </Button>
-            ),
+            cell: ({ row }) => {
+              console.log(row)
+              return (
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    copy(
+                      `${location.protocol}//${location.host}/register?token=${row.token}`
+                    )
+                    alert('Invite link copied to clipboard')
+                  }}
+                  disabled={row.claimed}
+                  px={1}
+                  py={1}
+                >
+                  <Copy size={24} />
+                </Button>
+              )
+            },
             rightAlign: true,
             gridWidth: '42px',
           },
@@ -184,6 +207,7 @@ const Account = ({ token, invites = [], userRole }) => {
           name="newPassword"
           type="password"
           label="New password"
+          autoComplete="new-password"
           mb={4}
           required
         />
@@ -203,9 +227,16 @@ export const getServerSideProps = async ({ req }) => {
     serverRuntimeConfig: { SQ_JWT_SECRET },
   } = getConfig()
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+  const { role, username } = jwt.verify(token, SQ_JWT_SECRET)
 
   try {
+    const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const user = await userRes.json()
     const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
       headers: {
         'Content-Type': 'application/json',
@@ -213,7 +244,7 @@ export const getServerSideProps = async ({ req }) => {
       },
     })
     const invites = await invitesRes.json()
-    return { props: { invites, userRole: role } }
+    return { props: { invites, user, userRole: role } }
   } catch (e) {
     return { props: {} }
   }
