@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { layout, space, variant } from 'styled-system'
+import { layout, space, display, flexbox, variant } from 'styled-system'
 import css from '@styled-system/css'
 import { darken, getLuminance } from 'polished'
 
@@ -73,7 +73,9 @@ const StyledButton = styled.button(
       },
     }),
   layout,
-  space
+  space,
+  display,
+  flexbox
 )
 
 const Button = ({ onClick, disabled, ...rest }) => (

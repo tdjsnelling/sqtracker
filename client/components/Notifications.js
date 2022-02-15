@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react'
 import styled, { keyframes } from 'styled-components'
+import { X } from '@styled-icons/boxicons-regular/X'
 import Box from './Box'
+import Button from './Button'
 
 const delay = 5000
 const animation = 200
@@ -36,7 +38,7 @@ const StyledNotification = styled(Box)`
   }
 `
 
-const Notification = ({ type, text }) => {
+const Notification = ({ type, text, dismiss }) => {
   const [className, setClassName] = useState('slideIn')
 
   useEffect(() => {
@@ -48,6 +50,9 @@ const Notification = ({ type, text }) => {
   return (
     <StyledNotification
       className={className}
+      display="flex"
+      alignItems="flex-start"
+      justifyContent="space-between"
       bg="sidebar"
       border="1px solid"
       borderColor={type}
@@ -59,7 +64,23 @@ const Notification = ({ type, text }) => {
       px={4}
       py={3}
     >
-      {text}
+      <Box mt="1px">{text}</Box>
+      <Button
+        onClick={() => {
+          setClassName('slideOut')
+          setTimeout(dismiss, animation)
+        }}
+        variant="noBackground"
+        width="24px"
+        height="24px"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        p={0}
+        ml={3}
+      >
+        <X size={16} />
+      </Button>
     </StyledNotification>
   )
 }
@@ -87,6 +108,14 @@ export const NotificationsProvider = ({ children }) => {
     }, delay + animation * 2)
   }
 
+  const removeNotification = (index) => {
+    setNotifications((existing) => {
+      const n = [...existing]
+      n.splice(index, 1)
+      return n
+    })
+  }
+
   return (
     <NotificationContext.Provider value={{ notifications, addNotification }}>
       <Box
@@ -99,7 +128,11 @@ export const NotificationsProvider = ({ children }) => {
         css={{ '> * + *': { mt: 3 } }}
       >
         {notifications.map((notification, i) => (
-          <Notification key={`notification-${i}`} {...notification} />
+          <Notification
+            key={`notification-${i}`}
+            dismiss={() => removeNotification(i)}
+            {...notification}
+          />
         ))}
       </Box>
       {children}
