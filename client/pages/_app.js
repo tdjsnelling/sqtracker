@@ -12,6 +12,7 @@ import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
+import { NotificationsProvider } from '../components/Notifications'
 
 const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
@@ -23,6 +24,8 @@ const getThemeColours = (theme, primary = '#f45d48') => {
         text: '#202224',
         grey: '#747474',
         error: '#f33',
+        success: '#44d944',
+        info: '#427ee1',
         border: '#deebf1',
       }
     case 'dark':
@@ -33,6 +36,8 @@ const getThemeColours = (theme, primary = '#f45d48') => {
         text: '#f8f8f8',
         grey: '#aaa',
         error: '#f33',
+        success: '#44d944',
+        info: '#427ee1',
         border: '#303236',
       }
   }
@@ -171,64 +176,66 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       </Head>
       <ThemeProvider theme={appTheme}>
         <GlobalStyle />
-        <Navigation
-          isMobile={isMobile}
-          menuIsOpen={menuIsOpen}
-          setMenuIsOpen={setMenuIsOpen}
-        />
-        <Box
-          width="100%"
-          height="60px"
-          borderBottom="1px solid"
-          borderColor="border"
-        >
+        <NotificationsProvider>
+          <Navigation
+            isMobile={isMobile}
+            menuIsOpen={menuIsOpen}
+            setMenuIsOpen={setMenuIsOpen}
+          />
           <Box
-            display="flex"
-            alignItems="center"
-            justifyContent={['space-between', 'flex-end']}
-            maxWidth="body"
+            width="100%"
             height="60px"
-            ml={[0, `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`]}
-            px={[4, 5]}
+            borderBottom="1px solid"
+            borderColor="border"
           >
-            <Button
-              onClick={() => setMenuIsOpen(true)}
-              variant="noBackground"
-              display={['block', 'none']}
-              px={1}
-              py={1}
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent={['space-between', 'flex-end']}
+              maxWidth="body"
+              height="60px"
+              ml={[0, `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`]}
+              px={[4, 5]}
             >
-              <Menu size={24} />
-            </Button>
-            {token && (
-              <Box display="flex">
-                <Box as="form" onSubmit={handleSearch} ml={4}>
-                  <Input
-                    name="query"
-                    placeholder="Search"
-                    maxWidth="300px"
-                    ref={searchRef}
-                  />
+              <Button
+                onClick={() => setMenuIsOpen(true)}
+                variant="noBackground"
+                display={['block', 'none']}
+                px={1}
+                py={1}
+              >
+                <Menu size={24} />
+              </Button>
+              {token && (
+                <Box display="flex">
+                  <Box as="form" onSubmit={handleSearch} ml={4}>
+                    <Input
+                      name="query"
+                      placeholder="Search"
+                      maxWidth="300px"
+                      ref={searchRef}
+                    />
+                  </Box>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      setThemeAndSave(theme === 'light' ? 'dark' : 'light')
+                    }}
+                    width="40px"
+                    px={2}
+                    py={2}
+                    ml={3}
+                  >
+                    {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
+                  </Button>
                 </Box>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setThemeAndSave(theme === 'light' ? 'dark' : 'light')
-                  }}
-                  width="40px"
-                  px={2}
-                  py={2}
-                  ml={3}
-                >
-                  {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
-                </Button>
-              </Box>
-            )}
+              )}
+            </Box>
           </Box>
-        </Box>
-        <main>
-          <Component {...pageProps} />
-        </main>
+          <main>
+            <Component {...pageProps} />
+          </main>
+        </NotificationsProvider>
       </ThemeProvider>
     </>
   )

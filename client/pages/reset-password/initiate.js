@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import getConfig from 'next/config'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
+import { NotificationContext } from '../../components/Notifications'
 
 const InitiatePasswordReset = () => {
-  const [error, setError] = useState()
+  const { addNotification } = useContext(NotificationContext)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -27,10 +28,24 @@ const InitiatePasswordReset = () => {
         }),
       })
 
+      if (res.status !== 200) {
+        const reason = await res.text()
+        throw new Error(reason)
+      }
+
+      addNotification(
+        'success',
+        'If an account with that email address exists, you will receive an email shortly'
+      )
+
       const token = await res.text()
       console.log(token)
     } catch (e) {
-      setError(e.message)
+      addNotification(
+        'error',
+        `Could not initiate password reset: ${e.message}`
+      )
+      console.error(e)
     }
   }
 

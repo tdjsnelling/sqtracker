@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -7,10 +7,12 @@ import SEO from '../components/SEO'
 import Text from '../components/Text'
 import Input from '../components/Input'
 import Button from '../components/Button'
+import { NotificationContext } from '../components/Notifications'
 
 const Login = () => {
-  const [error, setError] = useState()
   const [, setCookie] = useCookies()
+
+  const { addNotification } = useContext(NotificationContext)
 
   const router = useRouter()
 
@@ -34,6 +36,11 @@ const Login = () => {
         }),
       })
 
+      if (res.status !== 200) {
+        const reason = await res.text()
+        throw new Error(reason)
+      }
+
       const { token, uid, username } = await res.json()
 
       const expires = new Date()
@@ -42,9 +49,12 @@ const Login = () => {
       setCookie('userId', uid, { path: '/', expires })
       setCookie('username', username, { path: '/', expires })
 
+      addNotification('success', `Welcome back ${form.get('username')}!`)
+
       router.push('/')
     } catch (e) {
-      setError(e.message)
+      addNotification('error', `Could not log in: ${e.message}`)
+      console.error(e)
     }
   }
 

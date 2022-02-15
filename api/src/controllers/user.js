@@ -113,13 +113,15 @@ export const register = async (req, res) => {
           res.status(500).send('User could not be created')
         }
       } else {
-        res.sendStatus(409)
+        res
+          .status(409)
+          .send('An account with that email address or username already exists')
       }
     } catch (err) {
       res.status(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include email, username and password')
   }
 }
 
@@ -147,16 +149,16 @@ export const login = async (req, res) => {
             username: user.username,
           })
         } else {
-          res.sendStatus(401)
+          res.status(401).send('Incorrect login details')
         }
       } else {
-        res.sendStatus(404)
+        res.status(404).send('Incorrect login details')
       }
     } catch (err) {
       res.status(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include username and password')
   }
 }
 
@@ -232,7 +234,7 @@ export const changePassword = async (req, res) => {
       res.status(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include password and newPassword')
   }
 }
 
@@ -264,7 +266,7 @@ export const initiatePasswordReset = async (req, res) => {
       res.send(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include email')
   }
 }
 
@@ -317,7 +319,7 @@ export const finalisePasswordReset = async (req, res) => {
       res.status(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include email, newPassword and token')
   }
 }
 

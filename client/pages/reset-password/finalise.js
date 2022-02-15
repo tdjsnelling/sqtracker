@@ -1,13 +1,17 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import getConfig from 'next/config'
+import { useRouter } from 'next/router'
 import jwt from 'jsonwebtoken'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
+import { NotificationContext } from '../../components/Notifications'
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
-  const [error, setError] = useState()
+  const { addNotification } = useContext(NotificationContext)
+
+  const router = useRouter()
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -29,8 +33,21 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
           token,
         }),
       })
+
+      if (res.status !== 200) {
+        const reason = await res.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Password was reset successfully')
+
+      router.push('/login')
     } catch (e) {
-      setError(e.message)
+      addNotification(
+        'error',
+        `Could not complete password reset: ${e.message}`
+      )
+      console.error(e)
     }
   }
 

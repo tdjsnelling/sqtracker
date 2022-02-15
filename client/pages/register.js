@@ -1,16 +1,22 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
 import jwt from 'jsonwebtoken'
+import { ThemeContext } from 'styled-components'
+import { transparentize } from 'polished'
 import SEO from '../components/SEO'
 import Text from '../components/Text'
 import Input from '../components/Input'
 import Button from '../components/Button'
+import Box from '../components/Box'
+import { NotificationContext } from '../components/Notifications'
 
 const Register = ({ token: inviteToken, tokenError }) => {
-  const [error, setError] = useState()
   const [, setCookie] = useCookies()
+
+  const { colors } = useContext(ThemeContext)
+  const { addNotification } = useContext(NotificationContext)
 
   const router = useRouter()
 
@@ -36,6 +42,11 @@ const Register = ({ token: inviteToken, tokenError }) => {
         }),
       })
 
+      if (res.status !== 200) {
+        const reason = await res.text()
+        throw new Error(reason)
+      }
+
       const { token, uid, username } = await res.json()
 
       const expires = new Date()
@@ -44,9 +55,12 @@ const Register = ({ token: inviteToken, tokenError }) => {
       setCookie('userId', uid, { path: '/', expires })
       setCookie('username', username, { path: '/', expires })
 
+      addNotification('success', `Welcome ${form.get('username')}!`)
+
       router.push('/')
     } catch (e) {
-      setError(e.message)
+      addNotification('error', `Could not register: ${e.message}`)
+      console.error(e)
     }
   }
 
@@ -54,7 +68,9 @@ const Register = ({ token: inviteToken, tokenError }) => {
     return (
       <>
         <SEO title="Register" />
-        <h1>Register</h1>
+        <Text as="h1" mb={5}>
+          Register
+        </Text>
         <p>Registration is closed.</p>
       </>
     )
@@ -80,7 +96,15 @@ const Register = ({ token: inviteToken, tokenError }) => {
           <Button>Register</Button>
         </form>
       ) : (
-        <p>Token error: {tokenError}</p>
+        <Box
+          bg={transparentize(0.8, colors.error)}
+          border="1px solid"
+          borderColor="error"
+          borderRadius={1}
+          p={4}
+        >
+          <Text>Could not register: {tokenError}</Text>
+        </Box>
       )}
     </>
   )
