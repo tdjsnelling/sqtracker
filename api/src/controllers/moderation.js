@@ -29,7 +29,7 @@ export const createReport = async (req, res) => {
       res.status(500).send(e.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include reason')
   }
 }
 
@@ -43,7 +43,7 @@ export const fetchReport = async (req, res) => {
     const report = await Report.findOne({ _id: req.params.reportId }).lean()
 
     if (!report) {
-      res.sendStatus(404)
+      res.status(404).send('Report could not be found')
       return
     }
 

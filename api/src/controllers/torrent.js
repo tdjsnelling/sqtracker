@@ -236,7 +236,7 @@ export const deleteTorrent = async (req, res) => {
     }).lean()
 
     if (!torrent) {
-      res.sendStatus(404)
+      res.status(404).send('Torrent could not be found')
       return
     }
 
@@ -390,7 +390,7 @@ export const addComment = async (req, res) => {
       res.status(500).send(err.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include comment')
   }
 }
 
@@ -427,7 +427,7 @@ export const addVote = async (req, res) => {
     const torrent = await Torrent.findOne({ infoHash }).lean()
 
     if (!torrent) {
-      res.sendStatus(404)
+      res.status(404).send('Torrent could not be found')
       return
     }
 
@@ -448,7 +448,7 @@ export const addVote = async (req, res) => {
       )
       res.sendStatus(200)
     } else {
-      res.status(400).send('Vote must be one of (up, down)')
+      res.status(400).send('Vote must be one of up, down')
     }
   } catch (e) {
     res.status(500).send(e.message)
@@ -461,7 +461,7 @@ export const removeVote = async (req, res) => {
     const torrent = await Torrent.findOne({ infoHash }).lean()
 
     if (!torrent) {
-      res.sendStatus(404)
+      res.status(404).send('Torrent could not be found')
       return
     }
 

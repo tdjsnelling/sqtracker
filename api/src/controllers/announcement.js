@@ -39,7 +39,7 @@ export const createAnnouncement = async (req, res) => {
       res.status(500).send(e.message)
     }
   } else {
-    res.sendStatus(400)
+    res.status(400).send('Request must include title and body')
   }
 }
 
@@ -74,7 +74,7 @@ export const fetchAnnouncement = async (req, res) => {
       },
     ])
     if (!announcement) {
-      res.sendStatus(404)
+      res.status(404).send('Announcement could not be found')
       return
     }
     res.send(announcement)
