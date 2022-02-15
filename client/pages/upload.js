@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useContext } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -14,6 +14,7 @@ import Input, { WrapLabel } from '../components/Input'
 import Select from '../components/Select'
 import Checkbox from '../components/Checkbox'
 import Button from '../components/Button'
+import { NotificationContext } from '../components/Notifications'
 
 const FileUpload = styled(Box)(() =>
   css({
@@ -33,7 +34,8 @@ const FileUpload = styled(Box)(() =>
 
 const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState()
-  const [error, setError] = useState()
+
+  const { addNotification } = useContext(NotificationContext)
 
   const router = useRouter()
 
@@ -85,16 +87,19 @@ const Upload = ({ token, userId }) => {
           torrent: torrentFile.b64,
         }),
       })
-      if (uploadRes.ok) {
-        const infoHash = await uploadRes.text()
-        router.push(`/torrent/${infoHash}`)
-      } else {
-        const text = await uploadRes.text()
-        setError(text)
+
+      if (uploadRes.status !== 200) {
+        const reason = await uploadRes.text()
+        throw new Error(reason)
       }
+
+      addNotification('success', 'Torrent uploaded successfully')
+
+      const infoHash = await uploadRes.text()
+      router.push(`/torrent/${infoHash}`)
     } catch (e) {
+      addNotification('error', `Could not upload torrent: ${e.message}`)
       console.error(e)
-      setError(e.message)
     }
   }
 
@@ -155,7 +160,6 @@ const Upload = ({ token, userId }) => {
         <Button display="block" ml="auto" mt={5}>
           Upload
         </Button>
-        {error && <Text color="error">Error: {error}</Text>}
       </form>
     </>
   )

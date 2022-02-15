@@ -66,6 +66,7 @@ const baseTheme = {
   radii: [2, 4, 8],
   shadows: {
     edge: '0 8px 24px 0 rgba(0, 0, 0, 0.12)',
+    drop: '0 4px 24px 0 rgba(0, 0, 0, 0.24)',
   },
 }
 

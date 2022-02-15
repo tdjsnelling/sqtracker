@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import jwt from 'jsonwebtoken'
@@ -9,11 +9,14 @@ import Checkbox from '../../components/Checkbox'
 import Button from '../../components/Button'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
+import { NotificationContext } from '../../components/Notifications'
 
 const NewAnnouncement = ({ token, userRole }) => {
   if (userRole !== 'admin') {
     return <Text>You do not have permission to do that.</Text>
   }
+
+  const { addNotification } = useContext(NotificationContext)
 
   const router = useRouter()
 
@@ -41,11 +44,18 @@ const NewAnnouncement = ({ token, userRole }) => {
           }),
         }
       )
-      if (createAnnouncementRes.ok) {
-        const slug = await createAnnouncementRes.text()
-        router.push(`/announcements/${slug}`)
+
+      if (createAnnouncementRes.status !== 200) {
+        const reason = await createAnnouncementRes.text()
+        throw new Error(reason)
       }
+
+      addNotification('success', 'Announcement created successfully')
+
+      const slug = await createAnnouncementRes.text()
+      router.push(`/announcements/${slug}`)
     } catch (e) {
+      addNotification('error', `Could not create announcement: ${e.message}`)
       console.error(e)
     }
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -6,6 +6,7 @@ import moment from 'moment'
 import prettyBytes from 'pretty-bytes'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import jwt from 'jsonwebtoken'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import withAuth from '../../utils/withAuth'
@@ -19,7 +20,7 @@ import Button from '../../components/Button'
 import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
-import jwt from 'jsonwebtoken'
+import { NotificationContext } from '../../components/Notifications'
 
 export const Info = ({ title, items }) => (
   <Infobox mb={5}>
@@ -69,6 +70,8 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
     down: torrent.downvotes,
   })
 
+  const { addNotification } = useContext(NotificationContext)
+
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_TORRENT_CATEGORIES },
   } = getConfig()
@@ -85,6 +88,12 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           },
         }
       )
+
+      if (downloadRes.status !== 200) {
+        const reason = await downloadRes.text()
+        throw new Error(reason)
+      }
+
       const blob = await downloadRes.blob()
 
       const url = window.URL.createObjectURL(blob)
@@ -98,6 +107,7 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
 
       window.URL.revokeObjectURL(url)
     } catch (e) {
+      addNotification('error', `Could not download torrent: ${e.message}`)
       console.error(e)
     }
   }
@@ -113,10 +123,17 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           },
         }
       )
-      if (deleteRes.ok) {
-        router.push('/')
+
+      if (deleteRes.status !== 200) {
+        const reason = await deleteRes.text()
+        throw new Error(reason)
       }
+
+      addNotification('success', 'Torrent deleted successfully')
+
+      router.push('/')
     } catch (e) {
+      addNotification('error', `Could not delete torrent: ${e.message}`)
       console.error(e)
     }
   }
@@ -139,7 +156,15 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           }),
         }
       )
+
+      if (commentRes.status !== 200) {
+        const reason = await commentRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Comment posted successfully')
     } catch (e) {
+      addNotification('error', `Could not post comment: ${e.message}`)
       console.error(e)
     }
   }
@@ -179,7 +204,15 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           },
         }
       )
+
+      if (voteRes.status !== 200) {
+        const reason = await voteRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Vote submitted successfully')
     } catch (e) {
+      addNotification('error', `Could not submit vote: ${e.message}`)
       console.error(e)
     }
   }
@@ -201,8 +234,17 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           }),
         }
       )
-      if (reportRes.ok) setShowReportModal(false)
+
+      if (reportRes.status !== 200) {
+        const reason = await reportRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Report submitted successfully')
+
+      setShowReportModal(false)
     } catch (e) {
+      addNotification('error', `Could not submit report: ${e.message}`)
       console.error(e)
     }
   }

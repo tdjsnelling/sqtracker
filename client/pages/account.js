@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
 import moment from 'moment'
 import copy from 'copy-to-clipboard'
@@ -14,9 +14,12 @@ import Input from '../components/Input'
 import Select from '../components/Select'
 import Button from '../components/Button'
 import List from '../components/List'
+import { NotificationContext } from '../components/Notifications'
 
 const Account = ({ token, invites = [], user, userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
+
+  const { addNotification } = useContext(NotificationContext)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -37,13 +40,22 @@ const Account = ({ token, invites = [], user, userRole }) => {
           },
         }
       )
+
+      if (inviteRes.status !== 200) {
+        const reason = await inviteRes.text()
+        throw new Error(reason)
+      }
+
       const invite = await inviteRes.json()
       setInvitesList((cur) => {
         const currentInvitesList = [...cur]
         currentInvitesList.unshift(invite)
         return currentInvitesList
       })
+
+      addNotification('success', 'Invite generated successfully')
     } catch (e) {
+      addNotification('error', `Could not generate invite: ${e.message}`)
       console.error(e)
     }
   }
@@ -67,8 +79,15 @@ const Account = ({ token, invites = [], user, userRole }) => {
           }),
         }
       )
-      console.log(changePasswordRes.status)
+
+      if (changePasswordRes.status !== 200) {
+        const reason = await changePasswordRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Password changed successfully')
     } catch (e) {
+      addNotification('error', `Could not change password: ${e.message}`)
       console.error(e)
     }
   }
@@ -176,7 +195,10 @@ const Account = ({ token, invites = [], user, userRole }) => {
                     copy(
                       `${location.protocol}//${location.host}/register?token=${row.token}`
                     )
-                    alert('Invite link copied to clipboard')
+                    addNotification(
+                      'success',
+                      'Invite link copied to clipboard'
+                    )
                   }}
                   disabled={row.claimed}
                   px={1}

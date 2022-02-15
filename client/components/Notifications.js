@@ -91,9 +91,10 @@ export const NotificationsProvider = ({ children }) => {
     <NotificationContext.Provider value={{ notifications, addNotification }}>
       <Box
         position="absolute"
-        top="80px"
+        top="60px"
         right="0px"
-        px="20px"
+        p="20px"
+        pb="40px"
         overflowX="hidden"
         css={{ '> * + *': { mt: 3 } }}
       >

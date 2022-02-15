@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -14,8 +14,11 @@ import MarkdownBody from '../../components/MarkdownBody'
 import { Info } from '../torrent/[infoHash]'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
+import { NotificationContext } from '../../components/Notifications'
 
 const Report = ({ report, token, userRole }) => {
+  const { addNotification } = useContext(NotificationContext)
+
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
@@ -33,10 +36,17 @@ const Report = ({ report, token, userRole }) => {
           },
         }
       )
-      if (resolveRes.ok) {
-        router.push('/reports')
+
+      if (resolveRes.status !== 200) {
+        const reason = await resolveRes.text()
+        throw new Error(reason)
       }
+
+      addNotification('success', 'Report marked as solved')
+
+      router.push('/reports')
     } catch (e) {
+      addNotification('error', `Could not resolve report: ${e.message}`)
       console.error(e)
     }
   }

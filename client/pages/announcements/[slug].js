@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -14,9 +14,12 @@ import Button from '../../components/Button'
 import MarkdownBody from '../../components/MarkdownBody'
 import withAuth from '../../utils/withAuth'
 import getReqCookies from '../../utils/getReqCookies'
+import { NotificationContext } from '../../components/Notifications'
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned)
+
+  const { addNotification } = useContext(NotificationContext)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -35,10 +38,17 @@ const Announcement = ({ announcement, token, userRole }) => {
           },
         }
       )
-      if (deleteRes.ok) {
-        router.push('/announcements')
+
+      if (deleteRes.status !== 200) {
+        const reason = await deleteRes.text()
+        throw new Error(reason)
       }
+
+      addNotification('success', 'Announcement deleted successfully')
+
+      router.push('/announcements')
     } catch (e) {
+      addNotification('error', `Could not delete announcement: ${e.message}`)
       console.error(e)
     }
   }
@@ -56,10 +66,23 @@ const Announcement = ({ announcement, token, userRole }) => {
           },
         }
       )
-      if (pinRes.ok) {
-        setPinned((p) => !p)
+
+      if (pinRes.status !== 200) {
+        const reason = await pinRes.text()
+        throw new Error(reason)
       }
+
+      addNotification(
+        'success',
+        `Announcement ${pinned ? 'unpinned' : 'pinned'} successfully`
+      )
+
+      setPinned((p) => !p)
     } catch (e) {
+      addNotification(
+        'error',
+        `Could not ${pinned ? 'unpin' : 'pin'} announcement: ${e.message}`
+      )
       console.error(e)
     }
   }
@@ -92,9 +115,13 @@ const Announcement = ({ announcement, token, userRole }) => {
       </Box>
       <Text color="grey" mb={5}>
         Posted {moment(announcement.created).format('HH:mm Do MMM YYYY')} by{' '}
-        <Link href={`/user/${announcement.createdBy.username}`} passHref>
-          <a>{announcement.createdBy.username}</a>
-        </Link>
+        {announcement.createdBy?.username ? (
+          <Link href={`/user/${announcement.createdBy.username}`} passHref>
+            <a>{announcement.createdBy.username}</a>
+          </Link>
+        ) : (
+          'deleted user'
+        )}
       </Text>
       <MarkdownBody>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
