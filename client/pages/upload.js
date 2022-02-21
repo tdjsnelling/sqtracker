@@ -14,6 +14,7 @@ import Input, { WrapLabel } from '../components/Input'
 import Select from '../components/Select'
 import Checkbox from '../components/Checkbox'
 import Button from '../components/Button'
+import Infobox from '../components/Infobox'
 import { NotificationContext } from '../components/Notifications'
 
 const FileUpload = styled(Box)(() =>
@@ -161,6 +162,13 @@ const Upload = ({ token, userId }) => {
           Upload
         </Button>
       </form>
+      <Infobox mt={5}>
+        <Text color="grey" fontSize={1}>
+          Note: if you have started seeding a torrent before uploading, you made
+          need to refresh trackers in your torrent client once the upload is
+          complete.
+        </Text>
+      </Infobox>
     </>
   )
 }

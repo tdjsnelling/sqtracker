@@ -1,10 +1,26 @@
 import React from 'react'
 import getConfig from 'next/config'
 import jwt from 'jsonwebtoken'
+import styled from 'styled-components'
+import css from '@styled-system/css'
 import SEO from '../components/SEO'
 import Text from '../components/Text'
 import withAuth from '../utils/withAuth'
 import getReqCookies from '../utils/getReqCookies'
+
+const StyledTable = styled.table(() =>
+  css({
+    borderCollapse: 'collapse',
+    '&, td': {
+      border: '1px solid',
+      borderColor: 'border',
+    },
+    td: {
+      px: 4,
+      py: 3,
+    },
+  })
+)
 
 const Stats = ({ stats, userRole }) => {
   if (userRole !== 'admin') {
@@ -17,11 +33,19 @@ const Stats = ({ stats, userRole }) => {
       <Text as="h1" mb={5}>
         Stats
       </Text>
-      <ul>
-        {Object.entries(stats).map(([key, value]) => (
-          <li>{`${key}: ${value}`}</li>
-        ))}
-      </ul>
+      <StyledTable>
+        {Object.entries(stats).map(([key, value]) => {
+          let readableKey = key.replace(/([A-Z])/g, ' $1').toLowerCase()
+          readableKey =
+            readableKey.charAt(0).toUpperCase() + readableKey.slice(1)
+          return (
+            <tr key={`stat-${key}`}>
+              <td>{readableKey}</td>
+              <td>{value}</td>
+            </tr>
+          )
+        })}
+      </StyledTable>
     </>
   )
 }

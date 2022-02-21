@@ -1,3 +1,4 @@
+import fetch from 'node-fetch'
 import Report from '../schema/report'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
@@ -163,10 +164,36 @@ export const getStats = async (req, res) => {
 
     const registeredUsers = await User.countDocuments()
     const bannedUsers = await User.countDocuments({ banned: true })
-    const torrents = await Torrent.countDocuments()
+    const uploadedTorrents = await Torrent.countDocuments()
     const completedDownloads = await Progress.countDocuments({ left: 0 })
 
-    res.json({ registeredUsers, bannedUsers, torrents, completedDownloads })
+    const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
+
+    if (!trackerRes.ok) {
+      const body = await trackerRes.text()
+      throw new Error(
+        `Error performing tracker scrape: ${trackerRes.status} ${body}`
+      )
+    }
+
+    const body = await trackerRes.text()
+    const [peers, seeds, activeTorrentsLine] = body.split('\n')
+
+    const leechers = parseInt(peers) - parseInt(seeds)
+
+    const activeTorrentsRegex = /opentracker serving ([0-9]+) torrents/
+    const [, activeTorrents] = activeTorrentsLine.match(activeTorrentsRegex)
+
+    res.json({
+      registeredUsers,
+      bannedUsers,
+      uploadedTorrents,
+      completedDownloads,
+      peers,
+      seeds,
+      leechers,
+      activeTorrents,
+    })
   } catch (e) {
     res.status(500).send(e.message)
   }
