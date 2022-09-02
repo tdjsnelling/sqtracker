@@ -82,9 +82,9 @@ export const uploadTorrent = async (req, res) => {
 }
 
 export const downloadTorrent = async (req, res) => {
-  const { infoHash } = req.params
+  const { infoHash, userId } = req.params
 
-  const user = await User.findOne({ _id: req.userId }).lean()
+  const user = await User.findOne({ uid: userId }).lean()
 
   if (!user) {
     res.status(401).send(`User does not exist`)

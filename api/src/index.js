@@ -45,6 +45,7 @@ import {
   setReportResolved,
   getStats,
 } from './controllers/moderation'
+import { rssFeed } from './controllers/rss'
 import createAdminUser from './setup/createAdminUser'
 
 const connectToDb = () => {
@@ -69,6 +70,7 @@ mongoose.connection.once('open', () => {
 
 const app = express()
 app.set('trust proxy', true)
+app.disable('x-powered-by')
 
 const colorizeStatus = (status) => {
   if (!status) return '?'
@@ -115,6 +117,12 @@ app.post('/login', login)
 app.post('/reset-password/initiate', initiatePasswordReset)
 app.post('/reset-password/finalise', finalisePasswordReset)
 
+// rss feed (auth handled in headers)
+app.get('/rss', rssFeed)
+
+// torrent file download (can download without auth, will not be able to announce)
+app.get('/torrent/download/:infoHash/:userId', downloadTorrent)
+
 // everything from here on requires user auth
 app.use(auth)
 
@@ -127,7 +135,6 @@ app.get('/user/:username', fetchUser)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)
-app.get('/torrent/download/:infoHash', downloadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
 app.delete('/torrent/delete/:infoHash', deleteTorrent)
 app.post('/torrent/comment/:infoHash', addComment)

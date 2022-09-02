@@ -57,7 +57,7 @@ export const Info = ({ title, items }) => (
   </Infobox>
 )
 
-const Torrent = ({ token, torrent, userId, userRole }) => {
+const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   const [showReportModal, setShowReportModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [userVote, setUserVote] = useState(
@@ -87,12 +87,7 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
   const handleDownload = async () => {
     try {
       const downloadRes = await fetch(
-        `${SQ_API_URL}/torrent/download/${torrent.infoHash}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`
       )
 
       if (downloadRes.status !== 200) {
@@ -437,7 +432,7 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
 }
 
 export const getServerSideProps = async ({ req, query: { infoHash } }) => {
-  const { token } = getReqCookies(req)
+  const { token, userId } = getReqCookies(req)
 
   if (!token) return { props: {} }
 
@@ -455,7 +450,7 @@ export const getServerSideProps = async ({ req, query: { infoHash } }) => {
     },
   })
   const torrent = await torrentRes.json()
-  return { props: { torrent, userId: id, userRole: role } }
+  return { props: { torrent, userId: id, userRole: role, uid: userId } }
 }
 
 export default withAuth(Torrent)
