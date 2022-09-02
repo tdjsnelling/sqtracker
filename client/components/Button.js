@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { layout, space, display, flexbox, variant } from 'styled-system'
 import css from '@styled-system/css'
-import { darken, getLuminance } from 'polished'
+import { darken, lighten, getLuminance } from 'polished'
 
 const StyledButton = styled.button(
   ({ theme }) =>
@@ -18,11 +18,20 @@ const StyledButton = styled.button(
       py: 3,
       cursor: 'pointer',
       '&:hover': {
-        borderColor: darken(0.1, theme.colors.primary),
+        borderColor:
+          theme.name === 'light'
+            ? darken(0.1, theme.colors.primary)
+            : lighten(0.1, theme.colors.primary),
       },
       '&:focus, &:active': {
-        bg: darken(0.1, theme.colors.primary),
-        borderColor: darken(0.1, theme.colors.primary),
+        bg:
+          theme.name === 'light'
+            ? darken(0.1, theme.colors.primary)
+            : lighten(0.1, theme.colors.primary),
+        borderColor:
+          theme.name === 'light'
+            ? darken(0.1, theme.colors.primary)
+            : lighten(0.1, theme.colors.primary),
       },
       '&[disabled]': {
         cursor: 'not-allowed',
@@ -43,11 +52,20 @@ const StyledButton = styled.button(
           color: 'text',
           borderColor: 'sidebar',
           '&:hover': {
-            borderColor: darken(0.1, theme.colors.sidebar),
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
           },
           '&:focus, &:active': {
-            bg: darken(0.1, theme.colors.sidebar),
-            borderColor: darken(0.1, theme.colors.sidebar),
+            bg:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
           },
           '&[disabled]': {
             '&:hover': {
@@ -63,11 +81,20 @@ const StyledButton = styled.button(
           color: 'text',
           borderColor: 'sidebar',
           '&:hover': {
-            borderColor: darken(0.1, theme.colors.sidebar),
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
           },
           '&:focus, &:active': {
-            bg: darken(0.1, theme.colors.sidebar),
-            borderColor: darken(0.1, theme.colors.sidebar),
+            bg:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.sidebar)
+                : lighten(0.1, theme.colors.sidebar),
           },
         },
       },

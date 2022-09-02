@@ -152,6 +152,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const appTheme = {
     ...baseTheme,
     colors: getThemeColours(theme, SQ_THEME_COLOUR),
+    name: theme,
   }
 
   const handleSearch = (e) => {
