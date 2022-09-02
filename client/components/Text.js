@@ -36,10 +36,18 @@ const Text = ({
   my,
   mt,
   mb,
+  iconWrapperProps,
   ...rest
 }) =>
   Icon ? (
-    <Box display="flex" alignItems="center" my={my} mt={mt} mb={mb}>
+    <Box
+      display="flex"
+      alignItems="center"
+      my={my}
+      mt={mt}
+      mb={mb}
+      {...iconWrapperProps}
+    >
       <Box display="flex" alignItems="center" color={iconColor} mr={2}>
         <Icon size={iconSize} />
       </Box>

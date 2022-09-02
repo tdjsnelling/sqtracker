@@ -13,6 +13,8 @@ import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { NotificationsProvider } from '../components/Notifications'
+import Text from '../components/Text'
+import { Bell } from '@styled-icons/boxicons-regular/Bell'
 
 const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
@@ -123,7 +125,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const { token } = cookies
 
   const {
-    publicRuntimeConfig: { SQ_THEME_COLOUR },
+    publicRuntimeConfig: { SQ_THEME_COLOUR, SQ_SITE_WIDE_FREELEECH },
   } = getConfig()
 
   const setThemeAndSave = (theme) => {
@@ -193,24 +195,37 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
             <Box
               display="flex"
               alignItems="center"
-              justifyContent={['space-between', 'flex-end']}
+              justifyContent="space-between"
               maxWidth="body"
               height="60px"
               ml={[0, `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`]}
               px={[4, 5]}
             >
-              <Button
-                onClick={() => setMenuIsOpen(true)}
-                variant="noBackground"
-                display={['block', 'none']}
-                px={1}
-                py={1}
-              >
-                <Menu size={24} />
-              </Button>
+              <Box display="flex" alignItems="center">
+                <Button
+                  onClick={() => setMenuIsOpen(true)}
+                  variant="noBackground"
+                  display={['block', 'none']}
+                  px={1}
+                  py={1}
+                  mr={3}
+                >
+                  <Menu size={24} />
+                </Button>
+                {SQ_SITE_WIDE_FREELEECH === true && (
+                  <Text
+                    icon={Bell}
+                    iconColor="primary"
+                    iconWrapperProps={{ justifyContent: 'flex-end' }}
+                    fontSize={[0, 2]}
+                  >
+                    Site-wide freeleech enabled!
+                  </Text>
+                )}
+              </Box>
               {token && (
                 <Box display="flex">
-                  <Box as="form" onSubmit={handleSearch} ml={4}>
+                  <Box as="form" onSubmit={handleSearch}>
                     <Input
                       name="query"
                       placeholder="Search"

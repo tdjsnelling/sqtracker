@@ -74,7 +74,12 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
   const { addNotification } = useContext(NotificationContext)
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_TORRENT_CATEGORIES },
+    publicRuntimeConfig: {
+      SQ_SITE_NAME,
+      SQ_API_URL,
+      SQ_TORRENT_CATEGORIES,
+      SQ_SITE_WIDE_FREELEECH,
+    },
   } = getConfig()
 
   const router = useRouter()
@@ -336,7 +341,8 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           Downloads: torrent.downloads,
           Seeders: torrent.seeders,
           Leechers: torrent.leechers,
-          Freeleech: torrent.freeleech ? 'Yes' : 'No',
+          Freeleech:
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? 'Yes' : 'No',
         }}
       />
       <Box mb={5}>

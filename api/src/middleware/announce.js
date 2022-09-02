@@ -73,7 +73,10 @@ const handleAnnounce = async (req, res, next) => {
         userId: user._id,
         infoHash,
         uploaded: params.uploaded,
-        downloaded: !torrent.freeleech ? params.downloaded : 0,
+        downloaded:
+          torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+            ? 0
+            : params.downloaded,
         left: params.left,
       },
     },
