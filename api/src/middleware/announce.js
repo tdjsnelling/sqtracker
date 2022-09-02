@@ -73,7 +73,7 @@ const handleAnnounce = async (req, res, next) => {
         userId: user._id,
         infoHash,
         uploaded: params.uploaded,
-        downloaded: params.downloaded,
+        downloaded: !torrent.freeleech ? params.downloaded : 0,
         left: params.left,
       },
     },

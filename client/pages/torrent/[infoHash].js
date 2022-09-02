@@ -69,6 +69,7 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
     up: torrent.upvotes,
     down: torrent.downvotes,
   })
+  const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech)
 
   const { addNotification } = useContext(NotificationContext)
 
@@ -249,6 +250,32 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
     }
   }
 
+  const handleToggleFreeleech = async () => {
+    try {
+      const toggleRes = await fetch(
+        `${SQ_API_URL}/torrent/toggle-freeleech/${torrent.infoHash}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      if (toggleRes.status !== 200) {
+        const reason = await toggleRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Freeleech toggled successfully')
+
+      setIsFreeleech((f) => !f)
+    } catch (e) {
+      addNotification('error', `Could toggle freeleech: ${e.message}`)
+      console.error(e)
+    }
+  }
+
   const category = SQ_TORRENT_CATEGORIES.find((c) => c.slug === torrent.type)
 
   return (
@@ -269,6 +296,11 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
               mr={3}
             >
               Delete
+            </Button>
+          )}
+          {userRole === 'admin' && (
+            <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
+              {isFreeleech ? 'Unset' : 'Set'} freeleech
             </Button>
           )}
           <Button onClick={handleDownload}>Download</Button>
@@ -304,6 +336,7 @@ const Torrent = ({ token, torrent, userId, userRole }) => {
           Downloads: torrent.downloads,
           Seeders: torrent.seeders,
           Leechers: torrent.leechers,
+          Freeleech: torrent.freeleech ? 'Yes' : 'No',
         }}
       />
       <Box mb={5}>

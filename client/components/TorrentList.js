@@ -17,7 +17,16 @@ const TorrentList = ({ torrents = [], categories }) => (
       {
         header: 'Name',
         accessor: 'name',
-        cell: ({ value }) => <Text>{value}</Text>,
+        cell: ({ value, row }) => (
+          <Text>
+            {value}
+            {row.freeleech && (
+              <Text as="span" fontSize={0} color="primary" ml={3}>
+                FL!
+              </Text>
+            )}
+          </Text>
+        ),
         gridWidth: '2fr',
       },
       {

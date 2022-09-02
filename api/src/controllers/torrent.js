@@ -67,6 +67,7 @@ export const uploadTorrent = async (req, res) => {
         created: Date.now(),
         upvotes: [],
         downvotes: [],
+        freeleech: false,
       })
 
       await newTorrent.save()
@@ -130,6 +131,7 @@ export const fetchTorrent = async (req, res) => {
           downvotes: { $size: '$downvotes' },
           userHasUpvoted: { $in: [req.userId, '$upvotes'] },
           userHasDownvoted: { $in: [req.userId, '$downvotes'] },
+          freeleech: 1,
         },
       },
       {
@@ -273,6 +275,7 @@ export const getTorrentsPage = async ({
         downloads: 1,
         uploadedBy: 1,
         created: 1,
+        freeleech: 1,
       },
     },
     ...(query
@@ -480,6 +483,31 @@ export const removeVote = async (req, res) => {
     } else {
       res.status(400).send('Vote must be one of (up, down)')
     }
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const toggleFreeleech = async (req, res) => {
+  const { infoHash } = req.params
+  try {
+    if (req.userRole !== 'admin') {
+      res.status(401).send('You do not have permission to toggle freeleech')
+      return
+    }
+
+    const torrent = await Torrent.findOne({ infoHash }).lean()
+
+    if (!torrent) {
+      res.status(404).send('Torrent could not be found')
+      return
+    }
+
+    await Torrent.findOneAndUpdate(
+      { infoHash },
+      { $set: { freeleech: !torrent.freeleech } }
+    )
+    res.sendStatus(200)
   } catch (e) {
     res.status(500).send(e.message)
   }
