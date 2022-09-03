@@ -36,6 +36,9 @@ const Text = ({
   my,
   mt,
   mb,
+  mx,
+  ml,
+  mr,
   iconWrapperProps,
   ...rest
 }) =>
@@ -46,6 +49,9 @@ const Text = ({
       my={my}
       mt={mt}
       mb={mb}
+      mx={mx}
+      ml={ml}
+      mr={mr}
       {...iconWrapperProps}
     >
       <Box display="flex" alignItems="center" color={iconColor} mr={2}>
@@ -54,7 +60,7 @@ const Text = ({
       <StyledText {...rest}>{children}</StyledText>
     </Box>
   ) : (
-    <StyledText my={my} mt={mt} mb={mb} {...rest}>
+    <StyledText my={my} mt={mt} mb={mb} mx={mx} ml={ml} mr={mr} {...rest}>
       {children}
     </StyledText>
   )

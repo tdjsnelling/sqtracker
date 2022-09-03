@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 import { BarChartSquare } from '@styled-icons/boxicons-regular/BarChartSquare'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
+import { UserCircle } from '@styled-icons/boxicons-regular/UserCircle'
 import getReqCookies from '../../utils/getReqCookies'
 import withAuth from '../../utils/withAuth'
 import SEO from '../../components/SEO'
@@ -28,6 +29,7 @@ const User = ({ user, userRole }) => {
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(' ')
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(' ')
 
+  console.log(user)
   return (
     <>
       <SEO title={`${user.username}’s profile`} />
@@ -37,7 +39,14 @@ const User = ({ user, userRole }) => {
         justifyContent="space-between"
         mb={3}
       >
-        <Text as="h1">{user.username}’s profile</Text>
+        <Box display="flex" alignItems="center">
+          <Text as="h1">{user.username}’s profile</Text>
+          {user.role === 'admin' && (
+            <Text icon={UserCircle} iconColor="primary" ml={3}>
+              Admin
+            </Text>
+          )}
+        </Box>
         {cookies.username === user.username && (
           <Link href="/account">
             <a>
@@ -177,6 +186,9 @@ export const getServerSideProps = async ({ req, query: { username } }) => {
       Authorization: `Bearer ${token}`,
     },
   })
+
+  if (userRes.status === 404) return { notFound: {} }
+
   const user = await userRes.json()
   return { props: { user, userRole: role } }
 }

@@ -449,6 +449,9 @@ export const getServerSideProps = async ({ req, query: { infoHash } }) => {
       Authorization: `Bearer ${token}`,
     },
   })
+
+  if (torrentRes.status === 404) return { notFound: true }
+
   const torrent = await torrentRes.json()
   return { props: { torrent, userId: id, userRole: role, uid: userId } }
 }

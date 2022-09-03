@@ -336,6 +336,7 @@ export const fetchUser = async (req, res) => {
           _id: 1,
           username: 1,
           created: 1,
+          role: 1,
           ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
           remainingInvites: 1,
         },
