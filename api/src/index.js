@@ -4,6 +4,7 @@ import chalk from 'chalk'
 import bodyParser from 'body-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
+import nodemailer from 'nodemailer'
 import handleAnnounce from './middleware/announce'
 import auth from './middleware/auth'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
@@ -66,6 +67,16 @@ connectToDb()
 mongoose.connection.once('open', () => {
   console.log('[sq] connected to mongodb successfully')
   createAdminUser()
+})
+
+export const mail = nodemailer.createTransport({
+  host: process.env.SQ_SMTP_HOST,
+  port: process.env.SQ_SMTP_PORT,
+  secure: process.env.SQ_SMTP_SECURE,
+  auth: {
+    user: process.env.SQ_SMTP_USER,
+    pass: process.env.SQ_SMTP_PASS,
+  },
 })
 
 const app = express()

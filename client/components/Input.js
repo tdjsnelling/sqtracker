@@ -23,6 +23,9 @@ const shared = () =>
       borderColor: 'primary',
       outline: 0,
     },
+    '&[disabled]': {
+      opacity: 0.4,
+    },
   })
 
 const StyledInput = styled.input(shared, layout, space, typography)

@@ -5,6 +5,7 @@ import User from '../schema/user'
 import Invite from '../schema/invite'
 import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
+import { mail } from '../index'
 
 export const register = async (req, res) => {
   if (
@@ -261,9 +262,18 @@ export const initiatePasswordReset = async (req, res) => {
         process.env.SQ_JWT_SECRET
       )
 
+      await mail.sendMail({
+        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+        to: user.email,
+        subject: 'Password reset',
+        text: `Please follow the link below to reset your password.
+        
+${process.env.SQ_BASE_URL}/reset-password/finalise?token=${token}`,
+      })
+
       res.send(token)
     } catch (err) {
-      res.send(500).send(err.message)
+      res.status(500).send(err.message)
     }
   } else {
     res.status(400).send('Request must include email')

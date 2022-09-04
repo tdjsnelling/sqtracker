@@ -57,7 +57,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
       <Text as="h1" mb={5}>
         Reset password
       </Text>
-      <p>{email}</p>
+      <Input type="email" label="Email" value={email} mb={4} disabled />
       {!tokenError ? (
         <form onSubmit={handleInitiate}>
           <Input
