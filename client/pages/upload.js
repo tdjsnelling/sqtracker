@@ -125,10 +125,9 @@ const Upload = ({ token, userId }) => {
             <FileUpload {...getRootProps()}>
               <input {...getInputProps()} />
               {torrentFile ? (
-                <>
-                  <Check size={24} />
-                  <Text ml={2}>{torrentFile.name}</Text>
-                </>
+                <Text icon={Check} iconColor="success" iconSize={24} ml={2}>
+                  {torrentFile.name}
+                </Text>
               ) : isDragActive ? (
                 <Text color="grey">Drop the file here...</Text>
               ) : (

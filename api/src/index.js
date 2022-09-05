@@ -2,6 +2,7 @@ import express from 'express'
 import morgan from 'morgan'
 import chalk from 'chalk'
 import bodyParser from 'body-parser'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
@@ -117,6 +118,7 @@ app.use('/sq/*/scrape', userTrackerRoutes)
 app.use('/stats', otherTrackerRoutes)
 
 app.use(bodyParser.json())
+app.use(cookieParser())
 app.use(cors())
 
 // root
@@ -131,7 +133,7 @@ app.post('/reset-password/initiate', initiatePasswordReset)
 app.post('/reset-password/finalise', finalisePasswordReset)
 app.post('/verify-email', verifyUserEmail)
 
-// rss feed (auth handled in headers)
+// rss feed (auth handled in cookies)
 app.get('/rss', rssFeed)
 
 // torrent file download (can download without auth, will not be able to announce)

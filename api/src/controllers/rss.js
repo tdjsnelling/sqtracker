@@ -29,14 +29,14 @@ const getTorrentXml = (torrent, userId) => {
 }
 
 export const rssFeed = async (req, res) => {
-  const { 'x-sq-username': username, 'x-sq-password': password } = req.headers
+  const { username, password } = req.cookies
   const { query } = req.query
 
   try {
     const user = await User.findOne({ username })
 
     if (!user) {
-      res.status(404).send('Incorrect login details')
+      res.status(401).send('Incorrect login details')
       return
     }
 
