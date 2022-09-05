@@ -7,8 +7,7 @@ import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Checkbox from '../../components/Checkbox'
 import Button from '../../components/Button'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
 
 const NewAnnouncement = ({ token, userRole }) => {
@@ -85,9 +84,7 @@ const NewAnnouncement = ({ token, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -97,6 +94,6 @@ export const getServerSideProps = async ({ req }) => {
   const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
   return { props: { token, userRole: role } }
-}
+})
 
-export default withAuth(NewAnnouncement)
+export default NewAnnouncement

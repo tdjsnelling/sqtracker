@@ -4,8 +4,7 @@ import jwt from 'jsonwebtoken'
 import moment from 'moment'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import List from '../../components/List'
 
 const Reports = ({ reports, userRole }) => {
@@ -60,9 +59,7 @@ const Reports = ({ reports, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -82,6 +79,6 @@ export const getServerSideProps = async ({ req }) => {
   })
   const reports = await reportsRes.json()
   return { props: { reports, userRole: role } }
-}
+})
 
-export default withAuth(Reports)
+export default Reports

@@ -115,6 +115,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [theme, setTheme] = useState(initialTheme || 'light')
+  const [isServer, setIsServer] = useState(true)
 
   const router = useRouter()
 
@@ -137,6 +138,8 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   }
 
   useEffect(() => {
+    setIsServer(false)
+
     const query = window.matchMedia('(max-width: 767px)')
     setIsMobile(query.matches)
     query.addEventListener('change', ({ matches }) => {
@@ -223,7 +226,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                   </Text>
                 )}
               </Box>
-              {token && (
+              {!isServer && token && (
                 <Box display="flex">
                   <Box as="form" onSubmit={handleSearch}>
                     <Input

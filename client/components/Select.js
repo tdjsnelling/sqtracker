@@ -41,7 +41,7 @@ const Select = ({ label, rows, ...rest }) => {
           top="7px"
           right={4}
           color="grey"
-          css={{ pointerEvents: 'none' }}
+          _css={{ pointerEvents: 'none' }}
         >
           <ChevronDown size={22} />
         </Box>

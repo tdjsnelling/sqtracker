@@ -19,7 +19,7 @@ const WrapLink = ({ href, children }) =>
         as="a"
         display="block"
         color="text"
-        css={{
+        _css={{
           '&:visited': { color: 'text' },
           '&:hover': { bg: 'sidebar', textDecoration: 'none' },
         }}
@@ -37,7 +37,7 @@ const ListItem = ({ children }) => {
       as="li"
       borderBottom="1px solid"
       borderColor="border"
-      css={{
+      _css={{
         '&:first-child': { borderTopWidth: '1px', borderTopStyle: 'solid' },
       }}
     >
@@ -66,13 +66,13 @@ const List = ({ data = [], columns = [], ...rest }) => {
             fontWeight={600}
             fontSize={1}
             textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
           >
             {col.header}
           </Text>
         ))}
       </Box>
-      <Box as="ul" pl={0} css={{ listStyle: 'none' }} {...rest}>
+      <Box as="ul" pl={0} _css={{ listStyle: 'none' }} {...rest}>
         {data.length ? (
           data.map((row, i) => (
             <ListItem key={`list-row-${i}`}>
@@ -91,7 +91,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
                     <Box
                       key={`list-row-${i}-col-${j}`}
                       textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
-                      css={{ whiteSpace: 'nowrap' }}
+                      _css={{ whiteSpace: 'nowrap' }}
                     >
                       {col.cell({
                         value: col.accessor ? getIn(row, col.accessor) : null,

@@ -7,6 +7,17 @@ import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
 import { mail } from '../index'
 
+const sendVerificationEmail = async (address, token) => {
+  await mail.sendMail({
+    from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+    to: address,
+    subject: 'Verify you email address',
+    text: `Thank you for joining ${process.env.SQ_SITE_NAME}. Please follow the link below to verify your email address.
+        
+${process.env.SQ_BASE_URL}/verify-email?token=${token}`,
+  })
+}
+
 export const register = async (req, res) => {
   if (
     process.env.SQ_ALLOW_REGISTER !== 'open' &&
@@ -85,6 +96,7 @@ export const register = async (req, res) => {
           role,
           invitedBy: invite?.invitingUser,
           remainingInvites: 0,
+          emailVerified: false,
         })
 
         newUser.uid = crypto
@@ -94,6 +106,16 @@ export const register = async (req, res) => {
           .slice(0, 10)
 
         const createdUser = await newUser.save()
+
+        const emailVerificationValidUntil = created + 48 * 60 * 60 * 1000
+        const emailVerificationToken = jwt.sign(
+          {
+            user: req.body.email,
+            validUntil: emailVerificationValidUntil,
+          },
+          process.env.SQ_JWT_SECRET
+        )
+        await sendVerificationEmail(req.body.email, emailVerificationToken)
 
         if (createdUser) {
           res.send({
@@ -476,5 +498,50 @@ export const getUserRole = async (req, res) => {
     res.send(user.role)
   } catch (e) {
     res.status(500).send(e.message)
+  }
+}
+
+export const getUserVerifiedEmailStatus = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.userId }).lean()
+    res.send(user.emailVerified)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const verifyUserEmail = async (req, res) => {
+  if (req.body.token) {
+    try {
+      const { user: email, validUntil } = jwt.verify(
+        req.body.token,
+        process.env.SQ_JWT_SECRET
+      )
+
+      if (validUntil < Date.now()) {
+        res.status(403).send('Token has expired')
+        return
+      }
+
+      const user = await User.findOne({ email }).lean()
+
+      if (!user) {
+        res.status(404).send('User does not exist')
+        return
+      }
+
+      if (user.emailVerified) {
+        res.status(400).send('Email address is already verified')
+        return
+      }
+
+      await User.findOneAndUpdate({ email }, { $set: { emailVerified: true } })
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include token')
   }
 }

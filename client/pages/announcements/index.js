@@ -6,8 +6,7 @@ import moment from 'moment'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import Button from '../../components/Button'
 import List from '../../components/List'
 
@@ -104,9 +103,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -138,6 +135,6 @@ export const getServerSideProps = async ({ req }) => {
   return {
     props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
   }
-}
+})
 
-export default withAuth(Announcements)
+export default Announcements

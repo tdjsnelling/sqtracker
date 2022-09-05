@@ -6,7 +6,7 @@ import css from '@styled-system/css'
 import { useDropzone } from 'react-dropzone'
 import { Link as LinkIcon } from '@styled-icons/boxicons-regular/Link'
 import { Check } from '@styled-icons/boxicons-regular/Check'
-import withAuth from '../utils/withAuth'
+import { withAuth } from '../utils/withAuth'
 import SEO from '../components/SEO'
 import Box from '../components/Box'
 import Text from '../components/Text'
@@ -113,7 +113,7 @@ const Upload = ({ token, userId }) => {
       <Box mb={5}>
         <Text icon={LinkIcon} iconColor="primary">
           Announce URL must be set to{' '}
-          <Text as="strong" fontFamily="mono" css={{ userSelect: 'all' }}>
+          <Text as="strong" fontFamily="mono" _css={{ userSelect: 'all' }}>
             {SQ_BASE_URL}/sq/{userId}/announce
           </Text>{' '}
           or upload will be rejected

@@ -11,6 +11,7 @@ const User = new mongoose.Schema({
   role: String,
   invitedBy: mongoose.Schema.ObjectId,
   remainingInvites: Number,
+  emailVerified: Boolean,
 })
 
 export default mongoose.model('user', User)

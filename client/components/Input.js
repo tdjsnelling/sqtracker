@@ -39,7 +39,7 @@ export const WrapLabel = ({ label, children, as = 'label', ...rest }) =>
         fontWeight={600}
         fontSize={1}
         mb={3}
-        css={{ textTransform: 'uppercase' }}
+        _css={{ textTransform: 'uppercase' }}
       >
         {label}
       </Text>

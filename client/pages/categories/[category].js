@@ -1,8 +1,7 @@
 import React from 'react'
 import { useRouter } from 'next/router'
 import getConfig from 'next/config'
-import getReqCookies from '../../utils/getReqCookies'
-import withAuth from '../../utils/withAuth'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import TorrentList from '../../components/TorrentList'
@@ -34,30 +33,32 @@ const Category = ({ results }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { category } }) => {
-  const { token } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, query: { category } }) => {
+    if (!token) return { props: {} }
 
-  if (!token) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
-
-  try {
-    const searchRes = await fetch(
-      `${SQ_API_URL}/torrents/search?category=${encodeURIComponent(category)}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-    const results = await searchRes.json()
-    return { props: { results } }
-  } catch (e) {
-    return { props: {} }
+    try {
+      const searchRes = await fetch(
+        `${SQ_API_URL}/torrents/search?category=${encodeURIComponent(
+          category
+        )}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      const results = await searchRes.json()
+      return { props: { results } }
+    } catch (e) {
+      return { props: {} }
+    }
   }
-}
+)
 
-export default withAuth(Category)
+export default Category

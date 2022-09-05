@@ -2,14 +2,15 @@ import React from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import withAuth from '../utils/withAuth'
-import getReqCookies from '../utils/getReqCookies'
+import { withAuthServerSideProps } from '../utils/withAuth'
 import Box from '../components/Box'
 import Text from '../components/Text'
 import SEO from '../components/SEO'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import TorrentList from '../components/TorrentList'
+import Infobox from '../components/Infobox'
+import { ErrorCircle } from '@styled-icons/boxicons-regular/ErrorCircle'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -39,7 +40,7 @@ const PublicLanding = ({ name, allowRegister }) => (
   </Box>
 )
 
-const Index = ({ token, latest }) => {
+const Index = ({ token, latest, emailVerified }) => {
   const {
     publicRuntimeConfig: {
       SQ_SITE_NAME,
@@ -71,6 +72,14 @@ const Index = ({ token, latest }) => {
       <Text as="h1" mb={5}>
         Home
       </Text>
+      {!emailVerified && (
+        <Infobox mb={5}>
+          <Text icon={ErrorCircle} iconColor="error">
+            Your email address is not yet verified. You will not be able to
+            upload or download any data until this is done.
+          </Text>
+        </Infobox>
+      )}
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
         <Input placeholder="Search torrents" name="query" mr={3} required />
         <Button>Search</Button>
@@ -83,9 +92,7 @@ const Index = ({ token, latest }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -100,10 +107,19 @@ export const getServerSideProps = async ({ req }) => {
       },
     })
     const latest = await latestRes.json()
-    return { props: { latest, token } }
+
+    const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const emailVerified = await verifiedRes.json()
+
+    return { props: { latest, emailVerified, token } }
   } catch (e) {
     return { props: {} }
   }
-}
+})
 
-export default withAuth(Index, true)
+export default Index

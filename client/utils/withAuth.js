@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { useCookies } from 'react-cookie'
+import getReqCookies from './getReqCookies'
 
 const Redirect = ({ path }) => {
   const router = useRouter()
@@ -10,7 +11,7 @@ const Redirect = ({ path }) => {
   return <></>
 }
 
-const withAuth = (Component, noRedirect = false) => {
+export const withAuth = (Component, noRedirect = false) => {
   const Auth = (props) => {
     const [cookies] = useCookies()
 
@@ -23,11 +24,26 @@ const withAuth = (Component, noRedirect = false) => {
     )
   }
 
-  if (Component.getInitialProps) {
-    Auth.getInitialProps = Component.getInitialProps
-  }
-
   return Auth
 }
 
-export default withAuth
+export const withAuthServerSideProps = (getServerSideProps) => {
+  return async (ctx) => {
+    const { token, userId } = getReqCookies(ctx.req)
+
+    if (!token)
+      return {
+        redirect: {
+          permanent: false,
+          destination: '/login',
+        },
+      }
+
+    const { props: ssProps } = await getServerSideProps({
+      ...ctx,
+      token,
+      userId,
+    })
+    return { props: { ...ssProps, token } }
+  }
+}

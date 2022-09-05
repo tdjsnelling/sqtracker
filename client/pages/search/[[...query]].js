@@ -1,8 +1,7 @@
 import React from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import Input from '../../components/Input'
@@ -47,30 +46,30 @@ const Search = ({ results }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { query } }) => {
-  const { token } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, query: { query } }) => {
+    if (!token || !query) return { props: {} }
 
-  if (!token || !query) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
-
-  try {
-    const searchRes = await fetch(
-      `${SQ_API_URL}/torrents/search?query=${encodeURIComponent(query)}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    )
-    const results = await searchRes.json()
-    return { props: { results } }
-  } catch (e) {
-    return { props: {} }
+    try {
+      const searchRes = await fetch(
+        `${SQ_API_URL}/torrents/search?query=${encodeURIComponent(query)}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      const results = await searchRes.json()
+      return { props: { results } }
+    } catch (e) {
+      return { props: {} }
+    }
   }
-}
+)
 
-export default withAuth(Search)
+export default Search

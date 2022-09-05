@@ -11,7 +11,7 @@ const Comment = ({ comment }) => {
       p={4}
       borderTop="1px solid"
       borderColor="border"
-      css={{
+      _css={{
         '&:last-child': {
           borderBottom: '1px solid',
           borderBottomColor: 'border',

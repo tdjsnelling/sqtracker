@@ -4,8 +4,7 @@ import moment from 'moment'
 import copy from 'copy-to-clipboard'
 import jwt from 'jsonwebtoken'
 import { Copy } from '@styled-icons/boxicons-regular/Copy'
-import withAuth from '../utils/withAuth'
-import getReqCookies from '../utils/getReqCookies'
+import { withAuthServerSideProps } from '../utils/withAuth'
 import SEO from '../components/SEO'
 import Box from '../components/Box'
 import Text from '../components/Text'
@@ -92,6 +91,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
     }
   }
 
+  console.log(user)
   return (
     <>
       <SEO title="My account" />
@@ -121,7 +121,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             pl={4}
           >
             <Text color="grey" mr={4}>
-              {user.remainingInvites} remaining
+              {user.remainingInvites || 0} remaining
             </Text>
             {userRole === 'admin' && (
               <Select name="role" required mr={3}>
@@ -129,7 +129,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 <option value="admin">Role: admin</option>
               </Select>
             )}
-            <Button disabled={user.remainingInvites < 1}>
+            <Button disabled={(user.remainingInvites || 0) < 1}>
               Generate invite
             </Button>
           </Box>
@@ -180,7 +180,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             header: 'Role',
             accessor: 'role',
             cell: ({ value }) => (
-              <Text css={{ textTransform: 'capitalize' }}>{value}</Text>
+              <Text _css={{ textTransform: 'capitalize' }}>{value}</Text>
             ),
             gridWidth: '0.6fr',
           },
@@ -239,9 +239,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -270,6 +268,6 @@ export const getServerSideProps = async ({ req }) => {
   } catch (e) {
     return { props: {} }
   }
-}
+})
 
-export default withAuth(Account)
+export default Account

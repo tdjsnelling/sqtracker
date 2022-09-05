@@ -12,8 +12,7 @@ import Text from '../../components/Text'
 import Button from '../../components/Button'
 import MarkdownBody from '../../components/MarkdownBody'
 import { Info } from '../torrent/[infoHash]'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
 
 const Report = ({ report, token, userRole }) => {
@@ -89,7 +88,7 @@ const Report = ({ report, token, userRole }) => {
       <Text
         fontWeight={600}
         fontSize={1}
-        css={{ textTransform: 'uppercase' }}
+        _css={{ textTransform: 'uppercase' }}
         mb={4}
       >
         Reason for report
@@ -103,28 +102,28 @@ const Report = ({ report, token, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { id } }) => {
-  const { token } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, query: { id } }) => {
+    if (!token) return { props: {} }
 
-  if (!token) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    if (role !== 'admin') return { props: { report: null, userRole: role } }
 
-  if (role !== 'admin') return { props: { report: null, userRole: role } }
+    const reportRes = await fetch(`${SQ_API_URL}/reports/${id}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const report = await reportRes.json()
+    return { props: { report, token, userRole: role } }
+  }
+)
 
-  const reportRes = await fetch(`${SQ_API_URL}/reports/${id}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const report = await reportRes.json()
-  return { props: { report, token, userRole: role } }
-}
-
-export default withAuth(Report)
+export default Report

@@ -5,8 +5,7 @@ import styled from 'styled-components'
 import css from '@styled-system/css'
 import SEO from '../components/SEO'
 import Text from '../components/Text'
-import withAuth from '../utils/withAuth'
-import getReqCookies from '../utils/getReqCookies'
+import { withAuthServerSideProps } from '../utils/withAuth'
 
 const StyledTable = styled.table(() =>
   css({
@@ -50,9 +49,7 @@ const Stats = ({ stats, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req }) => {
-  const { token } = getReqCookies(req)
-
+export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   if (!token) return { props: {} }
 
   const {
@@ -71,6 +68,6 @@ export const getServerSideProps = async ({ req }) => {
   })
   const stats = await statsRes.json()
   return { props: { stats, userRole: role } }
-}
+})
 
-export default withAuth(Stats)
+export default Stats

@@ -121,7 +121,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             fontSize={3}
             fontWeight={600}
             color="text"
-            css={{ textDecoration: 'none', '&:visited': { color: 'text' } }}
+            _css={{ textDecoration: 'none', '&:visited': { color: 'text' } }}
           >
             {SQ_SITE_NAME}
           </Text>

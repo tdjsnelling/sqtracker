@@ -34,6 +34,13 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
+  // if the users email is not verified, deny announce
+  if (!user.emailVerified) {
+    res.statusMessage = 'Email must be verified'
+    res.sendStatus(401)
+    return
+  }
+
   const q = req.url.split('?')[1]
   const params = parseParams(q)
 

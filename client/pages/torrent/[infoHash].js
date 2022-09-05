@@ -9,8 +9,7 @@ import remarkGfm from 'remark-gfm'
 import jwt from 'jsonwebtoken'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -28,7 +27,7 @@ export const Info = ({ title, items }) => (
       <Text
         fontWeight={600}
         fontSize={1}
-        css={{ textTransform: 'uppercase' }}
+        _css={{ textTransform: 'uppercase' }}
         mb={4}
       >
         {title}
@@ -46,7 +45,7 @@ export const Info = ({ title, items }) => (
           <Text
             fontWeight={600}
             fontSize={1}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
           >
             {key}
           </Text>
@@ -328,7 +327,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           ),
           Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),
           'Info hash': (
-            <Text as="span" fontFamily="mono" css={{ userSelect: 'all' }}>
+            <Text as="span" fontFamily="mono" _css={{ userSelect: 'all' }}>
               {torrent.infoHash}
             </Text>
           ),
@@ -344,7 +343,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         <Text
           fontWeight={600}
           fontSize={1}
-          css={{ textTransform: 'uppercase' }}
+          _css={{ textTransform: 'uppercase' }}
           mb={3}
         >
           Description
@@ -431,29 +430,29 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { infoHash } }) => {
-  const { token, userId } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, userId, query: { infoHash } }) => {
+    if (!token) return { props: {} }
 
-  if (!token) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const { id, role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  const { id, role } = jwt.verify(token, SQ_JWT_SECRET)
+    const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-  const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
+    if (torrentRes.status === 404) return { notFound: true }
 
-  if (torrentRes.status === 404) return { notFound: true }
+    const torrent = await torrentRes.json()
+    return { props: { torrent, userId: id, userRole: role, uid: userId } }
+  }
+)
 
-  const torrent = await torrentRes.json()
-  return { props: { torrent, userId: id, userRole: role, uid: userId } }
-}
-
-export default withAuth(Torrent)
+export default Torrent

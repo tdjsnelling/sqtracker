@@ -12,8 +12,7 @@ import Box from '../../components/Box'
 import Text from '../../components/Text'
 import Button from '../../components/Button'
 import MarkdownBody from '../../components/MarkdownBody'
-import withAuth from '../../utils/withAuth'
-import getReqCookies from '../../utils/getReqCookies'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
 
 const Announcement = ({ announcement, token, userRole }) => {
@@ -132,26 +131,26 @@ const Announcement = ({ announcement, token, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { slug } }) => {
-  const { token } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, query: { slug } }) => {
+    if (!token) return { props: {} }
 
-  if (!token) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const announcementRes = await fetch(`${SQ_API_URL}/announcements/${slug}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    const announcement = await announcementRes.json()
+    return { props: { announcement, token, userRole: role } }
+  }
+)
 
-  const announcementRes = await fetch(`${SQ_API_URL}/announcements/${slug}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const announcement = await announcementRes.json()
-  return { props: { announcement, token, userRole: role } }
-}
-
-export default withAuth(Announcement)
+export default Announcement

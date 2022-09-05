@@ -18,6 +18,8 @@ import {
   finalisePasswordReset,
   fetchUser,
   getUserRole,
+  getUserVerifiedEmailStatus,
+  verifyUserEmail,
 } from './controllers/user'
 import {
   uploadTorrent,
@@ -127,6 +129,7 @@ app.post('/register', register)
 app.post('/login', login)
 app.post('/reset-password/initiate', initiatePasswordReset)
 app.post('/reset-password/finalise', finalisePasswordReset)
+app.post('/verify-email', verifyUserEmail)
 
 // rss feed (auth handled in headers)
 app.get('/rss', rssFeed)
@@ -142,6 +145,7 @@ app.get('/account/invites', fetchInvites)
 app.get('/account/generate-invite', generateInvite)
 app.post('/account/change-password', changePassword)
 app.get('/account/get-role', getUserRole)
+app.get('/account/get-verified', getUserVerifiedEmailStatus)
 app.get('/user/:username', fetchUser)
 
 // torrent routes

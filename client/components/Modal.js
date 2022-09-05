@@ -25,7 +25,7 @@ const Modal = ({ children, close }) => {
         maxWidth="600px"
         maxHeight="calc(100vh - 200px)"
         width="100%"
-        css={{ transform: 'translateX(-50%)' }}
+        _css={{ transform: 'translateX(-50%)' }}
       >
         <Box
           display="flex"

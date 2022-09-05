@@ -3,7 +3,7 @@ import getConfig from 'next/config'
 import Link from 'next/link'
 import styled from 'styled-components'
 import css from '@styled-system/css'
-import withAuth from '../../utils/withAuth'
+import { withAuth } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -39,7 +39,7 @@ const Categories = () => {
         display="grid"
         gridTemplateColumns="repeat(4, 1fr)"
         gridGap={4}
-        css={{ pl: 0, listStyle: 'none' }}
+        _css={{ pl: 0, listStyle: 'none' }}
       >
         {SQ_TORRENT_CATEGORIES.map((category) => (
           <CategoryItem key={category.slug}>

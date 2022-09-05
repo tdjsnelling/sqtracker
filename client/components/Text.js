@@ -22,14 +22,15 @@ const StyledText = styled.p(
   typography,
   border,
   position,
-  ({ css }) =>
+  ({ _css }) =>
     styledCss({
-      ...css,
+      ..._css,
     })
 )
 
 const Text = ({
   children,
+  fref,
   icon: Icon,
   iconSize = 20,
   iconColor = 'grey',
@@ -57,12 +58,23 @@ const Text = ({
       <Box display="flex" alignItems="center" color={iconColor} mr={2}>
         <Icon size={iconSize} />
       </Box>
-      <StyledText {...rest}>{children}</StyledText>
+      <StyledText ref={fref} {...rest}>
+        {children}
+      </StyledText>
     </Box>
   ) : (
-    <StyledText my={my} mt={mt} mb={mb} mx={mx} ml={ml} mr={mr} {...rest}>
+    <StyledText
+      ref={fref}
+      my={my}
+      mt={mt}
+      mb={mb}
+      mx={mx}
+      ml={ml}
+      mr={mr}
+      {...rest}
+    >
       {children}
     </StyledText>
   )
 
-export default Text
+export default React.forwardRef((props, ref) => <Text fref={ref} {...props} />)

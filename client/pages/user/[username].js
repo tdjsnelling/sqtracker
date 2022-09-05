@@ -9,8 +9,7 @@ import { BarChartSquare } from '@styled-icons/boxicons-regular/BarChartSquare'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
 import { UserCircle } from '@styled-icons/boxicons-regular/UserCircle'
-import getReqCookies from '../../utils/getReqCookies'
-import withAuth from '../../utils/withAuth'
+import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -64,7 +63,7 @@ const User = ({ user, userRole }) => {
             fontWeight={600}
             fontSize={1}
             mb={3}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
           >
             Only admins can see this
           </Text>
@@ -92,7 +91,7 @@ const User = ({ user, userRole }) => {
             fontWeight={600}
             fontSize={1}
             mb={3}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
             icon={BarChartSquare}
             iconColor="text"
           >
@@ -107,7 +106,7 @@ const User = ({ user, userRole }) => {
             fontWeight={600}
             fontSize={1}
             mb={3}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
             icon={Download}
             iconColor="text"
           >
@@ -126,7 +125,7 @@ const User = ({ user, userRole }) => {
             fontWeight={600}
             fontSize={1}
             mb={3}
-            css={{ textTransform: 'uppercase' }}
+            _css={{ textTransform: 'uppercase' }}
             icon={Upload}
             iconColor="text"
           >
@@ -168,29 +167,29 @@ const User = ({ user, userRole }) => {
   )
 }
 
-export const getServerSideProps = async ({ req, query: { username } }) => {
-  const { token } = getReqCookies(req)
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, query: { username } }) => {
+    if (!token) return { props: {} }
 
-  if (!token) return { props: {} }
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
 
-  const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
+    if (userRes.status === 404) return { notFound: {} }
 
-  if (userRes.status === 404) return { notFound: {} }
+    const user = await userRes.json()
+    return { props: { user, userRole: role } }
+  }
+)
 
-  const user = await userRes.json()
-  return { props: { user, userRole: role } }
-}
-
-export default withAuth(User)
+export default User
