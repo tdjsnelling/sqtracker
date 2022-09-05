@@ -1,15 +1,8 @@
-import memoize from 'memoizee'
 import querystring from 'querystring'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
 import { getUserRatio } from '../utils/ratio'
-
-const userLookup = async (userId) => {
-  return User.findOne({ uid: userId }).lean()
-}
-
-const userLookupMemo = memoize(userLookup)
 
 export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
@@ -25,7 +18,7 @@ const handleAnnounce = async (req, res, next) => {
 
   console.log(`[DEBUG] userId: ${userId}`)
 
-  const user = await userLookupMemo(userId)
+  const user = await User.findOne({ uid: userId }).lean()
 
   // if the uid does not match a registered user, deny announce
   if (!user) {

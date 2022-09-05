@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -7,6 +7,7 @@ import prettyBytes from 'pretty-bytes'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import jwt from 'jsonwebtoken'
+import { useCookies } from 'react-cookie'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import { withAuthServerSideProps } from '../../utils/withAuth'
@@ -68,9 +69,12 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     up: torrent.upvotes,
     down: torrent.downvotes,
   })
+  const [comments, setComments] = useState(torrent.comments)
   const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech)
 
   const { addNotification } = useContext(NotificationContext)
+
+  const commentInputRef = useRef()
 
   const {
     publicRuntimeConfig: {
@@ -82,6 +86,8 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   } = getConfig()
 
   const router = useRouter()
+
+  const [cookies] = useCookies()
 
   const handleDownload = async () => {
     try {
@@ -163,6 +169,19 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       }
 
       addNotification('success', 'Comment posted successfully')
+
+      setComments((c) => {
+        const newComment = {
+          comment: form.get('comment'),
+          created: Date.now(),
+          user: {
+            username: cookies.username,
+          },
+        }
+        return [newComment, ...c]
+      })
+
+      commentInputRef.current.value = ''
     } catch (e) {
       addNotification('error', `Could not post comment: ${e.message}`)
       console.error(e)
@@ -362,7 +381,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         mb={5}
       >
         <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
-          <Text icon={Like} iconColor={userVote === 'up' && 'green'}>
+          <Text icon={Like} iconColor={userVote === 'up' ? 'green' : undefined}>
             {votes.up || 0}
           </Text>
         </Button>
@@ -371,7 +390,10 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           variant="noBackground"
           mr={2}
         >
-          <Text icon={Dislike} iconColor={userVote === 'down' && 'red'}>
+          <Text
+            icon={Dislike}
+            iconColor={userVote === 'down' ? 'red' : undefined}
+          >
             {votes.down || 0}
           </Text>
         </Button>
@@ -383,15 +405,24 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         Comments
       </Text>
       <form onSubmit={handleComment}>
-        <Input name="comment" label="Post a comment" rows="5" mb={4} />
+        <Input
+          ref={commentInputRef}
+          name="comment"
+          label="Post a comment"
+          rows="5"
+          mb={4}
+        />
         <Button display="block" ml="auto">
           Post
         </Button>
       </form>
-      {!!torrent.comments?.length && (
+      {!!comments?.length && (
         <Box mt={5}>
-          {torrent.comments.map((comment) => (
-            <Comment key={comment._id} comment={{ ...comment, torrent }} />
+          {comments.map((comment) => (
+            <Comment
+              key={comment._id || comment.created}
+              comment={{ ...comment, torrent }}
+            />
           ))}
         </Box>
       )}

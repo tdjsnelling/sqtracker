@@ -28,7 +28,6 @@ const User = ({ user, userRole }) => {
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(' ')
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(' ')
 
-  console.log(user)
   return (
     <>
       <SEO title={`${user.username}’s profile`} />

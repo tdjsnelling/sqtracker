@@ -119,7 +119,7 @@ export const NotificationsProvider = ({ children }) => {
   return (
     <NotificationContext.Provider value={{ notifications, addNotification }}>
       <Box
-        position="absolute"
+        position="fixed"
         top="60px"
         right="0px"
         p="20px"

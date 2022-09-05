@@ -37,9 +37,6 @@ const InitiatePasswordReset = () => {
         'success',
         'If an account with that email address exists, you will receive an email shortly'
       )
-
-      const token = await res.text()
-      console.log(token)
     } catch (e) {
       addNotification(
         'error',

@@ -91,7 +91,6 @@ const Account = ({ token, invites = [], user, userRole }) => {
     }
   }
 
-  console.log(user)
   return (
     <>
       <SEO title="My account" />
@@ -187,7 +186,6 @@ const Account = ({ token, invites = [], user, userRole }) => {
           {
             header: 'Copy',
             cell: ({ row }) => {
-              console.log(row)
               return (
                 <Button
                   variant="secondary"
