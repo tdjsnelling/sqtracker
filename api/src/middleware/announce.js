@@ -1,4 +1,4 @@
-import querystring from 'querystring'
+import qs from 'qs'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
@@ -6,11 +6,6 @@ import { getUserRatio } from '../utils/ratio'
 
 export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
-
-const parseParams = (query) =>
-  querystring.parse(query, null, null, {
-    decodeURIComponent: unescape,
-  })
 
 const handleAnnounce = async (req, res, next) => {
   const userId = req.baseUrl.split('/')[2]
@@ -35,7 +30,7 @@ const handleAnnounce = async (req, res, next) => {
   }
 
   const q = req.url.split('?')[1]
-  const params = parseParams(q)
+  const params = qs.parse(q, { decoder: unescape })
 
   const infoHash = binaryToHex(params.info_hash)
 

@@ -1,9 +1,7 @@
 import bcrypt from 'bcrypt'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
-import { hexToBinary } from '../middleware/announce'
-import fetch from 'node-fetch'
-import bencode from 'bencode'
+import { embellishTorrentsWithTrackerScrape } from './torrent'
 
 // prettier-ignore
 const getTorrentXml = (torrent, userId) => {
@@ -68,34 +66,9 @@ export const rssFeed = async (req, res) => {
       }).lean()
     }
 
-    let q = ''
-    torrents.forEach((torrent, i) => {
-      q += `${i === 0 ? '?' : '&'}info_hash=${escape(
-        hexToBinary(torrent.infoHash)
-      )}`
-    })
-
-    const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/scrape${q}`)
-
-    if (!trackerRes.ok) {
-      const body = await trackerRes.text()
-      throw new Error(
-        `Error performing tracker scrape: ${trackerRes.status} ${body}`
-      )
-    }
-
-    const bencoded = await trackerRes.arrayBuffer()
-    const scrape = bencode.decode(bencoded)
-
-    const torrentsWithScrape = torrents.map((torrent) => {
-      const scrapeForInfoHash =
-        scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
-      return {
-        ...torrent,
-        seeders: scrapeForInfoHash?.complete || 0,
-        leechers: scrapeForInfoHash?.incomplete || 0,
-      }
-    })
+    const torrentsWithScrape = await embellishTorrentsWithTrackerScrape(
+      torrents
+    )
 
     const torrentsXml = torrentsWithScrape
       .map((t) => getTorrentXml(t, user.uid))

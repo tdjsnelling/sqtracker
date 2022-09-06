@@ -2,10 +2,43 @@ import bencode from 'bencode'
 import crypto from 'crypto'
 import fetch from 'node-fetch'
 import mongoose from 'mongoose'
+import qs from 'qs'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Comment from '../schema/comment'
 import { hexToBinary } from '../middleware/announce'
+
+export const embellishTorrentsWithTrackerScrape = async (torrents) => {
+  const infoHashes = torrents.map((torrent) => hexToBinary(torrent.infoHash))
+  const query = qs.stringify(
+    { info_hash: infoHashes },
+    { encoder: escape, indices: false }
+  )
+
+  const trackerRes = await fetch(
+    `${process.env.SQ_TRACKER_URL}/scrape?${query}`
+  )
+
+  if (!trackerRes.ok) {
+    const body = await trackerRes.text()
+    throw new Error(
+      `Error performing tracker scrape: ${trackerRes.status} ${body}`
+    )
+  }
+
+  const bencoded = await trackerRes.arrayBuffer()
+  const scrape = bencode.decode(bencoded)
+
+  return torrents.map((torrent) => {
+    const scrapeForInfoHash =
+      scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
+    return {
+      ...torrent,
+      seeders: scrapeForInfoHash?.complete || 0,
+      leechers: scrapeForInfoHash?.incomplete || 0,
+    }
+  })
+}
 
 export const uploadTorrent = async (req, res) => {
   if (
@@ -200,31 +233,11 @@ export const fetchTorrent = async (req, res) => {
 
     if (torrent.anonymous) delete torrent.uploadedBy
 
-    const binaryInfoHash = hexToBinary(infoHash)
-    const encodedInfoHash = escape(binaryInfoHash)
+    const [embellishedTorrent] = await embellishTorrentsWithTrackerScrape([
+      torrent,
+    ])
 
-    const trackerRes = await fetch(
-      `${process.env.SQ_TRACKER_URL}/scrape?info_hash=${encodedInfoHash}`
-    )
-
-    if (!trackerRes.ok) {
-      const body = await trackerRes.text()
-      res
-        .status(500)
-        .send(`Error performing tracker scrape: ${trackerRes.status} ${body}`)
-      return
-    }
-
-    const bencoded = await trackerRes.arrayBuffer()
-    const scrape = bencode.decode(bencoded)
-    const scrapeForInfoHash =
-      scrape.files[Buffer.from(binaryInfoHash, 'binary')]
-
-    res.json({
-      ...torrent,
-      seeders: scrapeForInfoHash?.complete || 0,
-      leechers: scrapeForInfoHash?.incomplete || 0,
-    })
+    res.json(embellishedTorrent)
   } catch (e) {
     console.error(e)
     res.status(500).send(e.message)
@@ -336,36 +349,7 @@ export const getTorrentsPage = async ({
     },
   ])
 
-  let q = ''
-  torrents.forEach((torrent, i) => {
-    q += `${i === 0 ? '?' : '&'}info_hash=${escape(
-      hexToBinary(torrent.infoHash)
-    )}`
-  })
-
-  const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/scrape${q}`)
-
-  if (!trackerRes.ok) {
-    const body = await trackerRes.text()
-    throw new Error(
-      `Error performing tracker scrape: ${trackerRes.status} ${body}`
-    )
-  }
-
-  const bencoded = await trackerRes.arrayBuffer()
-  const scrape = bencode.decode(bencoded)
-
-  const torrentsWithScrape = torrents.map((torrent) => {
-    const scrapeForInfoHash =
-      scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
-    return {
-      ...torrent,
-      seeders: scrapeForInfoHash?.complete || 0,
-      leechers: scrapeForInfoHash?.incomplete || 0,
-    }
-  })
-
-  return torrentsWithScrape
+  return await embellishTorrentsWithTrackerScrape(torrents)
 }
 
 export const addComment = async (req, res) => {
