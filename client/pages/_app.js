@@ -175,7 +175,14 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
     <>
       <Head>
         <title>sqtracker</title>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link
+          rel="shortcut icon"
+          href={`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${appTheme.colors.primary.replace(
+            '#',
+            '%23'
+          )}' /></svg>`}
+          type="image/svg+xml"
+        />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Source+Code+Pro:wght@400;500;700&display=swap"
