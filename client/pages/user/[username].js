@@ -22,7 +22,7 @@ const User = ({ user, userRole }) => {
   const [cookies] = useCookies()
 
   const {
-    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_MINIMUM_RATIO },
   } = getConfig()
 
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(' ')
@@ -97,7 +97,17 @@ const User = ({ user, userRole }) => {
             Ratio
           </Text>
           <Text fontSize={5}>
-            {user.ratio === -1 ? '∞' : user.ratio.toFixed(2)}
+            {user.ratio === -1 ? 'N/A' : user.ratio.toFixed(2)}
+            {user.ratio !== -1 && (
+              <Text
+                as="span"
+                fontSize={3}
+                color={user.ratio >= SQ_MINIMUM_RATIO ? 'success' : 'error'}
+              >
+                {' '}
+                {user.ratio >= SQ_MINIMUM_RATIO ? '>' : '<'} {SQ_MINIMUM_RATIO}
+              </Text>
+            )}
           </Text>
         </Box>
         <Box bg="sidebar" borderRadius={2} p={4}>
