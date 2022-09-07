@@ -11,7 +11,7 @@ const sendVerificationEmail = async (address, token) => {
   await mail.sendMail({
     from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
     to: address,
-    subject: 'Verify you email address',
+    subject: 'Verify your email address',
     text: `Thank you for joining ${process.env.SQ_SITE_NAME}. Please follow the link below to verify your email address.
         
 ${process.env.SQ_BASE_URL}/verify-email?token=${token}`,
@@ -47,7 +47,7 @@ export const register = async (req, res) => {
         const { id } = decoded
 
         invite = await Invite.findOne({ _id: id }).lean()
-        const { claimed, validUntil, invitingUser } = invite
+        const { claimed, validUntil, invitingUser, email } = invite
 
         if (claimed) {
           res.status(403).send('Invitation has already been claimed')
@@ -59,17 +59,18 @@ export const register = async (req, res) => {
           return
         }
 
+        if (email !== req.body.email) {
+          res
+            .status(403)
+            .send('Email address does not match invited email address')
+          return
+        }
+
         const inviter = User.findOne({ _id: invitingUser }).lean()
         if (!inviter || inviter.banned) {
           res.status(403).send('Inviting user doesn’t exist or has been banned')
           return
         }
-
-        await Invite.findOneAndUpdate({ _id: id }, { $set: { claimed: true } })
-        await User.findOneAndUpdate(
-          { _id: invite.invitingUser },
-          { $inc: { remainingInvites: -1 } }
-        )
       } catch (err) {
         res.status(500).send(`Error verifying invitation: ${err.message}`)
         return
@@ -118,6 +119,22 @@ export const register = async (req, res) => {
         await sendVerificationEmail(req.body.email, emailVerificationToken)
 
         if (createdUser) {
+          if (req.body.invite) {
+            const decoded = jwt.verify(
+              req.body.invite,
+              process.env.SQ_JWT_SECRET
+            )
+            const { id } = decoded
+            await Invite.findOneAndUpdate(
+              { _id: id },
+              { $set: { claimed: true } }
+            )
+            await User.findOneAndUpdate(
+              { _id: invite.invitingUser },
+              { $inc: { remainingInvites: -1 } }
+            )
+          }
+
           res.send({
             token: jwt.sign(
               {
@@ -186,34 +203,47 @@ export const login = async (req, res) => {
 }
 
 export const generateInvite = async (req, res) => {
-  const user = await User.findOne({ _id: req.userId }).lean()
+  if (req.body.email && req.body.role) {
+    const user = await User.findOne({ _id: req.userId }).lean()
 
-  if (user.remainingInvites < 1) {
-    res.status(403).send('You do not have any remaining invites')
-  }
+    if (user.remainingInvites < 1) {
+      res.status(403).send('You do not have any remaining invites')
+    }
 
-  const created = Date.now()
-  const validUntil = created + 48 * 60 * 60 * 1000
+    const created = Date.now()
+    const validUntil = created + 48 * 60 * 60 * 1000
 
-  const { role } = req.query
+    const { email, role } = req.body
 
-  const invite = new Invite({
-    invitingUser: req.userId,
-    created,
-    validUntil,
-    claimed: false,
-    role: role || 'user',
-  })
+    const invite = new Invite({
+      invitingUser: req.userId,
+      created,
+      validUntil,
+      claimed: false,
+      email,
+      role: role || 'user',
+    })
 
-  invite.token = jwt.sign(
-    { id: invite._id, validUntil },
-    process.env.SQ_JWT_SECRET
-  )
+    invite.token = jwt.sign(
+      { id: invite._id, validUntil },
+      process.env.SQ_JWT_SECRET
+    )
 
-  const createdInvite = await invite.save()
+    const createdInvite = await invite.save()
 
-  if (createdInvite) {
-    res.send(createdInvite)
+    if (createdInvite) {
+      mail.sendMail({
+        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+        to: email,
+        subject: 'Invite',
+        text: `You have been invited to join ${process.env.SQ_SITE_NAME}. Please follow the link below to register.
+        
+${process.env.SQ_BASE_URL}/register?token=${createdInvite.token}`,
+      })
+      res.send(createdInvite)
+    }
+  } else {
+    res.status(400).send('Request must include email, role')
   }
 }
 

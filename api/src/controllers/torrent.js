@@ -9,6 +9,8 @@ import Comment from '../schema/comment'
 import { hexToBinary } from '../middleware/announce'
 
 export const embellishTorrentsWithTrackerScrape = async (torrents) => {
+  if (!torrents.length) return []
+
   const infoHashes = torrents.map((torrent) => hexToBinary(torrent.infoHash))
   const query = qs.stringify(
     { info_hash: infoHashes },

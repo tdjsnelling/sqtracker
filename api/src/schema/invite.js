@@ -6,6 +6,7 @@ const Invite = new mongoose.Schema({
   validUntil: Number,
   claimed: Boolean,
   token: String,
+  email: String,
   role: String,
 })
 

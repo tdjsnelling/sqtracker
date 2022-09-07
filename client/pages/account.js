@@ -14,9 +14,11 @@ import Select from '../components/Select'
 import Button from '../components/Button'
 import List from '../components/List'
 import { NotificationContext } from '../components/Notifications'
+import Modal from '../components/Modal'
 
 const Account = ({ token, invites = [], user, userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
+  const [showInviteModal, setShowInviteModal] = useState(false)
 
   const { addNotification } = useContext(NotificationContext)
 
@@ -29,16 +31,17 @@ const Account = ({ token, invites = [], user, userRole }) => {
     const form = new FormData(e.target)
 
     try {
-      const inviteRes = await fetch(
-        `${SQ_API_URL}/account/generate-invite?role=${
-          form.get('role') || 'user'
-        }`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const inviteRes = await fetch(`${SQ_API_URL}/account/generate-invite`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          role: form.get('role') || 'user',
+          email: form.get('email'),
+        }),
+      })
 
       if (inviteRes.status !== 200) {
         const reason = await inviteRes.text()
@@ -52,9 +55,11 @@ const Account = ({ token, invites = [], user, userRole }) => {
         return currentInvitesList
       })
 
-      addNotification('success', 'Invite generated successfully')
+      addNotification('success', 'Invite sent successfully')
+
+      setShowInviteModal(false)
     } catch (e) {
-      addNotification('error', `Could not generate invite: ${e.message}`)
+      addNotification('error', `Could not send invite: ${e.message}`)
       console.error(e)
     }
   }
@@ -109,43 +114,42 @@ const Account = ({ token, invites = [], user, userRole }) => {
         mb={4}
       >
         <Text as="h2">Invites</Text>
-        <form onSubmit={handleGenerateInvite}>
-          <Box
-            display="flex"
-            alignItems="center"
-            border="1px solid"
-            borderColor="border"
-            borderRadius={1}
-            p={2}
-            pl={4}
+        <Box
+          display="flex"
+          alignItems="center"
+          border="1px solid"
+          borderColor="border"
+          borderRadius={1}
+          p={2}
+          pl={4}
+        >
+          <Text color="grey" mr={4}>
+            {user.remainingInvites || 0} remaining
+          </Text>
+          <Button
+            onClick={() => setShowInviteModal(true)}
+            disabled={(user.remainingInvites || 0) < 1}
           >
-            <Text color="grey" mr={4}>
-              {user.remainingInvites || 0} remaining
-            </Text>
-            {userRole === 'admin' && (
-              <Select name="role" required mr={3}>
-                <option value="user">Role: user</option>
-                <option value="admin">Role: admin</option>
-              </Select>
-            )}
-            <Button disabled={(user.remainingInvites || 0) < 1}>
-              Generate invite
-            </Button>
-          </Box>
-        </form>
+            Send invite
+          </Button>
+        </Box>
       </Box>
       <List
         data={invitesList}
         columns={[
           {
-            header: 'Token',
-            accessor: 'token',
-            cell: ({ value }) => (
-              <Text fontFamily="monospace">
-                ...{value.slice(value.length - 16)}
+            header: 'Email',
+            accessor: 'email',
+            cell: ({ value, row }) => (
+              <Text
+                _css={{
+                  textDecoration: row.claimed ? 'line-through' : 'none',
+                }}
+              >
+                {value}
               </Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '1.75fr',
           },
           {
             header: 'Claimed',
@@ -158,7 +162,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             accessor: 'validUntil',
             cell: ({ value }) => (
               <Text
-                style={{
+                _css={{
                   textDecoration: value < Date.now() ? 'line-through' : 'none',
                 }}
               >
@@ -173,7 +177,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             cell: ({ value }) => (
               <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '1.2fr',
           },
           {
             header: 'Role',
@@ -184,7 +188,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             gridWidth: '0.6fr',
           },
           {
-            header: 'Copy',
+            header: 'Copy link',
             cell: ({ row }) => {
               return (
                 <Button
@@ -207,7 +211,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
               )
             },
             rightAlign: true,
-            gridWidth: '42px',
+            gridWidth: '80px',
           },
         ]}
         mb={5}
@@ -233,6 +237,34 @@ const Account = ({ token, invites = [], user, userRole }) => {
         />
         <Button>Change password</Button>
       </form>
+      {showInviteModal && (
+        <Modal close={() => setShowInviteModal(false)}>
+          <Text mb={5}>
+            Enter an email address to send an invite. The invited user will need
+            to sign up with the same email address. Once the invite is
+            generated, you can also copy a direct invite link.
+          </Text>
+          <form onSubmit={handleGenerateInvite}>
+            <Input name="email" type="email" label="Email" mb={4} required />
+            {userRole === 'admin' && (
+              <Select name="role" mb={4} required>
+                <option value="user">Role: user</option>
+                <option value="admin">Role: admin</option>
+              </Select>
+            )}
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                onClick={() => setShowInviteModal(false)}
+                variant="secondary"
+                mr={3}
+              >
+                Cancel
+              </Button>
+              <Button>Send invite</Button>
+            </Box>
+          </form>
+        </Modal>
+      )}
     </>
   )
 }

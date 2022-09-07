@@ -144,7 +144,7 @@ app.use(auth)
 
 // user/account routes
 app.get('/account/invites', fetchInvites)
-app.get('/account/generate-invite', generateInvite)
+app.post('/account/generate-invite', generateInvite)
 app.post('/account/change-password', changePassword)
 app.get('/account/get-role', getUserRole)
 app.get('/account/get-verified', getUserVerifiedEmailStatus)
