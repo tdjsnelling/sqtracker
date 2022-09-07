@@ -177,7 +177,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
         <title>sqtracker</title>
         <link
           rel="shortcut icon"
-          href={`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='${appTheme.colors.primary.replace(
+          href={`data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='28' height='28' x='2' y='2' rx='4' fill='${appTheme.colors.primary.replace(
             '#',
             '%23'
           )}' /></svg>`}

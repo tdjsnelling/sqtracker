@@ -11,6 +11,7 @@ import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
 import { Search } from '@styled-icons/boxicons-regular/Search'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { News } from '@styled-icons/boxicons-regular/News'
+import { Rss } from '@styled-icons/boxicons-regular/Rss'
 import { User } from '@styled-icons/boxicons-regular/User'
 import { Error } from '@styled-icons/boxicons-regular/Error'
 import { TrendingUp } from '@styled-icons/boxicons-regular/TrendingUp'
@@ -159,6 +160,12 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <NavLink>
                   <Text>Announcements</Text>
                   <News size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/rss" passHref>
+                <NavLink>
+                  <Text>RSS</Text>
+                  <Rss size={24} />
                 </NavLink>
               </Link>
               <Link href={`/user/${username}`} passHref>
