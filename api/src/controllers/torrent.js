@@ -351,7 +351,72 @@ export const getTorrentsPage = async ({
     },
   ])
 
-  return await embellishTorrentsWithTrackerScrape(torrents)
+  const [count] = await Torrent.aggregate([
+    ...(query
+      ? [
+          {
+            $match: {
+              $or: [
+                { name: { $regex: query, $options: 'i' } },
+                { description: { $regex: query, $options: 'i' } },
+              ],
+            },
+          },
+        ]
+      : []),
+    ...(category
+      ? [
+          {
+            $match: {
+              type: category,
+            },
+          },
+        ]
+      : []),
+    ...(userId
+      ? [
+          {
+            $match: {
+              uploadedBy: userId,
+            },
+          },
+        ]
+      : []),
+    {
+      $count: 'total',
+    },
+  ])
+
+  return {
+    torrents: await embellishTorrentsWithTrackerScrape(torrents),
+    ...count,
+  }
+}
+
+export const listLatest = async (req, res) => {
+  let { count } = req.query
+  count = parseInt(count) || 25
+  count = Math.min(count, 100)
+  try {
+    const { torrents } = await getTorrentsPage({ limit: count })
+    res.json(torrents)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const searchTorrents = async (req, res) => {
+  const { query, category, page } = req.query
+  try {
+    const torrents = await getTorrentsPage({
+      skip: page ? parseInt(page) : 0,
+      query,
+      category,
+    })
+    res.json(torrents)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
 }
 
 export const addComment = async (req, res) => {
@@ -380,33 +445,6 @@ export const addComment = async (req, res) => {
     }
   } else {
     res.status(400).send('Request must include comment')
-  }
-}
-
-export const listLatest = async (req, res) => {
-  let { count } = req.query
-  count = parseInt(count) || 20
-  count = Math.min(count, 100)
-  try {
-    const torrents = await getTorrentsPage({ limit: count })
-    res.json(torrents)
-  } catch (e) {
-    res.status(500).send(e.message)
-  }
-}
-
-export const searchTorrents = async (req, res) => {
-  const { query, category, page } = req.query
-  try {
-    const torrents = await getTorrentsPage({
-      skip: page || 0,
-      limit: 25,
-      query,
-      category,
-    })
-    res.json(torrents)
-  } catch (e) {
-    res.status(500).send(e.message)
   }
 }
 

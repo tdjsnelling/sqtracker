@@ -513,7 +513,8 @@ export const fetchUser = async (req, res) => {
     }
 
     user.ratio = await getUserRatio(user._id)
-    user.torrents = await getTorrentsPage({ userId: user._id })
+    const { torrents } = await getTorrentsPage({ userId: user._id })
+    user.torrents = torrents
 
     res.json(user)
   } catch (e) {

@@ -1,6 +1,7 @@
 import React from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
+import qs from 'qs'
 import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
@@ -37,26 +38,40 @@ const Search = ({ results }) => {
         <Input placeholder="Search torrents" name="query" mr={3} required />
         <Button>Search</Button>
       </Box>
-      {results?.length ? (
-        <TorrentList torrents={results} categories={SQ_TORRENT_CATEGORIES} />
-      ) : (
-        <Text color="grey">No results.</Text>
+      {query && (
+        <>
+          {results.torrents.length ? (
+            <TorrentList
+              torrents={results.torrents}
+              categories={SQ_TORRENT_CATEGORIES}
+              total={results.total}
+            />
+          ) : (
+            <Text color="grey">No results.</Text>
+          )}
+        </>
       )}
     </>
   )
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { query } }) => {
+  async ({ token, query: { query, page: pageParam } }) => {
     if (!token || !query) return { props: {} }
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
     } = getConfig()
 
+    const params = {
+      query: encodeURIComponent(query),
+    }
+    const page = pageParam ? parseInt(pageParam) : 0
+    if (page > 0) params.page = page
+
     try {
       const searchRes = await fetch(
-        `${SQ_API_URL}/torrents/search?query=${encodeURIComponent(query)}`,
+        `${SQ_API_URL}/torrents/search?${qs.stringify(params)}`,
         {
           headers: {
             'Content-Type': 'application/json',
