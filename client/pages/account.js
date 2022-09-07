@@ -4,6 +4,8 @@ import moment from 'moment'
 import copy from 'copy-to-clipboard'
 import jwt from 'jsonwebtoken'
 import { Copy } from '@styled-icons/boxicons-regular/Copy'
+import { Check } from '@styled-icons/boxicons-regular/Check'
+import { X } from '@styled-icons/boxicons-regular/X'
 import { withAuthServerSideProps } from '../utils/withAuth'
 import SEO from '../components/SEO'
 import Box from '../components/Box'
@@ -117,8 +119,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
         <Box
           display="flex"
           alignItems="center"
-          border="1px solid"
-          borderColor="border"
+          bg="sidebar"
           borderRadius={1}
           p={2}
           pl={4}
@@ -140,32 +141,24 @@ const Account = ({ token, invites = [], user, userRole }) => {
           {
             header: 'Email',
             accessor: 'email',
-            cell: ({ value, row }) => (
-              <Text
-                _css={{
-                  textDecoration: row.claimed ? 'line-through' : 'none',
-                }}
-              >
-                {value}
-              </Text>
-            ),
+            cell: ({ value }) => <Text>{value}</Text>,
             gridWidth: '1.75fr',
           },
           {
             header: 'Claimed',
             accessor: 'claimed',
-            cell: ({ value }) => <Text>{value ? 'Yes' : 'No'}</Text>,
+            cell: ({ value }) => (
+              <Box color={value ? 'success' : 'grey'}>
+                {value ? <Check size={24} /> : <X size={24} />}{' '}
+              </Box>
+            ),
             gridWidth: '0.5fr',
           },
           {
             header: 'Valid until',
             accessor: 'validUntil',
             cell: ({ value }) => (
-              <Text
-                _css={{
-                  textDecoration: value < Date.now() ? 'line-through' : 'none',
-                }}
-              >
+              <Text color={value < Date.now() ? 'error' : 'text'}>
                 {moment(value).format('HH:mm Do MMM YYYY')}
               </Text>
             ),
@@ -179,14 +172,18 @@ const Account = ({ token, invites = [], user, userRole }) => {
             ),
             gridWidth: '1.2fr',
           },
-          {
-            header: 'Role',
-            accessor: 'role',
-            cell: ({ value }) => (
-              <Text _css={{ textTransform: 'capitalize' }}>{value}</Text>
-            ),
-            gridWidth: '0.6fr',
-          },
+          ...(userRole === 'admin'
+            ? [
+                {
+                  header: 'Role',
+                  accessor: 'role',
+                  cell: ({ value }) => (
+                    <Text _css={{ textTransform: 'capitalize' }}>{value}</Text>
+                  ),
+                  gridWidth: '0.6fr',
+                },
+              ]
+            : []),
           {
             header: 'Copy link',
             cell: ({ row }) => {
@@ -202,7 +199,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                       'Invite link copied to clipboard'
                     )
                   }}
-                  disabled={row.claimed}
+                  disabled={row.claimed || row.validUntil < Date.now()}
                   px={1}
                   py={1}
                 >
