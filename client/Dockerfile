@@ -6,6 +6,7 @@ RUN echo "{}" > /config.js
 RUN ./node_modules/.bin/next build
 
 FROM node:16-alpine
+LABEL org.opencontainers.image.source=https://github.com/tdjsnelling/sqtracker
 WORKDIR /sqtracker/client
 COPY --from=builder /sqtracker/node_modules ./node_modules
 COPY --from=builder /sqtracker/public ./public

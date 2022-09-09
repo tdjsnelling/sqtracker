@@ -10,14 +10,15 @@ services:
     container_name: "sq_traefik"
     command:
       - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file=true"
+      - "--providers.file.filename=/config/traefik.yml"
       - "--entrypoints.web.address=:80"
     ports:
       - "80:80"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - ./traefik.yml:/config/traefik.yml
   database:
     container_name: sq_mongodb
     image: mongo:4.4
@@ -32,13 +33,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "127.0.0.1:44444:44444"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.api.entrypoints=web"
-      - "traefik.http.routers.api.rule=PathPrefix(`/api`, `/sq`)"
-      - "traefik.http.services.api.loadbalancer.server.port=44444"
-      - "traefik.http.middlewares.api-prefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.api.middlewares=api-prefix"
     volumes:
       - ./config.js:/sqtracker/config.js
     depends_on:
@@ -51,11 +45,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "127.0.0.1:44445:44445"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.client.entrypoints=web"
-      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
-      - "traefik.http.services.client.loadbalancer.server.port=44445"
     volumes:
       - ./config.js:/sqtracker/config.js
     depends_on:

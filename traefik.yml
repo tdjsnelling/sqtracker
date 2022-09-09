@@ -1,0 +1,28 @@
+http:
+  routers:
+    api:
+      service: api
+      entryPoints:
+        - web
+      rule: "PathPrefix(`/api`, `/sq`)"
+      middlewares:
+        - api-prefix
+    client:
+      service: client
+      entryPoints:
+        - web
+      rule: "PathPrefix(`/`)"
+  services:
+    api:
+      loadBalancer:
+        servers:
+          - url: http://sq_api:44444
+    client:
+      loadBalancer:
+        servers:
+          - url: http://sq_client:44445
+  middlewares:
+    api-prefix:
+      stripPrefix:
+        prefixes:
+          - /api
