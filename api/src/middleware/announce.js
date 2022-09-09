@@ -56,7 +56,7 @@ const handleAnnounce = async (req, res, next) => {
     ratio !== -1 &&
     Number(params.left > 0)
   ) {
-    res.statusMessage = 'Ratio is below minimum threshold'
+    res.statusMessage = `Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}`
     res.sendStatus(403)
     return
   }

@@ -1,7 +1,6 @@
 FROM node:16-alpine
-WORKDIR /app
-COPY config.js /config.js
-COPY api/ .
+WORKDIR /sqtracker/app
+COPY . .
 RUN yarn
 EXPOSE 44444
 CMD yarn start

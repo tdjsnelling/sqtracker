@@ -28,8 +28,8 @@ services:
   api:
     container_name: sq_api
     build:
-      context: .
-      dockerfile: ./api/Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
     ports:
       - "127.0.0.1:44444:44444"
     labels:
@@ -39,14 +39,16 @@ services:
       - "traefik.http.services.api.loadbalancer.server.port=44444"
       - "traefik.http.middlewares.api-prefix.stripprefix.prefixes=/api"
       - "traefik.http.routers.api.middlewares=api-prefix"
+    volumes:
+      - ./config.js:/sqtracker/config.js
     depends_on:
       - database
       - tracker
   client:
     container_name: sq_client
     build:
-      context: .
-      dockerfile: ./client/Dockerfile
+      context: ./client
+      dockerfile: Dockerfile
     ports:
       - "127.0.0.1:44445:44445"
     labels:
@@ -54,5 +56,7 @@ services:
       - "traefik.http.routers.client.entrypoints=web"
       - "traefik.http.routers.client.rule=PathPrefix(`/`)"
       - "traefik.http.services.client.loadbalancer.server.port=44445"
+    volumes:
+      - ./config.js:/sqtracker/config.js
     depends_on:
       - api

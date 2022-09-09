@@ -7,7 +7,7 @@ import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
 import { mail } from '../index'
 
-const sendVerificationEmail = async (address, token) => {
+export const sendVerificationEmail = async (address, token) => {
   await mail.sendMail({
     from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
     to: address,

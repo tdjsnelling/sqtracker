@@ -2,15 +2,18 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 import User from '../schema/user'
+import { sendVerificationEmail } from '../controllers/user'
 
 const createAdminUser = async () => {
   const existingAdmin = await User.findOne({ username: 'admin' }).lean()
   if (!existingAdmin) {
     const created = Date.now()
+
     const hash = await bcrypt.hash('admin', 10)
+
     const adminUser = new User({
       username: 'admin',
-      email: 'admin@sqtracker',
+      email: process.env.SQ_ADMIN_EMAIL,
       role: 'admin',
       password: hash,
       created,
@@ -29,7 +32,21 @@ const createAdminUser = async () => {
       },
       process.env.SQ_JWT_SECRET
     )
+
     await adminUser.save()
+
+    const emailVerificationValidUntil = created + 48 * 60 * 60 * 1000
+    const emailVerificationToken = jwt.sign(
+      {
+        user: process.env.SQ_ADMIN_EMAIL,
+        validUntil: emailVerificationValidUntil,
+      },
+      process.env.SQ_JWT_SECRET
+    )
+    await sendVerificationEmail(
+      process.env.SQ_ADMIN_EMAIL,
+      emailVerificationToken
+    )
   }
 }
 

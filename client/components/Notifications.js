@@ -125,6 +125,7 @@ export const NotificationsProvider = ({ children }) => {
         p="20px"
         pb="40px"
         overflowX="hidden"
+        zIndex={999}
         _css={{ '> * + *': { mt: 3 } }}
       >
         {notifications.map((notification, i) => (
