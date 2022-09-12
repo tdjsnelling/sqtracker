@@ -16,11 +16,11 @@ http:
     api:
       loadBalancer:
         servers:
-          - url: http://sq_api:44444
+          - url: http://sq_api:3001
     client:
       loadBalancer:
         servers:
-          - url: http://sq_client:44445
+          - url: http://sq_client:3000
   middlewares:
     api-prefix:
       stripPrefix:

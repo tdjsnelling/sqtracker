@@ -28,9 +28,7 @@ services:
       - ./data:/data/db
   api:
     container_name: sq_api
-    build:
-      context: ./api
-      dockerfile: Dockerfile
+    image: ghcr.io/tdjsnelling/sqtracker-api:latest
     ports:
       - "127.0.0.1:3001:3001"
     volumes:
@@ -40,9 +38,7 @@ services:
       - tracker
   client:
     container_name: sq_client
-    build:
-      context: ./client
-      dockerfile: Dockerfile
+    image: ghcr.io/tdjsnelling/sqtracker-api:latest
     ports:
       - "127.0.0.1:3000:3000"
     volumes:

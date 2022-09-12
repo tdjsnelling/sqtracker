@@ -1,4 +1,5 @@
 import qs from 'qs'
+import bencode from 'bencode'
 import User from '../schema/user'
 import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
@@ -17,15 +18,19 @@ const handleAnnounce = async (req, res, next) => {
 
   // if the uid does not match a registered user, deny announce
   if (!user) {
-    res.statusMessage = 'User not registered'
-    res.sendStatus(401)
+    const response = bencode.encode({
+      'failure reason': 'Announce denied: you are not registered.',
+    })
+    res.send(response)
     return
   }
 
   // if the users email is not verified, deny announce
   if (!user.emailVerified) {
-    res.statusMessage = 'Email must be verified'
-    res.sendStatus(401)
+    const response = bencode.encode({
+      'failure reason': 'Announce denied: email address must be verified.',
+    })
+    res.send(response)
     return
   }
 
@@ -41,8 +46,11 @@ const handleAnnounce = async (req, res, next) => {
 
   // if torrent info hash is not in the database, deny announce
   if (!torrent) {
-    res.statusMessage = 'Cannot index a torrent that has not been uploaded'
-    res.sendStatus(406)
+    const response = bencode.encode({
+      'failure reason':
+        'Announce denied: cannot announce a torrent that has not been uploaded.',
+    })
+    res.send(response)
     return
   }
 
@@ -56,8 +64,10 @@ const handleAnnounce = async (req, res, next) => {
     ratio !== -1 &&
     Number(params.left > 0)
   ) {
-    res.statusMessage = `Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}`
-    res.sendStatus(403)
+    const response = bencode.encode({
+      'failure reason': `Announce denied: Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}.`,
+    })
+    res.send(response)
     return
   }
 

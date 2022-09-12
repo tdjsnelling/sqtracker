@@ -176,7 +176,7 @@ app.post('/reports/resolve/:reportId', setReportResolved)
 app.get('/reports/:reportId', fetchReport)
 app.get('/admin/stats', getStats)
 
-const port = process.env.SQ_PORT || 44444
+const port = process.env.SQ_PORT || 3001
 app.listen(port, () => {
   console.log(`[sq] ■ sqtracker running http://localhost:${port}`)
 })
