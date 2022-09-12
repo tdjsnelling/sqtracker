@@ -8,6 +8,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import jwt from 'jsonwebtoken'
 import { useCookies } from 'react-cookie'
+import slugify from 'slugify'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import { withAuthServerSideProps } from '../../utils/withAuth'
@@ -294,7 +295,9 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     }
   }
 
-  const category = SQ_TORRENT_CATEGORIES.find((c) => c.slug === torrent.type)
+  const category = SQ_TORRENT_CATEGORIES.find(
+    (c) => slugify(c, { lower: true }) === torrent.type
+  )
 
   return (
     <>
@@ -340,8 +343,11 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
             </>
           ),
           Category: (
-            <Link href={`/categories/${category.slug}`} passHref>
-              <Text as="a">{category.name}</Text>
+            <Link
+              href={`/categories/${slugify(category, { lower: true })}`}
+              passHref
+            >
+              <Text as="a">{category}</Text>
             </Link>
           ),
           Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),

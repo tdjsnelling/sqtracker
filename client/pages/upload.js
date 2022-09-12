@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import styled from 'styled-components'
 import css from '@styled-system/css'
 import { useDropzone } from 'react-dropzone'
+import slugify from 'slugify'
 import { Link as LinkIcon } from '@styled-icons/boxicons-regular/Link'
 import { Check } from '@styled-icons/boxicons-regular/Check'
 import { withAuth } from '../utils/withAuth'
@@ -141,8 +142,8 @@ const Upload = ({ token, userId }) => {
         <Input name="name" label="Name" mb={4} required />
         <Select name="category" label="Category" mb={4} required>
           {SQ_TORRENT_CATEGORIES.map((category) => (
-            <option key={category.slug} value={category.slug}>
-              {category.name}
+            <option key={category} value={slugify(category, { lower: true })}>
+              {category}
             </option>
           ))}
         </Select>

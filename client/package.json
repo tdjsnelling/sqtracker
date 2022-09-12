@@ -27,6 +27,7 @@
     "react-dropzone": "^11.4.2",
     "react-markdown": "^7.1.2",
     "remark-gfm": "^3.0.1",
+    "slugify": "^1.6.5",
     "styled-components": "^5.3.3",
     "styled-system": "^5.1.5"
   },

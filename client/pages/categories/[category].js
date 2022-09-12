@@ -2,6 +2,7 @@ import React from 'react'
 import { useRouter } from 'next/router'
 import getConfig from 'next/config'
 import qs from 'qs'
+import slugify from 'slugify'
 import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
@@ -17,13 +18,15 @@ const Category = ({ results }) => {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
   } = getConfig()
 
-  const category = SQ_TORRENT_CATEGORIES.find((c) => c.slug === categorySlug)
+  const category = SQ_TORRENT_CATEGORIES.find(
+    (c) => slugify(c, { lower: true }) === categorySlug
+  )
 
   return (
     <>
-      <SEO title={`Browse ${category.name}`} />
+      <SEO title={`Browse ${category}`} />
       <Text as="h1" mb={5}>
-        Browse {category.name}
+        Browse {category}
       </Text>
       {results?.torrents.length ? (
         <TorrentList

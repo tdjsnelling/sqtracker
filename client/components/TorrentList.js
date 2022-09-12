@@ -2,6 +2,7 @@ import React from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import moment from 'moment'
+import slugify from 'slugify'
 import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
@@ -65,7 +66,9 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             accessor: 'type',
             cell: ({ value }) => (
               <Text icon={ListUl}>
-                {categories.find((c) => c.slug === value)?.name || 'None'}
+                {categories.find(
+                  (c) => slugify(c, { lower: true }) === value
+                ) || 'None'}
               </Text>
             ),
             gridWidth: '2fr',

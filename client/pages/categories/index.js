@@ -3,6 +3,7 @@ import getConfig from 'next/config'
 import Link from 'next/link'
 import styled from 'styled-components'
 import css from '@styled-system/css'
+import slugify from 'slugify'
 import { withAuth } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
@@ -42,9 +43,12 @@ const Categories = () => {
         _css={{ pl: 0, listStyle: 'none' }}
       >
         {SQ_TORRENT_CATEGORIES.map((category) => (
-          <CategoryItem key={category.slug}>
-            <Link href={`/categories/${category.slug}`} passHref>
-              <a>{category.name}</a>
+          <CategoryItem key={category}>
+            <Link
+              href={`/categories/${slugify(category, { lower: true })}`}
+              passHref
+            >
+              <a>{category}</a>
             </Link>
           </CategoryItem>
         ))}
