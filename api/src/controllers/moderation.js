@@ -167,33 +167,47 @@ export const getStats = async (req, res) => {
     const uploadedTorrents = await Torrent.countDocuments()
     const completedDownloads = await Progress.countDocuments({ left: 0 })
 
-    const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
+    try {
+      const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
 
-    if (!trackerRes.ok) {
+      if (!trackerRes.ok) {
+        const body = await trackerRes.text()
+        throw new Error(
+          `Error performing tracker scrape: ${trackerRes.status} ${body}`
+        )
+      }
+
       const body = await trackerRes.text()
-      throw new Error(
-        `Error performing tracker scrape: ${trackerRes.status} ${body}`
-      )
+      const [peers, seeds, activeTorrentsLine] = body.split('\n')
+
+      const leechers = parseInt(peers) - parseInt(seeds)
+
+      const activeTorrentsRegex = /opentracker serving ([0-9]+) torrents/
+      const [, activeTorrents] = activeTorrentsLine.match(activeTorrentsRegex)
+
+      res.json({
+        registeredUsers,
+        bannedUsers,
+        uploadedTorrents,
+        completedDownloads,
+        peers,
+        seeds,
+        leechers,
+        activeTorrents,
+      })
+    } catch (e) {
+      console.error('[DEBUG] Error: could not fetch stats from tracker')
+      res.json({
+        registeredUsers,
+        bannedUsers,
+        uploadedTorrents,
+        completedDownloads,
+        peers: '?',
+        seeds: '?',
+        leechers: '?',
+        activeTorrents: '?',
+      })
     }
-
-    const body = await trackerRes.text()
-    const [peers, seeds, activeTorrentsLine] = body.split('\n')
-
-    const leechers = parseInt(peers) - parseInt(seeds)
-
-    const activeTorrentsRegex = /opentracker serving ([0-9]+) torrents/
-    const [, activeTorrents] = activeTorrentsLine.match(activeTorrentsRegex)
-
-    res.json({
-      registeredUsers,
-      bannedUsers,
-      uploadedTorrents,
-      completedDownloads,
-      peers,
-      seeds,
-      leechers,
-      activeTorrents,
-    })
   } catch (e) {
     res.status(500).send(e.message)
   }
