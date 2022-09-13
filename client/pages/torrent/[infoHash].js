@@ -358,8 +358,8 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           ),
           Size: prettyBytes(torrent.size),
           Downloads: torrent.downloads,
-          Seeders: torrent.seeders,
-          Leechers: torrent.leechers,
+          Seeders: torrent.seeders !== undefined ? torrent.seeders : '?',
+          Leechers: torrent.leechers !== undefined ? torrent.leechers : '?',
           Freeleech:
             torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? 'Yes' : 'No',
         }}

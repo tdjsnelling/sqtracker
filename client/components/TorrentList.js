@@ -76,13 +76,17 @@ const TorrentList = ({ torrents = [], categories, total }) => {
           {
             header: 'Seeders',
             accessor: 'seeders',
-            cell: ({ value }) => <Text icon={Upload}>{value}</Text>,
+            cell: ({ value }) => (
+              <Text icon={Upload}>{value !== undefined ? value : '?'}</Text>
+            ),
             gridWidth: '1fr',
           },
           {
             header: 'Leechers',
             accessor: 'leechers',
-            cell: ({ value }) => <Text icon={Download}>{value}</Text>,
+            cell: ({ value }) => (
+              <Text icon={Download}>{value !== undefined ? value : '?'}</Text>
+            ),
             gridWidth: '1fr',
           },
           {
