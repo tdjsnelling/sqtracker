@@ -92,6 +92,12 @@ const Account = ({ token, invites = [], user, userRole }) => {
       }
 
       addNotification('success', 'Password changed successfully')
+
+      const fields = e.target.querySelectorAll('input')
+      for (const field of fields) {
+        field.value = ''
+        field.blur()
+      }
     } catch (e) {
       addNotification('error', `Could not change password: ${e.message}`)
       console.error(e)

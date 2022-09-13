@@ -282,6 +282,19 @@ export const changePassword = async (req, res) => {
         { $set: { password: hash } }
       )
 
+      await mail.sendMail({
+        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+        to: user.email,
+        subject: 'Your password was changed',
+        text: `Your password was updated successfully at ${new Date().toISOString()} from ${
+          req.ip
+        }.
+        
+If you did not perform this action, follow the link below immediately to reset your password. If this was you, no action is required. 
+        
+${process.env.SQ_BASE_URL}/reset-password/initiate`,
+      })
+
       res.sendStatus(200)
     } catch (err) {
       res.status(500).send(err.message)
@@ -513,12 +526,12 @@ export const fetchUser = async (req, res) => {
     }
 
     user.ratio = await getUserRatio(user._id)
+
     const { torrents } = await getTorrentsPage({ userId: user._id })
     user.torrents = torrents
 
     res.json(user)
   } catch (e) {
-    console.error(e)
     res.status(500).send(e.message)
   }
 }

@@ -11,35 +11,40 @@ import { hexToBinary } from '../middleware/announce'
 export const embellishTorrentsWithTrackerScrape = async (torrents) => {
   if (!torrents.length) return []
 
-  const infoHashes = torrents.map((torrent) => hexToBinary(torrent.infoHash))
-  const query = qs.stringify(
-    { info_hash: infoHashes },
-    { encoder: escape, indices: false }
-  )
-
-  const trackerRes = await fetch(
-    `${process.env.SQ_TRACKER_URL}/scrape?${query}`
-  )
-
-  if (!trackerRes.ok) {
-    const body = await trackerRes.text()
-    throw new Error(
-      `Error performing tracker scrape: ${trackerRes.status} ${body}`
+  try {
+    const infoHashes = torrents.map((torrent) => hexToBinary(torrent.infoHash))
+    const query = qs.stringify(
+      { info_hash: infoHashes },
+      { encoder: escape, indices: false }
     )
-  }
 
-  const bencoded = await trackerRes.arrayBuffer()
-  const scrape = bencode.decode(bencoded)
+    const trackerRes = await fetch(
+      `${process.env.SQ_TRACKER_URL}/scrape?${query}`
+    )
 
-  return torrents.map((torrent) => {
-    const scrapeForInfoHash =
-      scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
-    return {
-      ...torrent,
-      seeders: scrapeForInfoHash?.complete || 0,
-      leechers: scrapeForInfoHash?.incomplete || 0,
+    if (!trackerRes.ok) {
+      const body = await trackerRes.text()
+      throw new Error(
+        `[DEBUG] Error performing tracker scrape: ${trackerRes.status} ${body}`
+      )
     }
-  })
+
+    const bencoded = await trackerRes.arrayBuffer()
+    const scrape = bencode.decode(bencoded)
+
+    return torrents.map((torrent) => {
+      const scrapeForInfoHash =
+        scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
+      return {
+        ...torrent,
+        seeders: scrapeForInfoHash?.complete || 0,
+        leechers: scrapeForInfoHash?.incomplete || 0,
+      }
+    })
+  } catch (e) {
+    console.error('[DEBUG] Error: could not embellish torrents from tracker')
+    return torrents
+  }
 }
 
 export const uploadTorrent = async (req, res) => {
