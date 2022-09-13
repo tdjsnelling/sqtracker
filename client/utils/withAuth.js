@@ -27,17 +27,22 @@ export const withAuth = (Component, noRedirect = false) => {
   return Auth
 }
 
-export const withAuthServerSideProps = (getServerSideProps) => {
+export const withAuthServerSideProps = (
+  getServerSideProps,
+  noRedirect = false
+) => {
   return async (ctx) => {
     const { token, userId } = getReqCookies(ctx.req)
 
-    if (!token)
+    if (!token && !noRedirect)
       return {
         redirect: {
           permanent: false,
           destination: '/login',
         },
       }
+
+    if (!token && noRedirect) return { props: {} }
 
     const { props: ssProps } = await getServerSideProps({
       ...ctx,

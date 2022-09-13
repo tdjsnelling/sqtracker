@@ -120,6 +120,6 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
   } catch (e) {
     return { props: {} }
   }
-})
+}, true)
 
 export default Index
