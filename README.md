@@ -60,9 +60,11 @@ The sqtracker platform is designed to be deployed via Docker. Once a configurati
 
 Alternatively, you can deploy each service individually on a PaaS cloud platform such as [Northflank](https://northflank.com).
 
+If you change the name of any services in `docker-compose.yml`, you will also need to update the relevant host names in your `config.js` and `traefik.yml` files.
+
 ## Configuration
 
-All configuration is provided via a single JavaScript file. This file must export an object containing 2 keys: `envs` and `secrets`.
+All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
 
 A full list of configuration options is below. All are required.
 
