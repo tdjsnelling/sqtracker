@@ -2,10 +2,11 @@
   "name": "@sqtracker/client",
   "version": "0.0.1",
   "private": true,
+  "license": "GPL-3.0-only",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {

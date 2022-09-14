@@ -2,6 +2,7 @@
   "name": "sqtracker",
   "version": "0.0.1",
   "private": true,
+  "license": "GPL-3.0-only",
   "workspaces": [
     "api",
     "client"

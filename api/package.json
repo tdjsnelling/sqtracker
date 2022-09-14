@@ -2,6 +2,7 @@
   "name": "@sqtracker/api",
   "version": "0.0.1",
   "private": true,
+  "license": "GPL-3.0-only",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
     "start": "babel-node src/index.js"

@@ -7,11 +7,14 @@ http:
       rule: "PathPrefix(`/api`, `/sq`)"
       middlewares:
         - api-prefix
+        - apiHostHeaderSet
     client:
       service: client
       entryPoints:
         - web
       rule: "PathPrefix(`/`)"
+      middlewares:
+        - clientHostHeaderSet
   services:
     api:
       loadBalancer:
@@ -26,3 +29,11 @@ http:
       stripPrefix:
         prefixes:
           - /api
+    clientHostHeaderSet:
+      headers:
+        customRequestHeaders:
+          Host: "sq_client"
+    apiHostHeaderSet:
+      headers:
+        customRequestHeaders:
+          Host: "sq_api"
