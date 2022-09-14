@@ -50,7 +50,10 @@ import {
   getStats,
 } from './controllers/moderation'
 import { rssFeed } from './controllers/rss'
+import validateConfig from './utils/validateConfig'
 import createAdminUser from './setup/createAdminUser'
+
+validateConfig()
 
 const connectToDb = () => {
   console.log('[sq] initiating db connection...')
