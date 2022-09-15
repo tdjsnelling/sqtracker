@@ -438,6 +438,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
             <Input
               name="reason"
               label="Reason for report"
+              placeholder="Markdown supported"
               rows={8}
               mb={4}
               required

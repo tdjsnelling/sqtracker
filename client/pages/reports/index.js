@@ -16,7 +16,7 @@ const Reports = ({ reports, userRole }) => {
     <>
       <SEO title="Unresolved reports" />
       <Text as="h1" mb={5}>
-        Reports
+        Unresolved reports
       </Text>
       <List
         data={reports

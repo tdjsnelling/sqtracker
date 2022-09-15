@@ -53,7 +53,7 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   })
 })
 
-const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
+const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen, version }) => {
   const [cookies] = useCookies()
   const [role, setRole] = useState('user')
   const [isServer, setIsServer] = useState(true)
@@ -232,7 +232,8 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
           Powered by{' '}
           <a href="https://github.com/tdjsnelling/sqtracker" target="_blank">
             ■ sqtracker
-          </a>
+          </a>{' '}
+          v{version}
         </Text>
       </Box>
     </Box>

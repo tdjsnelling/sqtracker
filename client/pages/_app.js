@@ -8,13 +8,14 @@ import { useCookies } from 'react-cookie'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
 import { Sun } from '@styled-icons/boxicons-regular/Sun'
 import { Moon } from '@styled-icons/boxicons-regular/Moon'
+import { Bell } from '@styled-icons/boxicons-regular/Bell'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { NotificationsProvider } from '../components/Notifications'
 import Text from '../components/Text'
-import { Bell } from '@styled-icons/boxicons-regular/Bell'
+import { version } from '../package.json'
 
 const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
@@ -195,6 +196,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
             isMobile={isMobile}
             menuIsOpen={menuIsOpen}
             setMenuIsOpen={setMenuIsOpen}
+            version={version}
           />
           <Box
             width="100%"

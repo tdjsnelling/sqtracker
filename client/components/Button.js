@@ -17,6 +17,7 @@ const StyledButton = styled.button(
       px: 4,
       py: 3,
       cursor: 'pointer',
+      whiteSpace: 'nowrap',
       '&:hover': {
         borderColor:
           theme.name === 'light'
