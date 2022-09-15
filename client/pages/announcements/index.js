@@ -50,7 +50,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
                 {
                   header: 'Posted by',
                   accessor: 'createdBy.username',
-                  cell: ({ value }) => <Text>{value}</Text>,
+                  cell: ({ value }) => <Text>{value ?? 'deleted user'}</Text>,
                   gridWidth: '1fr',
                 },
                 {
@@ -85,7 +85,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
           {
             header: 'Posted by',
             accessor: 'createdBy.username',
-            cell: ({ value }) => <Text>{value}</Text>,
+            cell: ({ value }) => <Text>{value ?? 'deleted user'}</Text>,
             gridWidth: '1fr',
           },
           {

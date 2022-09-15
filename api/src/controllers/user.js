@@ -548,7 +548,7 @@ export const getUserRole = async (req, res) => {
 export const getUserVerifiedEmailStatus = async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.userId }).lean()
-    res.send(user.emailVerified)
+    res.send(!!user.emailVerified)
   } catch (e) {
     res.status(500).send(e.message)
   }
