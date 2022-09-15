@@ -7,6 +7,7 @@ const Announcement = new mongoose.Schema({
   createdBy: mongoose.Schema.ObjectId,
   pinned: Boolean,
   created: Number,
+  updated: Number,
 })
 
 export default mongoose.model('announcement', Announcement)

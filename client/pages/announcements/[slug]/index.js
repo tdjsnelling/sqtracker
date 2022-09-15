@@ -7,13 +7,13 @@ import jwt from 'jsonwebtoken'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Pin } from '@styled-icons/boxicons-regular'
-import SEO from '../../components/SEO'
-import Box from '../../components/Box'
-import Text from '../../components/Text'
-import Button from '../../components/Button'
-import MarkdownBody from '../../components/MarkdownBody'
-import { withAuthServerSideProps } from '../../utils/withAuth'
-import { NotificationContext } from '../../components/Notifications'
+import SEO from '../../../components/SEO'
+import Box from '../../../components/Box'
+import Text from '../../../components/Text'
+import Button from '../../../components/Button'
+import MarkdownBody from '../../../components/MarkdownBody'
+import { withAuthServerSideProps } from '../../../utils/withAuth'
+import { NotificationContext } from '../../../components/Notifications'
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned)
@@ -108,20 +108,37 @@ const Announcement = ({ announcement, token, userRole }) => {
             <Button onClick={handlePin} variant="secondary" mr={3}>
               {pinned ? 'Unpin' : 'Pin'}
             </Button>
-            <Button onClick={handleDelete}>Delete</Button>
+            <Link href={`${router.asPath}/edit`} passHref>
+              <a>
+                <Button variant="secondary" mr={3}>
+                  Edit
+                </Button>
+              </a>
+            </Link>
+            <Button onClick={handleDelete} variant="secondary">
+              Delete
+            </Button>
           </Box>
         )}
       </Box>
-      <Text color="grey" mb={5}>
-        Posted {moment(announcement.created).format('HH:mm Do MMM YYYY')} by{' '}
-        {announcement.createdBy?.username ? (
-          <Link href={`/user/${announcement.createdBy.username}`} passHref>
-            <a>{announcement.createdBy.username}</a>
-          </Link>
-        ) : (
-          'deleted user'
+      <Box mb={5}>
+        <Text color="grey">
+          Posted {moment(announcement.created).format('HH:mm Do MMM YYYY')} by{' '}
+          {announcement.createdBy?.username ? (
+            <Link href={`/user/${announcement.createdBy.username}`} passHref>
+              <a>{announcement.createdBy.username}</a>
+            </Link>
+          ) : (
+            'deleted user'
+          )}
+        </Text>
+        {announcement.updated && (
+          <Text color="grey" mt={3}>
+            Last updated{' '}
+            {moment(announcement.updated).format('HH:mm Do MMM YYYY')}
+          </Text>
         )}
-      </Text>
+      </Box>
       <MarkdownBody>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {announcement.body}

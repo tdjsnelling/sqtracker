@@ -208,3 +208,34 @@ export const pinAnnouncement = async (req, res) => {
     res.status(500).send(e.message)
   }
 }
+
+export const editAnnouncement = async (req, res) => {
+  if (req.body.title && req.body.body) {
+    try {
+      if (req.userRole !== 'admin') {
+        res
+          .status(401)
+          .send('You do not have permission to edit an announcement')
+        return
+      }
+
+      const announcement = await Announcement.findOneAndUpdate(
+        { _id: req.params.announcementId },
+        {
+          $set: {
+            title: req.body.title,
+            body: req.body.body,
+            pinned: req.body.pinned,
+            updated: Date.now(),
+          },
+        }
+      )
+
+      res.send(announcement.slug)
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include title and body')
+  }
+}

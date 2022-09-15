@@ -41,6 +41,7 @@ import {
   getPinnedAnnouncements,
   deleteAnnouncement,
   pinAnnouncement,
+  editAnnouncement,
 } from './controllers/announcement'
 import {
   createReport,
@@ -172,6 +173,7 @@ app.get('/announcements/:slug', fetchAnnouncement)
 app.get('/announcements/page/:page', getAnnouncements)
 app.delete('/announcements/:slug', deleteAnnouncement)
 app.post('/announcements/pin/:announcementId/:action', pinAnnouncement)
+app.post('/announcements/edit/:announcementId', editAnnouncement)
 
 // moderation routes
 app.get('/reports/page/:page', getReports)
