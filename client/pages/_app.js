@@ -109,7 +109,7 @@ const GlobalStyle = createGlobalStyle(
     text-decoration: underline;
   }
   ul, ol {
-    padding-left: 20px;
+    padding-left: 1em;
   }
 `
 )

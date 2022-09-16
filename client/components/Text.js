@@ -53,9 +53,14 @@ const Text = ({
       mx={mx}
       ml={ml}
       mr={mr}
-      {...iconWrapperProps}
     >
-      <Box display="flex" alignItems="center" color={iconColor} mr={2}>
+      <Box
+        display="flex"
+        alignItems="center"
+        color={iconColor}
+        mr={2}
+        {...iconWrapperProps}
+      >
         <Icon size={iconSize} />
       </Box>
       <StyledText ref={fref} {...rest}>

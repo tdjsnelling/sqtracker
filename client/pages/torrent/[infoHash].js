@@ -11,6 +11,8 @@ import { useCookies } from 'react-cookie'
 import slugify from 'slugify'
 import { Download } from '@styled-icons/boxicons-regular/Download'
 import { Magnet } from '@styled-icons/boxicons-regular/Magnet'
+import { File } from '@styled-icons/boxicons-regular/File'
+import { Folder } from '@styled-icons/boxicons-regular/Folder'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import { withAuthServerSideProps } from '../../utils/withAuth'
@@ -24,6 +26,15 @@ import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
 import { NotificationContext } from '../../components/Notifications'
+
+// from https://stackoverflow.com/a/44681235/7739519
+const insert = (children = [], [head, ...tail], size) => {
+  let child = children.find((child) => child.name === head)
+  if (!child) children.push((child = { name: head, children: [] }))
+  if (tail.length > 0) insert(child.children, tail, size)
+  else child.size = size
+  return children
+}
 
 export const Info = ({ title, items }) => (
   <Infobox mb={5}>
@@ -58,6 +69,35 @@ export const Info = ({ title, items }) => (
       ))}
     </Box>
   </Infobox>
+)
+
+const FileItem = ({ file, depth = 0 }) => (
+  <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.6 }}>
+    <Text icon={file.children.length ? Folder : File} iconSize="18px">
+      {file.name}
+      {file.size !== undefined ? (
+        <>
+          {' '}
+          <Text as="span" color="grey" fontSize={1}>
+            ({prettyBytes(file.size)})
+          </Text>
+        </>
+      ) : (
+        '/'
+      )}
+    </Text>
+    {!!file.children.length && (
+      <Box as="ul" pl={0} css={{ listStyle: 'none' }}>
+        {file.children.map((child) => (
+          <FileItem
+            key={`file-${child.name}-${depth}`}
+            file={child}
+            depth={depth + 1}
+          />
+        ))}
+      </Box>
+    )}
+  </Box>
 )
 
 const Torrent = ({ token, torrent, userId, userRole, uid }) => {
@@ -302,6 +342,10 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     (c) => slugify(c, { lower: true }) === torrent.type
   )
 
+  const parsedFiles = torrent.files
+    .map(({ path, size }) => ({ path: path.split('/'), size }))
+    .reduce((children, { path, size }) => insert(children, path, size), [])
+
   return (
     <>
       <SEO title={torrent.name} />
@@ -402,6 +446,21 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           </ReactMarkdown>
         </MarkdownBody>
       </Box>
+      <Infobox mb={5}>
+        <Text
+          fontWeight={600}
+          fontSize={1}
+          _css={{ textTransform: 'uppercase' }}
+          mb={3}
+        >
+          Files
+        </Text>
+        <Box as="ul" pl={0} css={{ listStyle: 'none' }}>
+          {parsedFiles.map((file, i) => (
+            <FileItem key={`file-${i}`} file={file} />
+          ))}
+        </Box>
+      </Infobox>
       <Box
         display="flex"
         borderBottom="1px solid"

@@ -58,6 +58,8 @@ export const uploadTorrent = async (req, res) => {
       const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
 
+      console.dir(parsed, { depth: null })
+
       if (parsed.info.private !== 1) {
         res.status(400).send('Torrent must be set to private')
         return
@@ -90,11 +92,26 @@ export const uploadTorrent = async (req, res) => {
         return
       }
 
+      let files
+      if (parsed.info.files) {
+        files = parsed.info.files.map((file) => ({
+          path: file.path.map((tok) => tok.toString()).join('/'),
+          size: file.length,
+        }))
+      } else {
+        files = [
+          {
+            path: parsed.info.name.toString(),
+            size: parsed.info.length,
+          },
+        ]
+      }
+
       const newTorrent = new Torrent({
         name: req.body.name,
         description: req.body.description,
         type: req.body.type,
-        infoHash: infoHash,
+        infoHash,
         binary: req.body.torrent,
         uploadedBy: req.userId,
         downloads: 0,
@@ -104,6 +121,7 @@ export const uploadTorrent = async (req, res) => {
           parsed.info.files.reduce((acc, cur) => {
             return acc + cur.length
           }, 0),
+        files,
         created: Date.now(),
         upvotes: [],
         downvotes: [],
@@ -166,6 +184,7 @@ export const fetchTorrent = async (req, res) => {
           downloads: 1,
           anonymous: 1,
           size: 1,
+          files: 1,
           created: 1,
           upvotes: { $size: '$upvotes' },
           downvotes: { $size: '$downvotes' },

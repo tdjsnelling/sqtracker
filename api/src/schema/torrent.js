@@ -11,6 +11,7 @@ const Torrent = new mongoose.Schema({
   downloads: Number,
   anonymous: Boolean,
   size: Number,
+  files: Array,
   created: Number,
   upvotes: Array,
   downvotes: Array,
