@@ -1,4 +1,5 @@
 const config = require('../config')
+const { version } = require('./package.json')
 
 module.exports = {
   reactStrictMode: true,
@@ -8,6 +9,7 @@ module.exports = {
   },
   publicRuntimeConfig: {
     ...config.envs,
+    SQ_VERSION: version,
   },
   serverRuntimeConfig: {
     ...config.envs,

@@ -53,7 +53,7 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   })
 })
 
-const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen, version }) => {
+const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const [cookies] = useCookies()
   const [role, setRole] = useState('user')
   const [isServer, setIsServer] = useState(true)
@@ -63,7 +63,12 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen, version }) => {
   const { username, token } = cookies
 
   const {
-    publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL, SQ_ALLOW_REGISTER },
+    publicRuntimeConfig: {
+      SQ_SITE_NAME,
+      SQ_API_URL,
+      SQ_ALLOW_REGISTER,
+      SQ_VERSION,
+    },
   } = getConfig()
 
   useEffect(() => {
@@ -226,14 +231,16 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen, version }) => {
         right={0}
         borderTop="1px solid"
         borderColor="border"
-        p={4}
+        p={3}
       >
-        <Text color="grey" fontSize={1}>
+        <Text color="grey" fontSize={0}>
           Powered by{' '}
           <a href="https://github.com/tdjsnelling/sqtracker" target="_blank">
             ■ sqtracker
           </a>{' '}
-          v{version}
+        </Text>
+        <Text color="grey" fontSize={0}>
+          v{SQ_VERSION}
         </Text>
       </Box>
     </Box>

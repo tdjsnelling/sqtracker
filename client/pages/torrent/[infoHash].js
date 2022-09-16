@@ -9,6 +9,8 @@ import remarkGfm from 'remark-gfm'
 import jwt from 'jsonwebtoken'
 import { useCookies } from 'react-cookie'
 import slugify from 'slugify'
+import { Download } from '@styled-icons/boxicons-regular/Download'
+import { Magnet } from '@styled-icons/boxicons-regular/Magnet'
 import { Like } from '@styled-icons/boxicons-regular/Like'
 import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
 import { withAuthServerSideProps } from '../../utils/withAuth'
@@ -81,6 +83,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     publicRuntimeConfig: {
       SQ_SITE_NAME,
       SQ_API_URL,
+      SQ_BASE_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_SITE_WIDE_FREELEECH,
     },
@@ -324,7 +327,27 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               {isFreeleech ? 'Unset' : 'Set'} freeleech
             </Button>
           )}
-          <Button onClick={handleDownload}>Download</Button>
+          <Button onClick={handleDownload} mr={3}>
+            <Text icon={Download} iconColor="currentColor">
+              Download .torrent
+            </Text>
+          </Button>
+          <Link
+            href={`magnet:?xt=urn:btih:${
+              torrent.infoHash
+            }&dn=${encodeURIComponent(torrent.name)}&tr=${encodeURIComponent(
+              `${SQ_BASE_URL}/sq/${uid}/announce`
+            )}`}
+            passHref
+          >
+            <a>
+              <Button>
+                <Text icon={Magnet} iconColor="currentColor">
+                  Magnet link
+                </Text>
+              </Button>
+            </a>
+          </Link>
         </Box>
       </Box>
       <Info

@@ -15,7 +15,6 @@ import Button from '../components/Button'
 import Input from '../components/Input'
 import { NotificationsProvider } from '../components/Notifications'
 import Text from '../components/Text'
-import { version } from '../package.json'
 
 const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
@@ -74,7 +73,9 @@ const baseTheme = {
 }
 
 const GlobalStyle = createGlobalStyle(
-  ({ theme: { breakpoints, fonts, colors, lineHeights, sizes, space } }) => `
+  ({
+    theme: { breakpoints, fonts, fontSizes, colors, lineHeights, sizes, space },
+  }) => `
   * {
     margin: 0;
     padding: 0;
@@ -87,6 +88,7 @@ const GlobalStyle = createGlobalStyle(
     color: ${colors.text};
     font-family: ${fonts.body};
     line-height: ${lineHeights.body};
+    font-size: ${fontSizes[2]}px;
   }
   #__next main {
     min-height: calc(100vh - 109px);
@@ -196,7 +198,6 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
             isMobile={isMobile}
             menuIsOpen={menuIsOpen}
             setMenuIsOpen={setMenuIsOpen}
-            version={version}
           />
           <Box
             width="100%"
