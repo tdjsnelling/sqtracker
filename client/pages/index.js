@@ -106,6 +106,12 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
         Authorization: `Bearer ${token}`,
       },
     })
+    if (
+      latestRes.status === 403 &&
+      (await latestRes.text()) === 'User is banned'
+    ) {
+      throw 'banned'
+    }
     const latest = await latestRes.json()
 
     const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
@@ -118,6 +124,7 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
 
     return { props: { latest, emailVerified, token } }
   } catch (e) {
+    if (e === 'banned') throw 'banned'
     return { props: {} }
   }
 }, true)

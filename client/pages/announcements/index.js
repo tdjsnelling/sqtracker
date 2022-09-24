@@ -113,27 +113,38 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
 
   const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  const announcementsRes = await fetch(`${SQ_API_URL}/announcements/page/0`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const announcements = await announcementsRes.json()
-
-  const pinnedAnnouncementsRes = await fetch(
-    `${SQ_API_URL}/announcements/pinned`,
-    {
+  try {
+    const announcementsRes = await fetch(`${SQ_API_URL}/announcements/page/0`, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
+    })
+    if (
+      announcementsRes.status === 403 &&
+      (await announcementsRes.text()) === 'User is banned'
+    ) {
+      throw 'banned'
     }
-  )
-  const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+    const announcements = await announcementsRes.json()
 
-  return {
-    props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
+    const pinnedAnnouncementsRes = await fetch(
+      `${SQ_API_URL}/announcements/pinned`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+
+    return {
+      props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
+    }
+  } catch (e) {
+    if (e === 'banned') throw 'banned'
+    return { props: {} }
   }
 })
 

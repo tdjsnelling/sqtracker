@@ -171,6 +171,11 @@ export const login = async (req, res) => {
       const user = await User.findOne({ username: req.body.username })
 
       if (user) {
+        if (user.banned) {
+          res.status(403).send('User is banned')
+          return
+        }
+
         const matches = await bcrypt.compare(req.body.password, user.password)
 
         if (matches) {
@@ -414,6 +419,7 @@ export const fetchUser = async (req, res) => {
           role: 1,
           ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
           remainingInvites: 1,
+          banned: 1,
         },
       },
       {
@@ -587,5 +593,53 @@ export const verifyUserEmail = async (req, res) => {
     }
   } else {
     res.status(400).send('Request must include token')
+  }
+}
+
+export const banUser = async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      res.status(401).send('You do not have permission to ban a user')
+      return
+    }
+
+    const user = await User.findOne({ username: req.params.username })
+    if (!user) {
+      res.status(404).send('User does not exist')
+      return
+    }
+
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $set: { banned: true } }
+    )
+
+    res.sendStatus(200)
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const unbanUser = async (req, res) => {
+  try {
+    if (req.userRole !== 'admin') {
+      res.status(401).send('You do not have permission to unban a user')
+      return
+    }
+
+    const user = await User.findOne({ username: req.params.username })
+    if (!user) {
+      res.status(404).send('User does not exist')
+      return
+    }
+
+    await User.findOneAndUpdate(
+      { username: req.params.username },
+      { $set: { banned: false } }
+    )
+
+    res.sendStatus(200)
+  } catch (e) {
+    res.status(500).send(e.message)
   }
 }

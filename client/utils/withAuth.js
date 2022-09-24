@@ -44,11 +44,22 @@ export const withAuthServerSideProps = (
 
     if (!token && noRedirect) return { props: {} }
 
-    const { props: ssProps } = await getServerSideProps({
-      ...ctx,
-      token,
-      userId,
-    })
-    return { props: { ...ssProps, token } }
+    try {
+      const { props: ssProps } = await getServerSideProps({
+        ...ctx,
+        token,
+        userId,
+      })
+      return { props: { ...ssProps, token } }
+    } catch (e) {
+      if (e === 'banned')
+        return {
+          redirect: {
+            permanent: false,
+            destination: '/logout',
+          },
+        }
+      return { props: {} }
+    }
   }
 }

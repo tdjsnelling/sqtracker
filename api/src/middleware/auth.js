@@ -6,10 +6,13 @@ const auth = async (req, res, next) => {
     const token = req.headers.authorization.replace('Bearer ', '')
     try {
       const decoded = jwt.verify(token, process.env.SQ_JWT_SECRET)
-
       if (decoded) {
         const user = await User.findOne({ _id: decoded.id })
         if (user) {
+          if (user.banned) {
+            res.status(403).send('User is banned')
+            return
+          }
           req.userId = user._id
           req.userRole = user.role
           next()

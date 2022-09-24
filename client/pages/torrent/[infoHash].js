@@ -9,8 +9,6 @@ import remarkGfm from 'remark-gfm'
 import jwt from 'jsonwebtoken'
 import { useCookies } from 'react-cookie'
 import slugify from 'slugify'
-import { Download } from '@styled-icons/boxicons-regular/Download'
-import { Magnet } from '@styled-icons/boxicons-regular/Magnet'
 import { File } from '@styled-icons/boxicons-regular/File'
 import { Folder } from '@styled-icons/boxicons-regular/Folder'
 import { Like } from '@styled-icons/boxicons-regular/Like'
@@ -372,9 +370,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
             </Button>
           )}
           <Button onClick={handleDownload} mr={3}>
-            <Text icon={Download} iconColor="currentColor">
-              Download .torrent
-            </Text>
+            .torrent
           </Button>
           <Link
             href={`magnet:?xt=urn:btih:${
@@ -385,11 +381,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
             passHref
           >
             <a>
-              <Button>
-                <Text icon={Magnet} iconColor="currentColor">
-                  Magnet link
-                </Text>
-              </Button>
+              <Button>Magnet</Button>
             </a>
           </Link>
         </Box>
@@ -561,17 +553,29 @@ export const getServerSideProps = withAuthServerSideProps(
 
     const { id, role } = jwt.verify(token, SQ_JWT_SECRET)
 
-    const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    try {
+      const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
-    if (torrentRes.status === 404) return { notFound: true }
+      if (
+        torrentRes.status === 403 &&
+        (await torrentRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
 
-    const torrent = await torrentRes.json()
-    return { props: { torrent, userId: id, userRole: role, uid: userId } }
+      if (torrentRes.status === 404) return { notFound: true }
+
+      const torrent = await torrentRes.json()
+      return { props: { torrent, userId: id, userRole: role, uid: userId } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
+    }
   }
 )
 

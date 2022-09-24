@@ -289,6 +289,9 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
         Authorization: `Bearer ${token}`,
       },
     })
+    if (userRes.status === 403 && (await userRes.text()) === 'User is banned') {
+      throw 'banned'
+    }
     const user = await userRes.json()
     const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
       headers: {
@@ -299,6 +302,7 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
     const invites = await invitesRes.json()
     return { props: { invites, user, userRole: role } }
   } catch (e) {
+    if (e === 'banned') throw 'banned'
     return { props: {} }
   }
 })

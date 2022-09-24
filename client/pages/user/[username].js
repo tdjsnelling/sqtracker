@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useCookies } from 'react-cookie'
@@ -9,6 +9,7 @@ import { BarChartSquare } from '@styled-icons/boxicons-regular/BarChartSquare'
 import { Upload } from '@styled-icons/boxicons-regular/Upload'
 import { Download } from '@styled-icons/boxicons-regular/Download'
 import { UserCircle } from '@styled-icons/boxicons-regular/UserCircle'
+import { NoEntry } from '@styled-icons/boxicons-regular/NoEntry'
 import { withAuthServerSideProps } from '../../utils/withAuth'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
@@ -17,16 +18,60 @@ import Button from '../../components/Button'
 import Infobox from '../../components/Infobox'
 import TorrentList from '../../components/TorrentList'
 import Comment from '../../components/Comment'
+import Modal from '../../components/Modal'
+import { NotificationContext } from '../../components/Notifications'
 
-const User = ({ user, userRole }) => {
+const User = ({ token, user, userRole }) => {
+  const [banned, setBanned] = useState(!!user.banned)
+  const [showBanModal, setShowBanModal] = useState(false)
+
+  const { addNotification } = useContext(NotificationContext)
+
   const [cookies] = useCookies()
 
   const {
-    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_MINIMUM_RATIO },
+    publicRuntimeConfig: {
+      SQ_TORRENT_CATEGORIES,
+      SQ_MINIMUM_RATIO,
+      SQ_API_URL,
+    },
   } = getConfig()
 
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(' ')
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(' ')
+
+  const handleBanUser = async () => {
+    try {
+      const res = await fetch(
+        `${SQ_API_URL}/user/${banned ? 'unban' : 'ban'}/${user.username}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      if (res.status !== 200) {
+        const reason = await res.text()
+        throw new Error(reason)
+      }
+
+      addNotification(
+        'success',
+        `User ${banned ? 'unbanned' : 'banned'} successfully`
+      )
+
+      setBanned((b) => !b)
+      setShowBanModal(false)
+    } catch (e) {
+      addNotification(
+        'error',
+        `Could not ${banned ? 'unban' : 'ban'} user: ${e.message}`
+      )
+      console.error(e)
+    }
+  }
 
   return (
     <>
@@ -44,6 +89,11 @@ const User = ({ user, userRole }) => {
               Admin
             </Text>
           )}
+          {banned && (
+            <Text icon={NoEntry} iconColor="error" ml={4}>
+              Banned
+            </Text>
+          )}
         </Box>
         {cookies.username === user.username && (
           <Link href="/account">
@@ -51,6 +101,11 @@ const User = ({ user, userRole }) => {
               <Button>My account</Button>
             </a>
           </Link>
+        )}
+        {userRole === 'admin' && cookies.username !== user.username && (
+          <Button onClick={() => setShowBanModal(true)}>
+            {banned ? 'Unban' : 'Ban'} user
+          </Button>
         )}
       </Box>
       <Text color="grey" mb={5}>
@@ -172,6 +227,23 @@ const User = ({ user, userRole }) => {
       ) : (
         <Text color="grey">No comments.</Text>
       )}
+      {showBanModal && (
+        <Modal close={() => setShowBanModal(false)}>
+          <Text mb={4}>
+            Are you sure that you want to {banned ? 'unban' : 'ban'} this user?
+          </Text>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              onClick={() => setShowBanModal(false)}
+              variant="secondary"
+              mr={3}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleBanUser}>{banned ? 'Unban' : 'Ban'}</Button>
+          </Box>
+        </Modal>
+      )}
     </>
   )
 }
@@ -187,17 +259,29 @@ export const getServerSideProps = withAuthServerSideProps(
 
     const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-    const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
+    try {
+      const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
 
-    if (userRes.status === 404) return { notFound: {} }
+      if (
+        userRes.status === 403 &&
+        (await userRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
 
-    const user = await userRes.json()
-    return { props: { user, userRole: role } }
+      if (userRes.status === 404) return { notFound: {} }
+
+      const user = await userRes.json()
+      return { props: { token, user, userRole: role } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
+    }
   }
 )
 

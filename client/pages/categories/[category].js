@@ -65,9 +65,16 @@ export const getServerSideProps = withAuthServerSideProps(
           },
         }
       )
+      if (
+        searchRes.status === 403 &&
+        (await searchRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
       const results = await searchRes.json()
       return { props: { results } }
     } catch (e) {
+      if (e === 'banned') throw 'banned'
       return { props: {} }
     }
   }

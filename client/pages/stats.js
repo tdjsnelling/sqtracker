@@ -61,13 +61,24 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
 
   if (role !== 'admin') return { props: { reports: [], userRole: role } }
 
-  const statsRes = await fetch(`${SQ_API_URL}/admin/stats`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const stats = await statsRes.json()
-  return { props: { stats, userRole: role } }
+  try {
+    const statsRes = await fetch(`${SQ_API_URL}/admin/stats`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (
+      statsRes.status === 403 &&
+      (await statsRes.text()) === 'User is banned'
+    ) {
+      throw 'banned'
+    }
+    const stats = await statsRes.json()
+    return { props: { stats, userRole: role } }
+  } catch (e) {
+    if (e === 'banned') throw 'banned'
+    return { props: {} }
+  }
 })
 
 export default Stats

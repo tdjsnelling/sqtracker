@@ -71,14 +71,25 @@ export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
 
   if (role !== 'admin') return { props: { reports: [], userRole: role } }
 
-  const reportsRes = await fetch(`${SQ_API_URL}/reports/page/0`, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-  })
-  const reports = await reportsRes.json()
-  return { props: { reports, userRole: role } }
+  try {
+    const reportsRes = await fetch(`${SQ_API_URL}/reports/page/0`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    if (
+      reportsRes.status === 403 &&
+      (await reportsRes.text()) === 'User is banned'
+    ) {
+      throw 'banned'
+    }
+    const reports = await reportsRes.json()
+    return { props: { reports, userRole: role } }
+  } catch (e) {
+    if (e === 'banned') throw 'banned'
+    return { props: {} }
+  }
 })
 
 export default Reports

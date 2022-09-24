@@ -107,14 +107,28 @@ export const getServerSideProps = withAuthServerSideProps(
 
     const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-    const announcementRes = await fetch(`${SQ_API_URL}/announcements/${slug}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    const announcement = await announcementRes.json()
-    return { props: { announcement, token, userRole: role } }
+    try {
+      const announcementRes = await fetch(
+        `${SQ_API_URL}/announcements/${slug}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      if (
+        announcementRes.status === 403 &&
+        (await announcementRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
+      const announcement = await announcementRes.json()
+      return { props: { announcement, token, userRole: role } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
+    }
   }
 )
 
