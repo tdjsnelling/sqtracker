@@ -10,9 +10,10 @@ It implements all of the features required to run a private (or public) tracker 
   * Registration modes (open/closed/invite only)
   * Sending of invites
   * Account management (2FA, password resets etc.)
+  * Bonus points system
 * Torrent management
   * Uploading torrents with rich metadata (titles, descriptions, categories, tags etc.)
-  * Searching torrents or browsing by category
+  * Searching torrents or browsing by category or tags
   * Freeleech options (specific torrents, sitewide)
 * Upload/download tracking
   * Track how much content each user has uploaded/downloaded
@@ -22,11 +23,13 @@ It implements all of the features required to run a private (or public) tracker 
 * User interaction
   * Commenting on torrents
   * Up/down voting torrents
+  * Requests system
 * Moderation
   * Staff/admin privileges
   * Reporting torrents to be reviewed by staff
   * Detailed stats available to admins
   * Announcements/news posts (for posting of tracker rules, important updates etc.)
+  * Ban/unban users
 
 ## Deploying
 
