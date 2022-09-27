@@ -10,6 +10,7 @@ module.exports = {
     SQ_ALLOW_REGISTER: 'invite',
     SQ_ALLOW_ANONYMOUS_UPLOADS: false,
     SQ_MINIMUM_RATIO: 0.75,
+    SQ_BP_PER_GB: 1,
     SQ_TORRENT_CATEGORIES: ['Movies', 'TV', 'Music', 'Books'],
     SQ_BASE_URL: 'https://sqtracker.dev',
     SQ_API_URL: 'https://sqtracker.dev/api',

@@ -5,6 +5,8 @@ import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
 import { getUserRatio } from '../utils/ratio'
 
+const BYTES_GB = 1.074e9
+
 export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
 
@@ -71,6 +73,44 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
+  /*
+    Bonus points: determine how much the user has uploaded, and whether or not this announce will take their total
+    uploaded amount into the next whole GiB. If so, increment the users bonus points by the configured amount.
+  */
+
+  const [sumUploaded] = await Progress.aggregate([
+    {
+      $match: {
+        userId: user._id,
+      },
+    },
+    {
+      $group: {
+        _id: 'uploaded',
+        bytes: { $sum: '$uploaded' },
+      },
+    },
+  ])
+
+  const { bytes } = sumUploaded ?? { bytes: 0 }
+  const nextGb = Math.max(Math.ceil(bytes / BYTES_GB), 1)
+
+  const prevProgressRecord = await Progress.findOne({
+    userId: user._id,
+    infoHash,
+  }).lean()
+  const alreadyUploaded = prevProgressRecord?.uploaded ?? 0
+  const uploadDelta = params.uploaded - alreadyUploaded
+
+  if ((bytes + uploadDelta) / BYTES_GB >= nextGb) {
+    await User.findOneAndUpdate(
+      { _id: user._id },
+      { $inc: { bonusPoints: process.env.SQ_BP_PER_GB } }
+    )
+  }
+
+  // update the progress report for this user/torrent pair
+
   await Progress.findOneAndUpdate(
     { userId: user._id, infoHash },
     {
@@ -80,7 +120,7 @@ const handleAnnounce = async (req, res, next) => {
         uploaded: params.uploaded,
         downloaded:
           torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-            ? 0
+            ? prevProgressRecord?.downloaded ?? 0
             : params.downloaded,
         left: params.left,
       },

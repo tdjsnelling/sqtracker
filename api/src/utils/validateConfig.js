@@ -16,6 +16,7 @@ const configSchema = yup
           .required(),
         SQ_ALLOW_ANONYMOUS_UPLOADS: yup.boolean().required(),
         SQ_MINIMUM_RATIO: yup.number().min(0).required(),
+        SQ_BP_PER_GB: yup.number().min(0).required(),
         SQ_TORRENT_CATEGORIES: yup
           .array()
           .of(yup.string())
