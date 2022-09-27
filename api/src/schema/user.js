@@ -12,6 +12,7 @@ const User = new mongoose.Schema({
   invitedBy: mongoose.Schema.ObjectId,
   remainingInvites: Number,
   emailVerified: Boolean,
+  bonusPoints: Number,
 })
 
 export default mongoose.model('user', User)

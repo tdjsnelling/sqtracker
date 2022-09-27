@@ -98,6 +98,7 @@ export const register = async (req, res) => {
           invitedBy: invite?.invitingUser,
           remainingInvites: 0,
           emailVerified: false,
+          bonusPoints: 0,
         })
 
         newUser.uid = crypto
