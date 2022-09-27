@@ -58,8 +58,6 @@ export const uploadTorrent = async (req, res) => {
       const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
 
-      console.dir(parsed, { depth: null })
-
       if (parsed.info.private !== 1) {
         res.status(400).send('Torrent must be set to private')
         return
