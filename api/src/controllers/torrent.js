@@ -58,10 +58,10 @@ export const uploadTorrent = async (req, res) => {
       const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
 
-      // if (parsed.info.private !== 1) {
-      //   res.status(400).send('Torrent must be set to private')
-      //   return
-      // }
+      if (parsed.info.private !== 1) {
+        res.status(400).send('Torrent must be set to private')
+        return
+      }
 
       if (!parsed.announce || parsed['announce-list']) {
         res.status(400).send('One and only one announce URL must be set')

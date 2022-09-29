@@ -7,8 +7,8 @@ export const getUserRatio = async (_id) => {
   const userTorrents = await Progress.find({ userId: _id }).lean()
 
   for (const userTorrent of userTorrents) {
-    totalUp += Number(userTorrent.uploaded)
-    totalDown += Number(userTorrent.downloaded)
+    totalUp += Number(userTorrent.uploaded.total)
+    totalDown += Number(userTorrent.downloaded.total)
   }
 
   return totalDown === 0 ? -1 : Number((totalUp / totalDown).toFixed(2))

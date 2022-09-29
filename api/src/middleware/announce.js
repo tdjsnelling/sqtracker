@@ -68,6 +68,7 @@ const handleAnnounce = async (req, res, next) => {
   ) {
     const response = bencode.encode({
       'failure reason': `Announce denied: Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}.`,
+      peers: [],
     })
     res.send(response)
     return
@@ -87,7 +88,7 @@ const handleAnnounce = async (req, res, next) => {
     {
       $group: {
         _id: 'uploaded',
-        bytes: { $sum: '$uploaded' },
+        bytes: { $sum: '$uploaded.total' },
       },
     },
   ])
@@ -99,15 +100,27 @@ const handleAnnounce = async (req, res, next) => {
     userId: user._id,
     infoHash,
   }).lean()
-  const alreadyUploaded = prevProgressRecord?.uploaded ?? 0
-  const uploadDelta = params.uploaded - alreadyUploaded
 
-  if ((bytes + uploadDelta) / BYTES_GB >= nextGb) {
+  const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
+  const uploadDeltaSession = params.uploaded - alreadyUploadedSession
+
+  const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
+  const downloadDeltaSession = params.downloaded - alreadyDownloadedSession
+
+  if ((bytes + uploadDeltaSession) / BYTES_GB >= nextGb) {
     await User.findOneAndUpdate(
       { _id: user._id },
       { $inc: { bonusPoints: process.env.SQ_BP_PER_GB } }
     )
   }
+
+  console.log({
+    bytes,
+    alreadyUploadedSession,
+    uploadDeltaSession,
+    alreadyDownloadedSession,
+    downloadDeltaSession,
+  })
 
   // update the progress report for this user/torrent pair
 
@@ -117,11 +130,22 @@ const handleAnnounce = async (req, res, next) => {
       $set: {
         userId: user._id,
         infoHash,
-        uploaded: params.uploaded,
-        downloaded:
-          torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-            ? prevProgressRecord?.downloaded ?? 0
-            : params.downloaded,
+        uploaded: {
+          session: params.uploaded,
+          total:
+            (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
+        },
+        downloaded: {
+          session:
+            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+              ? prevProgressRecord?.downloaded?.session ?? 0
+              : params.downloaded,
+          total:
+            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+              ? prevProgressRecord?.downloaded?.total ?? 0
+              : (prevProgressRecord?.downloaded?.total ?? 0) +
+                downloadDeltaSession,
+        },
         left: params.left,
       },
     },
