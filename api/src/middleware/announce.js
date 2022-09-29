@@ -161,8 +161,8 @@ const handleAnnounce = async (req, res, next) => {
               torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
                 ? prevProgressRecord?.downloaded?.total ?? 0
                 : (prevProgressRecord?.downloaded?.total ?? 0) +
-                downloadDeltaSession,
-          }
+                  downloadDeltaSession,
+          },
           left: params.left,
         },
       },
