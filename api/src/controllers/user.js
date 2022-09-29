@@ -474,7 +474,7 @@ export const fetchUser = async (req, res) => {
             {
               $group: {
                 _id: 'downloaded',
-                bytes: { $sum: '$downloaded' },
+                bytes: { $sum: '$downloaded.total' },
                 count: { $sum: 1 },
               },
             },
@@ -496,7 +496,7 @@ export const fetchUser = async (req, res) => {
             {
               $group: {
                 _id: 'uploaded',
-                bytes: { $sum: '$uploaded' },
+                bytes: { $sum: '$uploaded.total' },
                 count: { $sum: 1 },
               },
             },

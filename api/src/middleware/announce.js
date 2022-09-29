@@ -116,41 +116,59 @@ const handleAnnounce = async (req, res, next) => {
 
   console.log({
     bytes,
+    uploaded: params.uploaded,
     alreadyUploadedSession,
     uploadDeltaSession,
+    downloaded: params.downloaded,
     alreadyDownloadedSession,
     downloadDeltaSession,
   })
 
   // update the progress report for this user/torrent pair
 
-  await Progress.findOneAndUpdate(
-    { userId: user._id, infoHash },
-    {
-      $set: {
-        userId: user._id,
-        infoHash,
-        uploaded: {
-          session: params.uploaded,
-          total:
-            (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
+  if (params.uploaded !== prevProgressRecord?.uploaded?.session) {
+    await Progress.findOneAndUpdate(
+      { userId: user._id, infoHash },
+      {
+        $set: {
+          userId: user._id,
+          infoHash,
+          uploaded: {
+            session: params.uploaded,
+            total:
+              (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
+          },
+          left: params.left,
         },
-        downloaded: {
-          session:
-            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-              ? prevProgressRecord?.downloaded?.session ?? 0
-              : params.downloaded,
-          total:
-            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-              ? prevProgressRecord?.downloaded?.total ?? 0
-              : (prevProgressRecord?.downloaded?.total ?? 0) +
-                downloadDeltaSession,
-        },
-        left: params.left,
       },
-    },
-    { upsert: true }
-  )
+      { upsert: true }
+    )
+  }
+
+  if (params.downloaded !== prevProgressRecord?.downloaded?.session) {
+    await Progress.findOneAndUpdate(
+      { userId: user._id, infoHash },
+      {
+        $set: {
+          userId: user._id,
+          infoHash,
+          downloaded: {
+            session:
+              torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+                ? prevProgressRecord?.downloaded?.session ?? 0
+                : params.downloaded,
+            total:
+              torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+                ? prevProgressRecord?.downloaded?.total ?? 0
+                : (prevProgressRecord?.downloaded?.total ?? 0) +
+                downloadDeltaSession,
+          }
+          left: params.left,
+        },
+      },
+      { upsert: true }
+    )
+  }
 
   next()
 }
