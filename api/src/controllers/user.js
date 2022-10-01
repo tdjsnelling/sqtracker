@@ -435,28 +435,86 @@ export const fetchUser = async (req, res) => {
               },
             },
             {
-              $lookup: {
-                from: 'torrents',
-                as: 'torrent',
-                let: { torrentId: '$torrentId' },
-                pipeline: [
+              $facet: {
+                torrent: [
                   {
                     $match: {
-                      $expr: { $eq: ['$_id', '$$torrentId'] },
+                      type: 'torrent',
                     },
                   },
-                  { $project: { name: 1, infoHash: 1 } },
+                  {
+                    $lookup: {
+                      from: 'torrents',
+                      as: 'torrent',
+                      let: { torrentId: '$parentId' },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: { $eq: ['$_id', '$$torrentId'] },
+                          },
+                        },
+                        { $project: { name: 1, infoHash: 1 } },
+                      ],
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: '$torrent',
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                ],
+                announcement: [
+                  {
+                    $match: {
+                      type: 'announcement',
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: 'announcements',
+                      as: 'announcement',
+                      let: { announcementId: '$parentId' },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: { $eq: ['$_id', '$$announcementId'] },
+                          },
+                        },
+                        { $project: { title: 1, slug: 1 } },
+                      ],
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: '$announcement',
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
                 ],
               },
             },
-            {
-              $unwind: {
-                path: '$torrent',
-                preserveNullAndEmptyArrays: true,
-              },
-            },
-            { $sort: { created: -1 } },
           ],
+        },
+      },
+      {
+        $unwind: {
+          path: '$comments',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $addFields: {
+          comments: {
+            $concatArrays: ['$comments.torrent', '$comments.announcement'],
+          },
+        },
+      },
+      {
+        $addFields: {
+          comments: {
+            $sortArray: { input: '$comments', sortBy: { created: -1 } },
+          },
         },
       },
       {
@@ -539,6 +597,7 @@ export const fetchUser = async (req, res) => {
 
     res.json(user)
   } catch (e) {
+    console.error(e)
     res.status(500).send(e.message)
   }
 }

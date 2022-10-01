@@ -40,6 +40,7 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
             title: form.get('title'),
             body: form.get('body'),
             pinned: !!form.get('pinned'),
+            allowComments: !!form.get('allowComments'),
           }),
         }
       )
@@ -86,6 +87,12 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
           label="Pin this announcement?"
           name="pinned"
           inputProps={{ defaultChecked: announcement.pinned }}
+          mb={4}
+        />
+        <Checkbox
+          label="Allow comments?"
+          name="allowComments"
+          inputProps={{ defaultChecked: announcement.allowComments }}
           mb={4}
         />
         <Button display="block" ml="auto">

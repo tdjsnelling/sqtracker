@@ -212,11 +212,12 @@ export const fetchTorrent = async (req, res) => {
         $lookup: {
           from: 'comments',
           as: 'comments',
-          let: { torrentId: '$_id' },
+          let: { parentId: '$_id' },
           pipeline: [
             {
               $match: {
-                $expr: { $eq: ['$torrentId', '$$torrentId'] },
+                type: 'torrent',
+                $expr: { $eq: ['$parentId', '$$parentId'] },
               },
             },
             {
@@ -358,9 +359,14 @@ export const getTorrentsPage = async ({
       $lookup: {
         from: 'comments',
         as: 'comments',
-        let: { torrentId: '$_id' },
+        let: { parentId: '$_id' },
         pipeline: [
-          { $match: { $expr: { $eq: ['$torrentId', '$$torrentId'] } } },
+          {
+            $match: {
+              type: 'torrent',
+              $expr: { $eq: ['$parentId', '$$parentId'] },
+            },
+          },
           { $count: 'count' },
         ],
       },
@@ -454,7 +460,8 @@ export const addComment = async (req, res) => {
       }
 
       const comment = new Comment({
-        torrentId: torrent._id,
+        type: 'torrent',
+        parentId: torrent._id,
         userId: req.userId,
         comment: req.body.comment,
         created: Date.now(),

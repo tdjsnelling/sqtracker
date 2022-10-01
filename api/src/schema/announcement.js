@@ -6,6 +6,7 @@ const Announcement = new mongoose.Schema({
   body: String,
   createdBy: mongoose.Schema.ObjectId,
   pinned: Boolean,
+  allowComments: Boolean,
   created: Number,
   updated: Number,
 })

@@ -2,10 +2,15 @@ import React from 'react'
 import Link from 'next/link'
 import moment from 'moment'
 import { Comment as CommentIcon } from '@styled-icons/boxicons-regular/Comment'
+import { File } from '@styled-icons/boxicons-regular/File'
+import { News } from '@styled-icons/boxicons-regular/News'
 import Box from './Box'
 import Text from './Text'
 
 const Comment = ({ comment }) => {
+  const isTorrent = !comment.announcement
+  const isAnnouncement = !comment.torrent
+  console.log({ isTorrent, isAnnouncement })
   return (
     <Box
       p={4}
@@ -31,12 +36,48 @@ const Comment = ({ comment }) => {
               <Text as="a">{comment.user.username}</Text>
             </Link>{' '}
             on{' '}
-            {comment.torrent ? (
-              <Link href={`/torrent/${comment.torrent.infoHash}`} passHref>
-                <Text as="a">{comment.torrent.name}</Text>
-              </Link>
-            ) : (
-              'deleted torrent'
+            {isTorrent && (
+              <>
+                {comment.torrent ? (
+                  <Link href={`/torrent/${comment.torrent.infoHash}`} passHref>
+                    <Text
+                      as="a"
+                      icon={File}
+                      iconColor="primary"
+                      iconTextWrapperProps={{
+                        style: { verticalAlign: 'text-bottom' },
+                      }}
+                    >
+                      {comment.torrent.name}
+                    </Text>
+                  </Link>
+                ) : (
+                  'deleted torrent'
+                )}
+              </>
+            )}
+            {isAnnouncement && (
+              <>
+                {comment.announcement ? (
+                  <Link
+                    href={`/announcements/${comment.announcement.slug}`}
+                    passHref
+                  >
+                    <Text
+                      as="a"
+                      icon={News}
+                      iconColor="primary"
+                      iconTextWrapperProps={{
+                        style: { verticalAlign: 'text-bottom' },
+                      }}
+                    >
+                      {comment.announcement.title}
+                    </Text>
+                  </Link>
+                ) : (
+                  'deleted announcement'
+                )}
+              </>
             )}
           </Text>
         ) : (

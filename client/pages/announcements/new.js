@@ -40,6 +40,7 @@ const NewAnnouncement = ({ token, userRole }) => {
             title: form.get('title'),
             body: form.get('body'),
             pinned: !!form.get('pinned'),
+            allowComments: !!form.get('allowComments'),
           }),
         }
       )
@@ -76,6 +77,7 @@ const NewAnnouncement = ({ token, userRole }) => {
           required
         />
         <Checkbox label="Pin this announcement?" name="pinned" mb={4} />
+        <Checkbox label="Allow comments?" name="allowComments" mb={4} />
         <Button display="block" ml="auto">
           Create announcement
         </Button>

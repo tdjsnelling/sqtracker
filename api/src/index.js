@@ -29,7 +29,7 @@ import {
   downloadTorrent,
   fetchTorrent,
   deleteTorrent,
-  addComment,
+  addComment as addCommentTorrent,
   listLatest,
   searchTorrents,
   addVote,
@@ -44,6 +44,7 @@ import {
   deleteAnnouncement,
   pinAnnouncement,
   editAnnouncement,
+  addComment as addCommentAnnouncement,
 } from './controllers/announcement'
 import {
   createReport,
@@ -162,7 +163,7 @@ app.post('/user/unban/:username', unbanUser)
 app.post('/torrent/upload', uploadTorrent)
 app.get('/torrent/info/:infoHash', fetchTorrent)
 app.delete('/torrent/delete/:infoHash', deleteTorrent)
-app.post('/torrent/comment/:infoHash', addComment)
+app.post('/torrent/comment/:infoHash', addCommentTorrent)
 app.post('/torrent/vote/:infoHash/:vote', addVote)
 app.post('/torrent/unvote/:infoHash/:vote', removeVote)
 app.post('/torrent/report/:infoHash', createReport)
@@ -178,6 +179,7 @@ app.get('/announcements/page/:page', getAnnouncements)
 app.delete('/announcements/:slug', deleteAnnouncement)
 app.post('/announcements/pin/:announcementId/:action', pinAnnouncement)
 app.post('/announcements/edit/:announcementId', editAnnouncement)
+app.post('/announcements/comment/:announcementId', addCommentAnnouncement)
 
 // moderation routes
 app.get('/reports/page/:page', getReports)

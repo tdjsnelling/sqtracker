@@ -43,7 +43,7 @@ sqtracker does not implement the BitTorrent tracker spec itself. Instead, it wor
 
 #### A MongoDB database
 
-[MongoDB](https://www.mongodb.com/) is a popular and powerful document-oriented database.
+[MongoDB](https://www.mongodb.com/) is a popular and powerful document-oriented database. Version 5.2 or higher is required.
 
 #### The sqtracker API service
 

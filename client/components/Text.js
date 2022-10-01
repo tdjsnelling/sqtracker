@@ -40,12 +40,13 @@ const Text = ({
   mx,
   ml,
   mr,
+  iconTextWrapperProps,
   iconWrapperProps,
   ...rest
 }) =>
   Icon ? (
     <Box
-      display="flex"
+      display="inline-flex"
       alignItems="center"
       my={my}
       mt={mt}
@@ -53,6 +54,7 @@ const Text = ({
       mx={mx}
       ml={ml}
       mr={mr}
+      {...iconTextWrapperProps}
     >
       <Box
         display="flex"
@@ -63,7 +65,7 @@ const Text = ({
       >
         <Icon size={iconSize} />
       </Box>
-      <StyledText ref={fref} {...rest}>
+      <StyledText ref={fref} lineHeight={1.25} {...rest}>
         {children}
       </StyledText>
     </Box>

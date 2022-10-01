@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 import getConfig from 'next/config'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
@@ -6,6 +6,7 @@ import moment from 'moment'
 import jwt from 'jsonwebtoken'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { useCookies } from 'react-cookie'
 import { Pin } from '@styled-icons/boxicons-regular'
 import SEO from '../../../components/SEO'
 import Box from '../../../components/Box'
@@ -14,17 +15,24 @@ import Button from '../../../components/Button'
 import MarkdownBody from '../../../components/MarkdownBody'
 import { withAuthServerSideProps } from '../../../utils/withAuth'
 import { NotificationContext } from '../../../components/Notifications'
+import Input from '../../../components/Input'
+import Comment from '../../../components/Comment'
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned)
+  const [comments, setComments] = useState(announcement.comments)
 
   const { addNotification } = useContext(NotificationContext)
+
+  const commentInputRef = useRef()
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig()
 
   const router = useRouter()
+
+  const [cookies] = useCookies()
 
   const handleDelete = async () => {
     try {
@@ -86,6 +94,50 @@ const Announcement = ({ announcement, token, userRole }) => {
     }
   }
 
+  const handleComment = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
+    try {
+      const commentRes = await fetch(
+        `${SQ_API_URL}/announcements/comment/${announcement._id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            comment: form.get('comment'),
+          }),
+        }
+      )
+
+      if (commentRes.status !== 200) {
+        const reason = await commentRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Comment posted successfully')
+
+      setComments((c) => {
+        const newComment = {
+          comment: form.get('comment'),
+          created: Date.now(),
+          user: {
+            username: cookies.username,
+          },
+        }
+        return [newComment, ...c]
+      })
+
+      commentInputRef.current.value = ''
+    } catch (e) {
+      addNotification('error', `Could not post comment: ${e.message}`)
+      console.error(e)
+    }
+  }
+
   return (
     <>
       <SEO title={`${announcement.title} | Announcements`} />
@@ -139,11 +191,48 @@ const Announcement = ({ announcement, token, userRole }) => {
           </Text>
         )}
       </Box>
-      <MarkdownBody>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
-          {announcement.body}
-        </ReactMarkdown>
-      </MarkdownBody>
+      <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
+        <MarkdownBody>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {announcement.body}
+          </ReactMarkdown>
+        </MarkdownBody>
+      </Box>
+      <Box>
+        <Text as="h2" mb={4}>
+          Comments
+        </Text>
+        <form onSubmit={handleComment}>
+          <Input
+            ref={commentInputRef}
+            name="comment"
+            label="Post a comment"
+            rows="5"
+            placeholder={
+              !announcement.allowComments ? 'Comments disabled.' : undefined
+            }
+            disabled={!announcement.allowComments}
+            mb={4}
+          />
+          <Button
+            display="block"
+            disabled={!announcement.allowComments}
+            ml="auto"
+          >
+            Post
+          </Button>
+        </form>
+        {!!comments?.length && (
+          <Box mt={5}>
+            {comments.map((comment) => (
+              <Comment
+                key={comment._id || comment.created}
+                comment={{ ...comment, announcement }}
+              />
+            ))}
+          </Box>
+        )}
+      </Box>
     </>
   )
 }

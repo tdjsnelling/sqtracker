@@ -1,5 +1,6 @@
 import slugify from 'slugify'
 import Announcement from '../schema/announcement'
+import Comment from '../schema/comment'
 
 export const createAnnouncement = async (req, res) => {
   if (req.body.title && req.body.body) {
@@ -29,7 +30,8 @@ export const createAnnouncement = async (req, res) => {
         slug,
         body: req.body.body,
         createdBy: req.userId,
-        pinned: req.body.pinned,
+        pinned: !!req.body.pinned,
+        allowComments: !!req.body.allowComments,
         created: Date.now(),
       })
 
@@ -70,6 +72,47 @@ export const fetchAnnouncement = async (req, res) => {
         $unwind: {
           path: '$createdBy',
           preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          as: 'comments',
+          let: { parentId: '$_id' },
+          pipeline: [
+            {
+              $match: {
+                type: 'announcement',
+                $expr: { $eq: ['$parentId', '$$parentId'] },
+              },
+            },
+            {
+              $lookup: {
+                from: 'users',
+                as: 'user',
+                let: { userId: '$userId' },
+                pipeline: [
+                  {
+                    $match: {
+                      $expr: { $eq: ['$_id', '$$userId'] },
+                    },
+                  },
+                  {
+                    $project: {
+                      username: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $unwind: {
+                path: '$user',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            { $sort: { created: -1 } },
+          ],
         },
       },
     ])
@@ -225,7 +268,8 @@ export const editAnnouncement = async (req, res) => {
           $set: {
             title: req.body.title,
             body: req.body.body,
-            pinned: req.body.pinned,
+            pinned: !!req.body.pinned,
+            allowComments: !!req.body.allowComments,
             updated: Date.now(),
           },
         }
@@ -237,5 +281,40 @@ export const editAnnouncement = async (req, res) => {
     }
   } else {
     res.status(400).send('Request must include title and body')
+  }
+}
+
+export const addComment = async (req, res) => {
+  if (req.body.comment) {
+    try {
+      const announcement = await Announcement.findOne({
+        _id: req.params.announcementId,
+      }).lean()
+
+      if (!announcement) {
+        res.status(404).send('Announcement does not exist')
+        return
+      }
+
+      if (!announcement.allowComments) {
+        res.status(403).send('Commenting is disabled on this announcement')
+        return
+      }
+
+      const comment = new Comment({
+        type: 'announcement',
+        parentId: announcement._id,
+        userId: req.userId,
+        comment: req.body.comment,
+        created: Date.now(),
+      })
+      await comment.save()
+
+      res.sendStatus(200)
+    } catch (err) {
+      res.status(500).send(err.message)
+    }
+  } else {
+    res.status(400).send('Request must include comment')
   }
 }
