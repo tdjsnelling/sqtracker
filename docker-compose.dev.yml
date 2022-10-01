@@ -21,7 +21,7 @@ services:
       - ./traefik.yml:/config/traefik.yml
   database:
     container_name: sq_mongodb
-    image: mongo:4.4
+    image: mongo:6.0
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
