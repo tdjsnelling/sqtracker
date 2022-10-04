@@ -5,7 +5,7 @@ import Torrent from '../schema/torrent'
 import Progress from '../schema/progress'
 import { getUserRatio } from '../utils/ratio'
 
-const BYTES_GB = 1.074e9
+export const BYTES_GB = 1e9
 
 export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
@@ -110,7 +110,7 @@ const handleAnnounce = async (req, res, next) => {
   if ((bytes + uploadDeltaSession) / BYTES_GB >= nextGb) {
     await User.findOneAndUpdate(
       { _id: user._id },
-      { $inc: { bonusPoints: process.env.SQ_BP_PER_GB } }
+      { $inc: { bonusPoints: process.env.SQ_BP_EARNED_PER_GB } }
     )
   }
 

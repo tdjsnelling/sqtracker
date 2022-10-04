@@ -152,8 +152,12 @@ const User = ({ token, user, userRole }) => {
             Ratio
           </Text>
           <Text fontSize={5}>
-            {user.ratio === -1 ? 'N/A' : user.ratio.toFixed(2)}
-            {user.ratio !== -1 && (
+            {typeof user.ratio === 'number'
+              ? user.ratio === -1
+                ? 'N/A'
+                : user.ratio.toFixed(2)
+              : '?'}
+            {typeof user.ratio === 'number' && user.ratio !== -1 && (
               <Text
                 as="span"
                 fontSize={3}

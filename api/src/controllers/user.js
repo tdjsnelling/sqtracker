@@ -3,9 +3,11 @@ import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import User from '../schema/user'
 import Invite from '../schema/invite'
+import Progress from '../schema/progress'
 import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
 import { mail } from '../index'
+import { BYTES_GB } from '../middleware/announce'
 
 export const sendVerificationEmail = async (address, token) => {
   await mail.sendMail({
@@ -421,6 +423,7 @@ export const fetchUser = async (req, res) => {
           ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
           remainingInvites: 1,
           banned: 1,
+          bonusPoints: 1,
         },
       },
       {
@@ -526,7 +529,7 @@ export const fetchUser = async (req, res) => {
             {
               $match: {
                 $expr: { $eq: ['$userId', '$$userId'] },
-                downloaded: { $gt: 0 },
+                'downloaded.total': { $gt: 0 },
               },
             },
             {
@@ -548,7 +551,7 @@ export const fetchUser = async (req, res) => {
             {
               $match: {
                 $expr: { $eq: ['$userId', '$$userId'] },
-                uploaded: { $gt: 0 },
+                'uploaded.total': { $gt: 0 },
               },
             },
             {
@@ -677,6 +680,81 @@ export const banUser = async (req, res) => {
     res.sendStatus(200)
   } catch (e) {
     res.status(500).send(e.message)
+  }
+}
+
+export const buyItems = async (req, res) => {
+  if (req.body.type && req.body.amount) {
+    try {
+      const amount = parseInt(req.body.amount)
+
+      if (amount < 1) {
+        res.status(400).send('Amount must be a number >=1')
+        return
+      }
+
+      const user = await User.findOne({ _id: req.userId }).lean()
+
+      if (req.body.type === 'invite') {
+        const cost = amount * process.env.SQ_BP_COST_PER_INVITE
+        if (cost > user.bonusPoints) {
+          res.status(403).send('Not enough points for transaction')
+          return
+        }
+
+        await User.findOneAndUpdate(
+          { _id: req.userId },
+          {
+            $inc: {
+              remainingInvites: amount,
+              bonusPoints: cost * -1,
+            },
+          }
+        )
+
+        res.status(200).send((user.bonusPoints - cost).toString())
+      } else if (req.body.type === 'upload') {
+        const cost = amount * process.env.SQ_BP_COST_PER_GB
+        if (cost > user.bonusPoints) {
+          res.status(403).send('Not enough points for transaction')
+          return
+        }
+
+        await User.findOneAndUpdate(
+          { _id: req.userId },
+          {
+            $inc: {
+              bonusPoints: cost * -1,
+            },
+          }
+        )
+
+        const progressRecord = new Progress({
+          infoHash: `purchase-${Date.now()}`,
+          userId: req.userId,
+          uploaded: {
+            session: BYTES_GB * amount,
+            total: BYTES_GB * amount,
+          },
+          downloaded: {
+            session: 0,
+            total: 0,
+          },
+          left: 0,
+        })
+
+        await progressRecord.save()
+
+        res.status(200).send((user.bonusPoints - cost).toString())
+      } else {
+        res.status(400).send('Type must be one of invite, upload')
+        return
+      }
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include type, amount')
   }
 }
 

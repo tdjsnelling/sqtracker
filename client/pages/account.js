@@ -3,6 +3,7 @@ import getConfig from 'next/config'
 import moment from 'moment'
 import copy from 'copy-to-clipboard'
 import jwt from 'jsonwebtoken'
+import pluralize from 'pluralize'
 import { Copy } from '@styled-icons/boxicons-regular/Copy'
 import { Check } from '@styled-icons/boxicons-regular/Check'
 import { X } from '@styled-icons/boxicons-regular/X'
@@ -18,14 +19,59 @@ import List from '../components/List'
 import { NotificationContext } from '../components/Notifications'
 import Modal from '../components/Modal'
 
+const BuyItem = ({ text, cost, wallet, handleBuy }) => {
+  const [amount, setAmount] = useState(1)
+  return (
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      border="1px solid"
+      borderColor="border"
+      borderRadius={1}
+      p={3}
+      pl={4}
+    >
+      <Text>{text}</Text>
+      <form onSubmit={handleBuy}>
+        <Box display="flex" alignItems="center">
+          <Text color="grey" mr={4}>
+            Cost: {amount * cost} points
+          </Text>
+          <Input
+            type="number"
+            name="amount"
+            value={amount}
+            onChange={(e) => setAmount(parseInt(e.currentTarget.value))}
+            min={1}
+            max={Math.floor(wallet / cost)}
+            width="100px"
+            mr={3}
+          />
+          <Button disabled={amount * cost > wallet}>Buy</Button>
+        </Box>
+      </form>
+    </Box>
+  )
+}
+
 const Account = ({ token, invites = [], user, userRole }) => {
+  const [remainingInvites, setRemainingInvites] = useState(
+    user.remainingInvites ?? 0
+  )
   const [invitesList, setInvitesList] = useState(invites)
   const [showInviteModal, setShowInviteModal] = useState(false)
+  const [bonusPoints, setBonusPoints] = useState(user.bonusPoints ?? 0)
 
   const { addNotification } = useContext(NotificationContext)
 
   const {
-    publicRuntimeConfig: { SQ_API_URL },
+    publicRuntimeConfig: {
+      SQ_API_URL,
+      SQ_BP_EARNED_PER_GB,
+      SQ_BP_COST_PER_INVITE,
+      SQ_BP_COST_PER_GB,
+    },
   } = getConfig()
 
   const handleGenerateInvite = async (e) => {
@@ -58,6 +104,8 @@ const Account = ({ token, invites = [], user, userRole }) => {
       })
 
       addNotification('success', 'Invite sent successfully')
+
+      setRemainingInvites((r) => r - 1)
 
       setShowInviteModal(false)
     } catch (e) {
@@ -104,6 +152,48 @@ const Account = ({ token, invites = [], user, userRole }) => {
     }
   }
 
+  const handleBuy = async (e, type) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
+    try {
+      const amount = parseInt(form.get('amount'))
+
+      const buyRes = await fetch(`${SQ_API_URL}/account/buy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          type,
+          amount,
+        }),
+      })
+
+      if (buyRes.status !== 200) {
+        const reason = await buyRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Items purchased successfully')
+
+      const pointsRemaining = await buyRes.text()
+      setBonusPoints(parseInt(pointsRemaining))
+
+      if (type === 'invite') setRemainingInvites((r) => r + amount)
+
+      const fields = e.target.querySelectorAll('input')
+      for (const field of fields) {
+        field.value = 1
+        field.blur()
+      }
+    } catch (e) {
+      addNotification('error', `Could not buy items: ${e.message}`)
+      console.error(e)
+    }
+  }
+
   return (
     <>
       <SEO title="My account" />
@@ -115,6 +205,28 @@ const Account = ({ token, invites = [], user, userRole }) => {
           <Text>This is an admin account.</Text>
         </Infobox>
       )}
+      <Text as="h2" mb={4}>
+        Bonus points
+      </Text>
+      <Text mb={4}>
+        You currently have <strong>{bonusPoints}</strong> bonus points. You will
+        earn {SQ_BP_EARNED_PER_GB} {pluralize('point', SQ_BP_EARNED_PER_GB)} for
+        every GB you upload.
+      </Text>
+      <Box _css={{ '> * + *': { mt: 3 } }} mb={5}>
+        <BuyItem
+          text="Purchase invites"
+          cost={SQ_BP_COST_PER_INVITE}
+          wallet={bonusPoints}
+          handleBuy={(e) => handleBuy(e, 'invite')}
+        />
+        <BuyItem
+          text="Purchase upload (1 GB)"
+          cost={SQ_BP_COST_PER_GB}
+          wallet={bonusPoints}
+          handleBuy={(e) => handleBuy(e, 'upload')}
+        />
+      </Box>
       <Box
         display="flex"
         alignItems="center"
@@ -131,11 +243,11 @@ const Account = ({ token, invites = [], user, userRole }) => {
           pl={4}
         >
           <Text color="grey" mr={4}>
-            {user.remainingInvites || 0} remaining
+            {remainingInvites.toLocaleString()} remaining
           </Text>
           <Button
             onClick={() => setShowInviteModal(true)}
-            disabled={(user.remainingInvites || 0) < 1}
+            disabled={remainingInvites < 1}
           >
             Send invite
           </Button>

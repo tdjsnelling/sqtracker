@@ -23,6 +23,7 @@ import {
   verifyUserEmail,
   banUser,
   unbanUser,
+  buyItems,
 } from './controllers/user'
 import {
   uploadTorrent,
@@ -155,6 +156,7 @@ app.post('/account/generate-invite', generateInvite)
 app.post('/account/change-password', changePassword)
 app.get('/account/get-role', getUserRole)
 app.get('/account/get-verified', getUserVerifiedEmailStatus)
+app.post('/account/buy', buyItems)
 app.get('/user/:username', fetchUser)
 app.post('/user/ban/:username', banUser)
 app.post('/user/unban/:username', unbanUser)
