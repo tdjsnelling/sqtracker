@@ -21,6 +21,7 @@ import Modal from '../components/Modal'
 
 const BuyItem = ({ text, cost, wallet, handleBuy }) => {
   const [amount, setAmount] = useState(1)
+  const unavailable = cost === 0
   return (
     <Box
       display="flex"
@@ -36,7 +37,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
       <form onSubmit={handleBuy}>
         <Box display="flex" alignItems="center">
           <Text color="grey" mr={4}>
-            Cost: {amount * cost} points
+            {unavailable ? 'Not available' : `Cost: ${amount * cost} points`}
           </Text>
           <Input
             type="number"
@@ -46,9 +47,10 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
             min={1}
             max={Math.floor(wallet / cost)}
             width="100px"
+            disabled={unavailable}
             mr={3}
           />
-          <Button disabled={amount * cost > wallet}>Buy</Button>
+          <Button disabled={unavailable || amount * cost > wallet}>Buy</Button>
         </Box>
       </form>
     </Box>

@@ -696,6 +696,11 @@ export const buyItems = async (req, res) => {
       const user = await User.findOne({ _id: req.userId }).lean()
 
       if (req.body.type === 'invite') {
+        if (process.env.SQ_BP_COST_PER_INVITE === 0) {
+          res.status(403).send('Not available to buy')
+          return
+        }
+
         const cost = amount * process.env.SQ_BP_COST_PER_INVITE
         if (cost > user.bonusPoints) {
           res.status(403).send('Not enough points for transaction')
@@ -714,6 +719,11 @@ export const buyItems = async (req, res) => {
 
         res.status(200).send((user.bonusPoints - cost).toString())
       } else if (req.body.type === 'upload') {
+        if (process.env.SQ_BP_COST_PER_GB === 0) {
+          res.status(403).send('Not available to buy')
+          return
+        }
+
         const cost = amount * process.env.SQ_BP_COST_PER_GB
         if (cost > user.bonusPoints) {
           res.status(403).send('Not enough points for transaction')
