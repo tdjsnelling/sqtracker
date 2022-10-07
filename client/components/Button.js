@@ -4,7 +4,7 @@ import css from '@styled-system/css'
 import { darken, lighten, getLuminance } from 'polished'
 
 const StyledButton = styled.button(
-  ({ theme }) =>
+  ({ theme, small }) =>
     css({
       appearance: 'none',
       bg: 'primary',
@@ -15,7 +15,7 @@ const StyledButton = styled.button(
       fontFamily: 'body',
       fontSize: 2,
       px: 4,
-      py: 3,
+      py: !small ? 3 : 2,
       cursor: 'pointer',
       whiteSpace: 'nowrap',
       '&:hover': {

@@ -1,5 +1,6 @@
 import Request from '../schema/request'
 import Comment from '../schema/comment'
+import Torrent from '../schema/torrent'
 
 export const createRequest = async (req, res) => {
   if (req.body.title && req.body.body) {
@@ -148,6 +149,30 @@ export const fetchRequest = async (req, res) => {
           ],
         },
       },
+      {
+        $lookup: {
+          from: 'torrents',
+          as: 'candidates',
+          let: { torrentIds: '$candidates' },
+          pipeline: [
+            { $match: { $expr: { $in: ['$_id', '$$torrentIds'] } } },
+            {
+              $project: {
+                infoHash: 1,
+                name: 1,
+                type: 1,
+                created: 1,
+              },
+            },
+            {
+              $unwind: {
+                path: '$candidates',
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+          ],
+        },
+      },
     ])
     if (!request) {
       res.status(404).send('Request could not be found')
@@ -155,6 +180,7 @@ export const fetchRequest = async (req, res) => {
     }
     res.send(request)
   } catch (e) {
+    console.error(e)
     res.status(500).send(e.message)
   }
 }
@@ -204,5 +230,86 @@ export const addComment = async (req, res) => {
     }
   } else {
     res.status(400).send('Request must include comment')
+  }
+}
+
+export const addCandidate = async (req, res) => {
+  if (req.body.infoHash) {
+    try {
+      const request = await Request.findOne({
+        _id: req.params.requestId,
+      }).lean()
+
+      const torrent = await Torrent.findOne(
+        {
+          infoHash: req.body.infoHash,
+        },
+        { infoHash: 1, name: 1, type: 1, created: 1 }
+      ).lean()
+
+      if (!torrent) {
+        res.status(404).send('Torrent does not exist')
+        return
+      }
+
+      if (request.candidates.includes(torrent._id)) {
+        res.status(409).send('Torrent has already been suggested')
+        return
+      }
+
+      await Request.findOneAndUpdate(
+        { _id: req.params.requestId },
+        { $addToSet: { candidates: torrent._id } }
+      )
+
+      res.status(200).send({ torrent })
+    } catch (err) {
+      res.status(500).send(err.message)
+    }
+  } else {
+    res.status(400).send('Request must include infoHash')
+  }
+}
+
+export const acceptCandidate = async (req, res) => {
+  if (req.body.infoHash) {
+    try {
+      const request = await Request.findOne({
+        _id: req.params.requestId,
+      }).lean()
+
+      if (req.userId.toString() !== request.createdBy.toString()) {
+        res
+          .status(401)
+          .send('You do not have permission to accept that suggestion')
+        return
+      }
+
+      const torrent = await Torrent.findOne({
+        infoHash: req.body.infoHash,
+      }).lean()
+
+      if (
+        !request.candidates.some(
+          (candidate) => candidate.toString() === torrent._id.toString()
+        )
+      ) {
+        res
+          .status(403)
+          .send('Cannot accept a torrent that has not been suggested')
+        return
+      }
+
+      await Request.findOneAndUpdate(
+        { _id: req.params.requestId },
+        { $set: { fulfilledBy: torrent._id } }
+      )
+
+      res.status(200).send({ torrent: torrent._id })
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include infoHash')
   }
 }

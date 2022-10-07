@@ -7,7 +7,6 @@ import jwt from 'jsonwebtoken'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { useCookies } from 'react-cookie'
-import { Pin } from '@styled-icons/boxicons-regular'
 import SEO from '../../components/SEO'
 import Box from '../../components/Box'
 import Text from '../../components/Text'
@@ -17,16 +16,29 @@ import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
 import Input from '../../components/Input'
 import Comment from '../../components/Comment'
+import Modal from '../../components/Modal'
+import List from '../../components/List'
+import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
+import slugify from 'slugify'
+import { Check } from '@styled-icons/boxicons-regular/Check'
+import { X } from '@styled-icons/boxicons-regular/X'
 
 const Request = ({ request, token, user }) => {
   const [comments, setComments] = useState(request.comments)
+  const [candidates, setCandidates] = useState(request.candidates.reverse())
+  const [fulfilledBy, setFulfilledBy] = useState(request.fulfilledBy)
+  const [showSuggestModal, setShowSuggestModal] = useState(false)
 
   const { addNotification } = useContext(NotificationContext)
 
   const commentInputRef = useRef()
 
   const {
-    publicRuntimeConfig: { SQ_API_URL },
+    publicRuntimeConfig: {
+      SQ_API_URL,
+      SQ_SITE_WIDE_FREELEECH,
+      SQ_TORRENT_CATEGORIES,
+    },
   } = getConfig()
 
   const router = useRouter()
@@ -100,6 +112,73 @@ const Request = ({ request, token, user }) => {
     }
   }
 
+  const handleSuggestion = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
+    try {
+      const suggestRes = await fetch(
+        `${SQ_API_URL}/requests/suggest/${request._id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            infoHash: form.get('infoHash'),
+          }),
+        }
+      )
+
+      if (suggestRes.status !== 200) {
+        const reason = await suggestRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Suggestion added successfully')
+
+      const { torrent } = await suggestRes.json()
+      setCandidates((existing) => [torrent, ...existing])
+
+      setShowSuggestModal(false)
+    } catch (e) {
+      addNotification('error', `Could not add suggestion: ${e.message}`)
+      console.error(e)
+    }
+  }
+
+  const handleAccept = async (infoHash) => {
+    try {
+      const acceptRes = await fetch(
+        `${SQ_API_URL}/requests/accept/${request._id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            infoHash,
+          }),
+        }
+      )
+
+      if (acceptRes.status !== 200) {
+        const reason = await acceptRes.text()
+        throw new Error(reason)
+      }
+
+      addNotification('success', 'Suggestion accepted successfully')
+
+      const { torrent } = await acceptRes.json()
+      setFulfilledBy(torrent)
+    } catch (e) {
+      addNotification('error', `Could not accept suggestion: ${e.message}`)
+      console.error(e)
+    }
+  }
+
   return (
     <>
       <SEO title={`${request.title} | Request`} />
@@ -137,6 +216,104 @@ const Request = ({ request, token, user }) => {
           </ReactMarkdown>
         </MarkdownBody>
       </Box>
+      <Box mb={5}>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          mb={4}
+        >
+          <Text as="h2">Suggested torrents</Text>
+          <Button
+            onClick={() => setShowSuggestModal(true)}
+            disabled={!!fulfilledBy}
+          >
+            Suggest a torrent
+          </Button>
+        </Box>
+        {candidates.length ? (
+          <List
+            data={candidates.map((torrent) => ({
+              ...torrent,
+              href: `/torrent/${torrent.infoHash}`,
+            }))}
+            columns={[
+              {
+                header: 'Name',
+                accessor: 'name',
+                cell: ({ value, row }) => (
+                  <Text>
+                    {value}
+                    {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
+                      <Text as="span" fontSize={0} color="primary" ml={3}>
+                        FL!
+                      </Text>
+                    )}
+                  </Text>
+                ),
+                gridWidth: '2fr',
+              },
+              {
+                header: 'Category',
+                accessor: 'type',
+                cell: ({ value }) => (
+                  <Text icon={ListUl}>
+                    {SQ_TORRENT_CATEGORIES.find(
+                      (c) => slugify(c, { lower: true }) === value
+                    ) || 'None'}
+                  </Text>
+                ),
+                gridWidth: '1fr',
+              },
+              {
+                header: 'Accepted',
+                accessor: '_id',
+                cell: ({ value }) => (
+                  <Box color={value === fulfilledBy ? 'success' : 'grey'}>
+                    {value === fulfilledBy ? (
+                      <Check size={24} />
+                    ) : (
+                      <X size={24} />
+                    )}
+                  </Box>
+                ),
+                gridWidth: '1fr',
+              },
+              {
+                header: 'Uploaded',
+                accessor: 'created',
+                cell: ({ value }) => (
+                  <Text>{moment(value).format('Do MMM YYYY')}</Text>
+                ),
+                gridWidth: '1fr',
+                rightAlign: true,
+              },
+              ...(user === request.createdBy._id
+                ? [
+                    {
+                      cell: ({ row }) => (
+                        <Button
+                          onClick={async (e) => {
+                            e.preventDefault()
+                            await handleAccept(row.infoHash)
+                          }}
+                          disabled={!!fulfilledBy}
+                          small
+                        >
+                          Accept
+                        </Button>
+                      ),
+                      gridWidth: '90px',
+                      rightAlign: true,
+                    },
+                  ]
+                : []),
+            ]}
+          />
+        ) : (
+          <Text color="grey">No torrents have been suggested yet.</Text>
+        )}
+      </Box>
       <Box>
         <Text as="h2" mb={4}>
           Comments
@@ -164,6 +341,25 @@ const Request = ({ request, token, user }) => {
           </Box>
         )}
       </Box>
+      {showSuggestModal && (
+        <Modal close={() => setShowSuggestModal(false)}>
+          <Text mb={5}>Enter the infohash of a torrent below.</Text>
+          <form onSubmit={handleSuggestion}>
+            <Input name="infoHash" label="Infohash" mb={4} />
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                type="button"
+                onClick={() => setShowSuggestModal(false)}
+                variant="secondary"
+                mr={3}
+              >
+                Cancel
+              </Button>
+              <Button>Suggest</Button>
+            </Box>
+          </form>
+        </Modal>
+      )}
     </>
   )
 }

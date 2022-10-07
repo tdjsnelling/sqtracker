@@ -61,6 +61,8 @@ import {
   fetchRequest,
   deleteRequest,
   addComment as addCommentRequest,
+  addCandidate,
+  acceptCandidate,
 } from './controllers/request'
 import validateConfig from './utils/validateConfig'
 import createAdminUser from './setup/createAdminUser'
@@ -202,6 +204,8 @@ app.get('/requests/page/:page', getRequests)
 app.get('/requests/:index', fetchRequest)
 app.delete('/requests/:index', deleteRequest)
 app.post('/requests/comment/:requestId', addCommentRequest)
+app.post('/requests/suggest/:requestId', addCandidate)
+app.post('/requests/accept/:requestId', acceptCandidate)
 
 const port = process.env.SQ_PORT || 3001
 app.listen(port, () => {

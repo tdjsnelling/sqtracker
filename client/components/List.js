@@ -85,13 +85,17 @@ const List = ({ data = [], columns = [], ...rest }) => {
                   ]}
                   gridGap={[2, 4]}
                   alignItems="center"
-                  p={4}
+                  minHeight="50px"
+                  px={4}
                 >
                   {columns.map((col, j) => (
                     <Box
                       key={`list-row-${i}-col-${j}`}
+                      width="100%"
+                      display="flex"
+                      alignItems="center"
                       textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
-                      _css={{ whiteSpace: 'nowrap' }}
+                      _css={{ whiteSpace: 'nowrap', '> *': { width: '100%' } }}
                     >
                       {col.cell({
                         value: col.accessor ? getIn(row, col.accessor) : null,
