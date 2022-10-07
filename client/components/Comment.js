@@ -4,13 +4,15 @@ import moment from 'moment'
 import { Comment as CommentIcon } from '@styled-icons/boxicons-regular/Comment'
 import { File } from '@styled-icons/boxicons-regular/File'
 import { News } from '@styled-icons/boxicons-regular/News'
+import { CommentAdd } from '@styled-icons/boxicons-regular/CommentAdd'
 import Box from './Box'
 import Text from './Text'
 
 const Comment = ({ comment }) => {
-  const isTorrent = !comment.announcement
-  const isAnnouncement = !comment.torrent
-  console.log({ isTorrent, isAnnouncement })
+  const isTorrent = !comment.announcement && !comment.request
+  const isAnnouncement = !comment.torrent && !comment.request
+  const isRequest = !comment.torrent && !comment.announcement
+
   return (
     <Box
       p={4}
@@ -76,6 +78,26 @@ const Comment = ({ comment }) => {
                   </Link>
                 ) : (
                   'deleted announcement'
+                )}
+              </>
+            )}
+            {isRequest && (
+              <>
+                {comment.request ? (
+                  <Link href={`/requests/${comment.request.index}`} passHref>
+                    <Text
+                      as="a"
+                      icon={CommentAdd}
+                      iconColor="primary"
+                      iconTextWrapperProps={{
+                        style: { verticalAlign: 'text-bottom' },
+                      }}
+                    >
+                      {comment.request.title}
+                    </Text>
+                  </Link>
+                ) : (
+                  'deleted request'
                 )}
               </>
             )}

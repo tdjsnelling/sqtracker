@@ -495,6 +495,34 @@ export const fetchUser = async (req, res) => {
                     },
                   },
                 ],
+                request: [
+                  {
+                    $match: {
+                      type: 'request',
+                    },
+                  },
+                  {
+                    $lookup: {
+                      from: 'requests',
+                      as: 'request',
+                      let: { requestId: '$parentId' },
+                      pipeline: [
+                        {
+                          $match: {
+                            $expr: { $eq: ['$_id', '$$requestId'] },
+                          },
+                        },
+                        { $project: { title: 1, index: 1 } },
+                      ],
+                    },
+                  },
+                  {
+                    $unwind: {
+                      path: '$request',
+                      preserveNullAndEmptyArrays: true,
+                    },
+                  },
+                ],
               },
             },
           ],
@@ -509,7 +537,11 @@ export const fetchUser = async (req, res) => {
       {
         $addFields: {
           comments: {
-            $concatArrays: ['$comments.torrent', '$comments.announcement'],
+            $concatArrays: [
+              '$comments.torrent',
+              '$comments.announcement',
+              '$comments.request',
+            ],
           },
         },
       },

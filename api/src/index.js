@@ -55,6 +55,13 @@ import {
   getStats,
 } from './controllers/moderation'
 import { rssFeed } from './controllers/rss'
+import {
+  createRequest,
+  getRequests,
+  fetchRequest,
+  deleteRequest,
+  addComment as addCommentRequest,
+} from './controllers/request'
 import validateConfig from './utils/validateConfig'
 import createAdminUser from './setup/createAdminUser'
 
@@ -188,6 +195,13 @@ app.get('/reports/page/:page', getReports)
 app.post('/reports/resolve/:reportId', setReportResolved)
 app.get('/reports/:reportId', fetchReport)
 app.get('/admin/stats', getStats)
+
+// request routes
+app.post('/requests/new', createRequest)
+app.get('/requests/page/:page', getRequests)
+app.get('/requests/:index', fetchRequest)
+app.delete('/requests/:index', deleteRequest)
+app.post('/requests/comment/:requestId', addCommentRequest)
 
 const port = process.env.SQ_PORT || 3001
 app.listen(port, () => {
