@@ -252,7 +252,13 @@ export const addCandidate = async (req, res) => {
         return
       }
 
-      if (request.candidates.includes(torrent._id)) {
+      console.log(request, torrent)
+
+      if (
+        request.candidates
+          .map((c) => c.toString())
+          .includes(torrent._id.toString())
+      ) {
         res.status(409).send('Torrent has already been suggested')
         return
       }
