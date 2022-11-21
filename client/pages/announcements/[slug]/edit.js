@@ -9,6 +9,7 @@ import Checkbox from '../../../components/Checkbox'
 import Button from '../../../components/Button'
 import { withAuthServerSideProps } from '../../../utils/withAuth'
 import { NotificationContext } from '../../../components/Notifications'
+import LoadingContext from '../../../utils/LoadingContext'
 
 const EditAnnouncement = ({ announcement, token, userRole }) => {
   if (userRole !== 'admin') {
@@ -16,6 +17,7 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
   }
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
 
@@ -25,6 +27,7 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -58,6 +61,8 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
       addNotification('error', `Could not update announcement: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

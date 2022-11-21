@@ -20,12 +20,14 @@ import TorrentList from '../../components/TorrentList'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 const User = ({ token, user, userRole }) => {
   const [banned, setBanned] = useState(!!user.banned)
   const [showBanModal, setShowBanModal] = useState(false)
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const [cookies] = useCookies()
 
@@ -41,6 +43,8 @@ const User = ({ token, user, userRole }) => {
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(' ')
 
   const handleBanUser = async () => {
+    setLoading(true)
+
     try {
       const res = await fetch(
         `${SQ_API_URL}/user/${banned ? 'unban' : 'ban'}/${user.username}`,
@@ -71,6 +75,8 @@ const User = ({ token, user, userRole }) => {
       )
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

@@ -1,20 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react'
 import App from 'next/app'
 import Head from 'next/head'
-import { useRouter } from 'next/router'
+import Router, { useRouter } from 'next/router'
 import getConfig from 'next/config'
-import { ThemeProvider, createGlobalStyle } from 'styled-components'
+import styled, {
+  ThemeProvider,
+  createGlobalStyle,
+  keyframes,
+} from 'styled-components'
 import { useCookies } from 'react-cookie'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
 import { Sun } from '@styled-icons/boxicons-regular/Sun'
 import { Moon } from '@styled-icons/boxicons-regular/Moon'
 import { Bell } from '@styled-icons/boxicons-regular/Bell'
+import { LoaderAlt } from '@styled-icons/boxicons-regular/LoaderAlt'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
 import Input from '../components/Input'
 import { NotificationsProvider } from '../components/Notifications'
 import Text from '../components/Text'
+import LoadingContext from '../utils/LoadingContext'
 
 const getThemeColours = (theme, primary = '#f45d48') => {
   switch (theme) {
@@ -114,11 +120,25 @@ const GlobalStyle = createGlobalStyle(
 `
 )
 
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+`
+
+const Loading = styled(LoaderAlt)`
+  animation: ${spin} 1s linear infinite;
+`
+
 const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isMobile, setIsMobile] = useState(false)
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [theme, setTheme] = useState(initialTheme || 'light')
   const [isServer, setIsServer] = useState(true)
+  const [loading, setLoading] = useState(false)
 
   const router = useRouter()
 
@@ -155,6 +175,10 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
     themeQuery.addEventListener('change', ({ matches }) => {
       setThemeAndSave(matches ? 'light' : 'dark')
     })
+
+    Router.events.on('routeChangeStart', () => setLoading(true))
+    Router.events.on('routeChangeComplete', () => setLoading(false))
+    Router.events.on('routeChangeError', () => setLoading(false))
   }, [])
 
   const appTheme = {
@@ -187,79 +211,89 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       </Head>
       <ThemeProvider theme={appTheme}>
         <GlobalStyle />
-        <NotificationsProvider>
-          <Navigation
-            isMobile={isMobile}
-            menuIsOpen={menuIsOpen}
-            setMenuIsOpen={setMenuIsOpen}
-          />
-          <Box
-            width="100%"
-            height="60px"
-            borderBottom="1px solid"
-            borderColor="border"
-          >
+        <LoadingContext.Provider value={{ loading, setLoading }}>
+          <NotificationsProvider>
+            <Navigation
+              isMobile={isMobile}
+              menuIsOpen={menuIsOpen}
+              setMenuIsOpen={setMenuIsOpen}
+            />
             <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              maxWidth="body"
+              width="100%"
               height="60px"
-              ml={[0, `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`]}
-              px={[4, 5]}
+              borderBottom="1px solid"
+              borderColor="border"
             >
-              <Box display="flex" alignItems="center">
-                <Button
-                  onClick={() => setMenuIsOpen(true)}
-                  variant="noBackground"
-                  display={['block', 'none']}
-                  px={1}
-                  py={1}
-                  mr={3}
-                >
-                  <Menu size={24} />
-                </Button>
-                {SQ_SITE_WIDE_FREELEECH === true && (
-                  <Text
-                    icon={Bell}
-                    iconColor="primary"
-                    iconWrapperProps={{ justifyContent: 'flex-end' }}
-                    fontSize={[0, 2]}
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                maxWidth="body"
+                height="60px"
+                ml={[
+                  0,
+                  `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`,
+                ]}
+                px={[4, 5]}
+              >
+                <Box display="flex" alignItems="center">
+                  <Button
+                    onClick={() => setMenuIsOpen(true)}
+                    variant="noBackground"
+                    display={['block', 'none']}
+                    px={1}
+                    py={1}
+                    mr={3}
                   >
-                    Site-wide freeleech enabled!
-                  </Text>
+                    <Menu size={24} />
+                  </Button>
+                  {loading && <Loading size={24} />}
+                  {SQ_SITE_WIDE_FREELEECH === true && (
+                    <Text
+                      icon={Bell}
+                      iconColor="primary"
+                      iconWrapperProps={{ justifyContent: 'flex-end' }}
+                      fontSize={[0, 2]}
+                    >
+                      Site-wide freeleech enabled!
+                    </Text>
+                  )}
+                </Box>
+                {!isServer && token && (
+                  <Box display="flex">
+                    <Box as="form" onSubmit={handleSearch}>
+                      <Input
+                        name="query"
+                        placeholder="Search"
+                        maxWidth="300px"
+                        ref={searchRef}
+                      />
+                    </Box>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setThemeAndSave(theme === 'light' ? 'dark' : 'light')
+                      }}
+                      width="40px"
+                      px={2}
+                      py={2}
+                      ml={3}
+                    >
+                      {theme === 'light' ? (
+                        <Sun size={24} />
+                      ) : (
+                        <Moon size={24} />
+                      )}
+                    </Button>
+                  </Box>
                 )}
               </Box>
-              {!isServer && token && (
-                <Box display="flex">
-                  <Box as="form" onSubmit={handleSearch}>
-                    <Input
-                      name="query"
-                      placeholder="Search"
-                      maxWidth="300px"
-                      ref={searchRef}
-                    />
-                  </Box>
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      setThemeAndSave(theme === 'light' ? 'dark' : 'light')
-                    }}
-                    width="40px"
-                    px={2}
-                    py={2}
-                    ml={3}
-                  >
-                    {theme === 'light' ? <Sun size={24} /> : <Moon size={24} />}
-                  </Button>
-                </Box>
-              )}
             </Box>
-          </Box>
-          <main>
-            <Component {...pageProps} />
-          </main>
-        </NotificationsProvider>
+            <main>
+              <Component {...pageProps} />
+            </main>
+          </NotificationsProvider>
+        </LoadingContext.Provider>
       </ThemeProvider>
     </>
   )

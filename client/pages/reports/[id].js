@@ -14,9 +14,11 @@ import MarkdownBody from '../../components/MarkdownBody'
 import { Info } from '../torrent/[infoHash]'
 import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 const Report = ({ report, token, userRole }) => {
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -25,6 +27,8 @@ const Report = ({ report, token, userRole }) => {
   const router = useRouter()
 
   const handleResolve = async () => {
+    setLoading(true)
+
     try {
       const resolveRes = await fetch(
         `${SQ_API_URL}/reports/resolve/${report._id}`,
@@ -48,6 +52,8 @@ const Report = ({ report, token, userRole }) => {
       addNotification('error', `Could not resolve report: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   if (userRole !== 'admin') {

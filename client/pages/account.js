@@ -18,10 +18,12 @@ import Button from '../components/Button'
 import List from '../components/List'
 import { NotificationContext } from '../components/Notifications'
 import Modal from '../components/Modal'
+import LoadingContext from '../utils/LoadingContext'
 
 const BuyItem = ({ text, cost, wallet, handleBuy }) => {
   const [amount, setAmount] = useState(1)
   const unavailable = cost === 0
+  const cannotAfford = amount * cost > wallet
   return (
     <Box
       display="flex"
@@ -37,7 +39,9 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
       <form onSubmit={handleBuy}>
         <Box display="flex" alignItems="center">
           <Text color="grey" mr={4}>
-            {unavailable ? 'Not available' : `Cost: ${amount * cost} points`}
+            {unavailable
+              ? 'Not available to buy'
+              : `Cost: ${amount * cost} points`}
           </Text>
           <Input
             type="number"
@@ -47,10 +51,10 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
             min={1}
             max={Math.floor(wallet / cost)}
             width="100px"
-            disabled={unavailable}
+            disabled={unavailable || cannotAfford}
             mr={3}
           />
-          <Button disabled={unavailable || amount * cost > wallet}>Buy</Button>
+          <Button disabled={unavailable || cannotAfford}>Buy</Button>
         </Box>
       </form>
     </Box>
@@ -66,6 +70,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
   const [bonusPoints, setBonusPoints] = useState(user.bonusPoints ?? 0)
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const {
     publicRuntimeConfig: {
@@ -78,6 +83,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
 
   const handleGenerateInvite = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -114,10 +120,13 @@ const Account = ({ token, invites = [], user, userRole }) => {
       addNotification('error', `Could not send invite: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleChangePassword = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -152,10 +161,13 @@ const Account = ({ token, invites = [], user, userRole }) => {
       addNotification('error', `Could not change password: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleBuy = async (e, type) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -194,6 +206,8 @@ const Account = ({ token, invites = [], user, userRole }) => {
       addNotification('error', `Could not buy items: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

@@ -5,9 +5,11 @@ import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 const InitiatePasswordReset = () => {
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -15,6 +17,7 @@ const InitiatePasswordReset = () => {
 
   const handleInitiate = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -44,6 +47,8 @@ const InitiatePasswordReset = () => {
       )
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

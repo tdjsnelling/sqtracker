@@ -24,6 +24,7 @@ import Input from '../../components/Input'
 import Comment from '../../components/Comment'
 import Modal from '../../components/Modal'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
@@ -114,6 +115,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech)
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const commentInputRef = useRef()
 
@@ -132,6 +134,8 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   const [cookies] = useCookies()
 
   const handleDownload = async () => {
+    setLoading(true)
+
     try {
       const downloadRes = await fetch(
         `${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`
@@ -158,9 +162,13 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could not download torrent: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleDelete = async () => {
+    setLoading(true)
+
     try {
       const deleteRes = await fetch(
         `${SQ_API_URL}/torrent/delete/${torrent.infoHash}`,
@@ -184,10 +192,13 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could not delete torrent: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleComment = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -228,9 +239,13 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could not post comment: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleVote = async (vote) => {
+    setLoading(true)
+
     try {
       if (userVote) {
         if (userVote === vote) {
@@ -276,11 +291,15 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could not submit vote: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleReport = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
+
     try {
       const reportRes = await fetch(
         `${SQ_API_URL}/torrent/report/${torrent.infoHash}`,
@@ -308,9 +327,13 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could not submit report: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleToggleFreeleech = async () => {
+    setLoading(true)
+
     try {
       const toggleRes = await fetch(
         `${SQ_API_URL}/torrent/toggle-freeleech/${torrent.infoHash}`,
@@ -334,6 +357,8 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       addNotification('error', `Could toggle freeleech: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const category = SQ_TORRENT_CATEGORIES.find(

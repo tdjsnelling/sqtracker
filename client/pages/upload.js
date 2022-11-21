@@ -17,6 +17,7 @@ import Checkbox from '../components/Checkbox'
 import Button from '../components/Button'
 import Infobox from '../components/Infobox'
 import { NotificationContext } from '../components/Notifications'
+import LoadingContext from '../utils/LoadingContext'
 
 const FileUpload = styled(Box)(() =>
   css({
@@ -38,6 +39,7 @@ const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState()
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
 
@@ -72,6 +74,7 @@ const Upload = ({ token, userId }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -103,6 +106,8 @@ const Upload = ({ token, userId }) => {
       addNotification('error', `Could not upload torrent: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

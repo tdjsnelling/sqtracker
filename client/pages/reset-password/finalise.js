@@ -7,9 +7,11 @@ import Text from '../../components/Text'
 import Input from '../../components/Input'
 import Button from '../../components/Button'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
 
@@ -19,6 +21,7 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
 
   const handleInitiate = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -49,6 +52,8 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
       )
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

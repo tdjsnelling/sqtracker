@@ -11,12 +11,14 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import Box from '../components/Box'
 import { NotificationContext } from '../components/Notifications'
+import LoadingContext from '../utils/LoadingContext'
 
 const Register = ({ token: inviteToken, tokenError }) => {
   const [, setCookie] = useCookies()
 
   const { colors } = useContext(ThemeContext)
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
 
@@ -26,6 +28,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
 
   const handleRegister = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -62,6 +65,8 @@ const Register = ({ token: inviteToken, tokenError }) => {
       addNotification('error', `Could not register: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   if (SQ_ALLOW_REGISTER !== 'open' && SQ_ALLOW_REGISTER !== 'invite') {

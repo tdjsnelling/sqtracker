@@ -22,6 +22,7 @@ import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
 import slugify from 'slugify'
 import { Check } from '@styled-icons/boxicons-regular/Check'
 import { X } from '@styled-icons/boxicons-regular/X'
+import LoadingContext from '../../utils/LoadingContext'
 
 const Request = ({ request, token, user }) => {
   const [comments, setComments] = useState(request.comments)
@@ -30,6 +31,7 @@ const Request = ({ request, token, user }) => {
   const [showSuggestModal, setShowSuggestModal] = useState(false)
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const commentInputRef = useRef()
 
@@ -46,6 +48,8 @@ const Request = ({ request, token, user }) => {
   const [cookies] = useCookies()
 
   const handleDelete = async () => {
+    setLoading(true)
+
     try {
       const deleteRes = await fetch(`${SQ_API_URL}/requests/${request.index}`, {
         method: 'DELETE',
@@ -66,10 +70,13 @@ const Request = ({ request, token, user }) => {
       addNotification('error', `Could not delete request: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleComment = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -110,10 +117,13 @@ const Request = ({ request, token, user }) => {
       addNotification('error', `Could not post comment: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleSuggestion = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -146,9 +156,13 @@ const Request = ({ request, token, user }) => {
       addNotification('error', `Could not add suggestion: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleAccept = async (infoHash) => {
+    setLoading(true)
+
     try {
       const acceptRes = await fetch(
         `${SQ_API_URL}/requests/accept/${request._id}`,
@@ -177,6 +191,8 @@ const Request = ({ request, token, user }) => {
       addNotification('error', `Could not accept suggestion: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

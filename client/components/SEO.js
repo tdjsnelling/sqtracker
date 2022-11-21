@@ -10,7 +10,7 @@ const SEO = ({ title, noTitleTemplate }) => {
   const formattedTitle = title
     ? noTitleTemplate
       ? title
-      : `${title} | ${SQ_SITE_NAME}`
+      : `${title} — ${SQ_SITE_NAME}`
     : SQ_SITE_NAME
 
   return (

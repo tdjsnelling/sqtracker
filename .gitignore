@@ -4,3 +4,4 @@
 client/.next
 data/
 config.js
+.DS_Store

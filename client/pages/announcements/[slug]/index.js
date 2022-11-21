@@ -17,12 +17,14 @@ import { withAuthServerSideProps } from '../../../utils/withAuth'
 import { NotificationContext } from '../../../components/Notifications'
 import Input from '../../../components/Input'
 import Comment from '../../../components/Comment'
+import LoadingContext from '../../../utils/LoadingContext'
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned)
   const [comments, setComments] = useState(announcement.comments)
 
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const commentInputRef = useRef()
 
@@ -35,6 +37,8 @@ const Announcement = ({ announcement, token, userRole }) => {
   const [cookies] = useCookies()
 
   const handleDelete = async () => {
+    setLoading(true)
+
     try {
       const deleteRes = await fetch(
         `${SQ_API_URL}/announcements/${announcement.slug}`,
@@ -58,9 +62,13 @@ const Announcement = ({ announcement, token, userRole }) => {
       addNotification('error', `Could not delete announcement: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handlePin = async () => {
+    setLoading(true)
+
     try {
       const pinRes = await fetch(
         `${SQ_API_URL}/announcements/pin/${announcement._id}/${
@@ -92,10 +100,13 @@ const Announcement = ({ announcement, token, userRole }) => {
       )
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   const handleComment = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -136,6 +147,8 @@ const Announcement = ({ announcement, token, userRole }) => {
       addNotification('error', `Could not post comment: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (

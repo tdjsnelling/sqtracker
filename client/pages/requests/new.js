@@ -5,13 +5,14 @@ import jwt from 'jsonwebtoken'
 import SEO from '../../components/SEO'
 import Text from '../../components/Text'
 import Input from '../../components/Input'
-import Checkbox from '../../components/Checkbox'
 import Button from '../../components/Button'
 import { withAuthServerSideProps } from '../../utils/withAuth'
 import { NotificationContext } from '../../components/Notifications'
+import LoadingContext from '../../utils/LoadingContext'
 
 const NewRequest = ({ token }) => {
   const { addNotification } = useContext(NotificationContext)
+  const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
 
@@ -21,6 +22,7 @@ const NewRequest = ({ token }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault()
+    setLoading(true)
     const form = new FormData(e.target)
 
     try {
@@ -49,6 +51,8 @@ const NewRequest = ({ token }) => {
       addNotification('error', `Could not create request: ${e.message}`)
       console.error(e)
     }
+
+    setLoading(false)
   }
 
   return (
