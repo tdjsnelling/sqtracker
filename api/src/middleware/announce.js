@@ -102,10 +102,16 @@ const handleAnnounce = async (req, res, next) => {
   }).lean()
 
   const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
-  const uploadDeltaSession = params.uploaded - alreadyUploadedSession
+  const uploadDeltaSession =
+    params.uploaded > alreadyUploadedSession
+      ? params.uploaded - alreadyUploadedSession
+      : 0
 
   const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
-  const downloadDeltaSession = params.downloaded - alreadyDownloadedSession
+  const downloadDeltaSession =
+    params.downloaded > alreadyDownloadedSession
+      ? params.downloaded - alreadyDownloadedSession
+      : 0
 
   if ((bytes + uploadDeltaSession) / BYTES_GB >= nextGb) {
     await User.findOneAndUpdate(
