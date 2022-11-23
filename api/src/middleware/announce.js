@@ -101,16 +101,17 @@ const handleAnnounce = async (req, res, next) => {
     infoHash,
   }).lean()
 
+  const uploaded = Number(params.uploaded)
+  const downloaded = Number(params.downloaded)
+
   const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
   const uploadDeltaSession =
-    params.uploaded > alreadyUploadedSession
-      ? params.uploaded - alreadyUploadedSession
-      : 0
+    uploaded > alreadyUploadedSession ? uploaded - alreadyUploadedSession : 0
 
   const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
   const downloadDeltaSession =
-    params.downloaded > alreadyDownloadedSession
-      ? params.downloaded - alreadyDownloadedSession
+    downloaded > alreadyDownloadedSession
+      ? downloaded - alreadyDownloadedSession
       : 0
 
   if ((bytes + uploadDeltaSession) / BYTES_GB >= nextGb) {
@@ -122,17 +123,17 @@ const handleAnnounce = async (req, res, next) => {
 
   console.log({
     bytes,
-    uploaded: params.uploaded,
+    uploaded,
     alreadyUploadedSession,
     uploadDeltaSession,
-    downloaded: params.downloaded,
+    downloaded,
     alreadyDownloadedSession,
     downloadDeltaSession,
   })
 
   // update the progress report for this user/torrent pair
 
-  if (params.uploaded !== prevProgressRecord?.uploaded?.session) {
+  if (uploaded !== prevProgressRecord?.uploaded?.session) {
     await Progress.findOneAndUpdate(
       { userId: user._id, infoHash },
       {
@@ -140,18 +141,18 @@ const handleAnnounce = async (req, res, next) => {
           userId: user._id,
           infoHash,
           uploaded: {
-            session: params.uploaded,
+            session: uploaded,
             total:
               (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
           },
-          left: params.left,
+          left: Number(params.left),
         },
       },
       { upsert: true }
     )
   }
 
-  if (params.downloaded !== prevProgressRecord?.downloaded?.session) {
+  if (downloaded !== prevProgressRecord?.downloaded?.session) {
     await Progress.findOneAndUpdate(
       { userId: user._id, infoHash },
       {
@@ -162,14 +163,14 @@ const handleAnnounce = async (req, res, next) => {
             session:
               torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
                 ? prevProgressRecord?.downloaded?.session ?? 0
-                : params.downloaded,
+                : downloaded,
             total:
               torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
                 ? prevProgressRecord?.downloaded?.total ?? 0
                 : (prevProgressRecord?.downloaded?.total ?? 0) +
                   downloadDeltaSession,
           },
-          left: params.left,
+          left: Number(params.left),
         },
       },
       { upsert: true }
