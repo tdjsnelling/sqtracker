@@ -131,7 +131,39 @@ const handleAnnounce = async (req, res, next) => {
     downloadDeltaSession,
   })
 
-  // update the progress report for this user/torrent pair
+  if (uploadDeltaSession === 0) {
+    await Progress.findOneAndUpdate(
+      { userId: user._id, infoHash },
+      {
+        $set: {
+          userId: user._id,
+          infoHash,
+          uploaded: {
+            session: 0,
+            total: prevProgressRecord?.uploaded?.total ?? 0,
+          },
+          left: Number(params.left),
+        },
+      }
+    )
+  }
+
+  if (downloadDeltaSession === 0) {
+    await Progress.findOneAndUpdate(
+      { userId: user._id, infoHash },
+      {
+        $set: {
+          userId: user._id,
+          infoHash,
+          downloaded: {
+            session: 0,
+            total: prevProgressRecord?.downloaded?.total ?? 0,
+          },
+          left: Number(params.left),
+        },
+      }
+    )
+  }
 
   if (uploaded !== prevProgressRecord?.uploaded?.session) {
     await Progress.findOneAndUpdate(
