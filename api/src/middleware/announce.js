@@ -74,10 +74,23 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
-  /*
-    Bonus points: determine how much the user has uploaded, and whether or not this announce will take their total
-    uploaded amount into the next whole GiB. If so, increment the users bonus points by the configured amount.
-  */
+  const uploaded = Number(params.uploaded)
+  const downloaded = Number(params.downloaded)
+
+  const prevProgressRecord = await Progress.findOne({
+    userId: user._id,
+    infoHash,
+  }).lean()
+
+  const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
+  const uploadDeltaSession =
+    uploaded > alreadyUploadedSession ? uploaded - alreadyUploadedSession : 0
+
+  const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
+  const downloadDeltaSession =
+    downloaded > alreadyDownloadedSession
+      ? downloaded - alreadyDownloadedSession
+      : 0
 
   const [sumUploaded] = await Progress.aggregate([
     {
@@ -94,30 +107,16 @@ const handleAnnounce = async (req, res, next) => {
   ])
 
   const { bytes } = sumUploaded ?? { bytes: 0 }
-  const nextGb = Math.max(Math.ceil(bytes / BYTES_GB), 1)
+  const nextGb = Math.max(Math.ceil((bytes + 1) / BYTES_GB), 1)
+  const currentGb = nextGb - 1
 
-  const prevProgressRecord = await Progress.findOne({
-    userId: user._id,
-    infoHash,
-  }).lean()
+  const gbAfterUpload = Math.floor((bytes + uploadDeltaSession) / BYTES_GB)
 
-  const uploaded = Number(params.uploaded)
-  const downloaded = Number(params.downloaded)
-
-  const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
-  const uploadDeltaSession =
-    uploaded > alreadyUploadedSession ? uploaded - alreadyUploadedSession : 0
-
-  const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
-  const downloadDeltaSession =
-    downloaded > alreadyDownloadedSession
-      ? downloaded - alreadyDownloadedSession
-      : 0
-
-  if ((bytes + uploadDeltaSession) / BYTES_GB >= nextGb) {
+  if (gbAfterUpload >= nextGb) {
+    const deltaGb = gbAfterUpload - currentGb
     await User.findOneAndUpdate(
       { _id: user._id },
-      { $inc: { bonusPoints: process.env.SQ_BP_EARNED_PER_GB } }
+      { $inc: { bonusPoints: deltaGb * process.env.SQ_BP_EARNED_PER_GB } }
     )
   }
 
@@ -144,28 +143,10 @@ const handleAnnounce = async (req, res, next) => {
           },
           left: Number(params.left),
         },
-      }
+      },
+      { upsert: true }
     )
-  }
-
-  if (downloadDeltaSession === 0) {
-    await Progress.findOneAndUpdate(
-      { userId: user._id, infoHash },
-      {
-        $set: {
-          userId: user._id,
-          infoHash,
-          downloaded: {
-            session: 0,
-            total: prevProgressRecord?.downloaded?.total ?? 0,
-          },
-          left: Number(params.left),
-        },
-      }
-    )
-  }
-
-  if (uploaded !== prevProgressRecord?.uploaded?.session) {
+  } else {
     await Progress.findOneAndUpdate(
       { userId: user._id, infoHash },
       {
@@ -184,7 +165,23 @@ const handleAnnounce = async (req, res, next) => {
     )
   }
 
-  if (downloaded !== prevProgressRecord?.downloaded?.session) {
+  if (downloadDeltaSession === 0) {
+    await Progress.findOneAndUpdate(
+      { userId: user._id, infoHash },
+      {
+        $set: {
+          userId: user._id,
+          infoHash,
+          downloaded: {
+            session: 0,
+            total: prevProgressRecord?.downloaded?.total ?? 0,
+          },
+          left: Number(params.left),
+        },
+      },
+      { upsert: true }
+    )
+  } else {
     await Progress.findOneAndUpdate(
       { userId: user._id, infoHash },
       {

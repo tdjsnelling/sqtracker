@@ -252,8 +252,6 @@ export const addCandidate = async (req, res) => {
         return
       }
 
-      console.log(request, torrent)
-
       if (
         request.candidates
           .map((c) => c.toString())
