@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import fetch from 'node-fetch'
 import mongoose from 'mongoose'
 import qs from 'qs'
+import slugify from 'slugify'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Comment from '../schema/comment'
@@ -124,6 +125,9 @@ export const uploadTorrent = async (req, res) => {
         upvotes: [],
         downvotes: [],
         freeleech: false,
+        tags: (req.body.tags ?? '')
+          .split(',')
+          .map((t) => slugify(t.trim(), { lower: true })),
       })
 
       await newTorrent.save()
@@ -190,6 +194,7 @@ export const fetchTorrent = async (req, res) => {
           userHasUpvoted: { $in: [req.userId, '$upvotes'] },
           userHasDownvoted: { $in: [req.userId, '$downvotes'] },
           freeleech: 1,
+          tags: 1,
         },
       },
       {
@@ -302,6 +307,7 @@ export const getTorrentsPage = async ({
   limit = 25,
   query,
   category,
+  tag,
   userId,
 }) => {
   const torrents = await Torrent.aggregate([
@@ -315,6 +321,7 @@ export const getTorrentsPage = async ({
         uploadedBy: 1,
         created: 1,
         freeleech: 1,
+        tags: 1,
       },
     },
     ...(query
@@ -334,6 +341,15 @@ export const getTorrentsPage = async ({
           {
             $match: {
               type: category,
+            },
+          },
+        ]
+      : []),
+    ...(tag
+      ? [
+          {
+            $match: {
+              $expr: { $in: [tag, '$tags'] },
             },
           },
         ]
@@ -402,6 +418,15 @@ export const getTorrentsPage = async ({
           },
         ]
       : []),
+    ...(tag
+      ? [
+          {
+            $match: {
+              $expr: { $in: [tag, '$tags'] },
+            },
+          },
+        ]
+      : []),
     ...(userId
       ? [
           {
@@ -435,12 +460,13 @@ export const listLatest = async (req, res) => {
 }
 
 export const searchTorrents = async (req, res) => {
-  const { query, category, page } = req.query
+  const { query, category, tag, page } = req.query
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
       query,
       category,
+      tag,
     })
     res.json(torrents)
   } catch (e) {

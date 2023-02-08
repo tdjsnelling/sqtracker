@@ -475,6 +475,33 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           </ReactMarkdown>
         </MarkdownBody>
       </Box>
+      <Box mb={5}>
+        <Text
+          fontWeight={600}
+          fontSize={1}
+          _css={{ textTransform: 'uppercase' }}
+          mb={3}
+        >
+          Tags
+        </Text>
+        <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
+          {torrent.tags.map((tag) => (
+            <Box
+              bg="sidebar"
+              border="1px solid"
+              borderColor="border"
+              borderRadius={1}
+              m={1}
+            >
+              <Link href={`/tags/${tag}`} passHref>
+                <Text as="a" display="block" color="text" px={3} py={1}>
+                  {tag}
+                </Text>
+              </Link>
+            </Box>
+          ))}
+        </Box>
+      </Box>
       <Infobox mb={5}>
         <Text
           fontWeight={600}

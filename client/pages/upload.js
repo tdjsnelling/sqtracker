@@ -90,6 +90,7 @@ const Upload = ({ token, userId }) => {
           type: form.get('category'),
           anonymous: !!form.get('anonymous'),
           torrent: torrentFile.b64,
+          tags: form.get('tags'),
         }),
       })
 
@@ -163,6 +164,12 @@ const Upload = ({ token, userId }) => {
           placeholder="Markdown supported"
           mb={4}
           required
+        />
+        <Input
+          name="tags"
+          label="Tags"
+          placeholder="Separated by commas"
+          mb={4}
         />
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
           <Checkbox name="anonymous" label="Anonymous upload" />
