@@ -28,9 +28,9 @@ const Stats = ({ stats, userRole }) => {
 
   return (
     <>
-      <SEO title="Stats" />
+      <SEO title="Tracker statistics" />
       <Text as="h1" mb={5}>
-        Stats
+        Tracker statistics
       </Text>
       <StyledTable>
         {Object.entries(stats).map(([key, value]) => {

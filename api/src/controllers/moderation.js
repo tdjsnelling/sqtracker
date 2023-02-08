@@ -3,6 +3,9 @@ import Report from '../schema/report'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Progress from '../schema/progress'
+import Invite from '../schema/invite'
+import Request from '../schema/request'
+import Comment from '../schema/comment'
 
 export const createReport = async (req, res) => {
   if (req.body.reason) {
@@ -166,6 +169,13 @@ export const getStats = async (req, res) => {
     const bannedUsers = await User.countDocuments({ banned: true })
     const uploadedTorrents = await Torrent.countDocuments()
     const completedDownloads = await Progress.countDocuments({ left: 0 })
+    const totalInvitesSent = await Invite.countDocuments()
+    const invitesAccepted = await Invite.countDocuments({ claimed: true })
+    const totalRequests = await Request.countDocuments({})
+    const filledRequests = await Request.countDocuments({
+      fulfilledBy: { $exists: true },
+    })
+    const totalComments = await Comment.countDocuments()
 
     try {
       const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
@@ -202,6 +212,11 @@ export const getStats = async (req, res) => {
         bannedUsers,
         uploadedTorrents,
         completedDownloads,
+        totalInvitesSent,
+        invitesAccepted,
+        totalRequests,
+        filledRequests,
+        totalComments,
         peers: '?',
         seeds: '?',
         leechers: '?',
