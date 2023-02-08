@@ -152,6 +152,7 @@ export const downloadTorrent = async (req, res) => {
   const parsed = bencode.decode(Buffer.from(binary, 'base64'))
 
   parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
+  parsed.info.private = 1
 
   await Torrent.findOneAndUpdate({ infoHash }, { $inc: { downloads: 1 } })
 

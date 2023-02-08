@@ -247,7 +247,11 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                   >
                     <Menu size={24} />
                   </Button>
-                  {loading && <Loading size={24} />}
+                  {loading && (
+                    <Box mr={3}>
+                      <Loading size={24} />
+                    </Box>
+                  )}
                   {SQ_SITE_WIDE_FREELEECH === true && (
                     <Text
                       icon={Bell}

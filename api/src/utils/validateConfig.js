@@ -19,6 +19,7 @@ const configSchema = yup
         SQ_BP_EARNED_PER_GB: yup.number().min(0).required(),
         SQ_BP_COST_PER_INVITE: yup.number().min(0).required(),
         SQ_BP_COST_PER_GB: yup.number().min(0).required(),
+        SQ_SITE_WIDE_FREELEECH: yup.boolean().required(),
         SQ_TORRENT_CATEGORIES: yup
           .array()
           .of(yup.string())

@@ -381,6 +381,11 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       >
         <Text as="h1" mb={[4, 0]}>
           {torrent.name}
+          {(torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
+            <Text as="span" fontSize={3} color="primary" ml={3}>
+              FL!
+            </Text>
+          )}
         </Text>
         <Box display="flex" alignItems="center" ml={3}>
           {(userRole === 'admin' || userId === torrent.uploadedBy._id) && (
