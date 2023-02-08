@@ -48,72 +48,73 @@ const ListItem = ({ children }) => {
 
 const List = ({ data = [], columns = [], ...rest }) => {
   return (
-    <Box>
-      <Box
-        display="grid"
-        gridTemplateColumns={[
-          '1fr',
-          columns.map((col) => col.gridWidth).join(' '),
-        ]}
-        gridGap={[2, 4]}
-        alignItems="center"
-        px={4}
-        mb={3}
-      >
-        {columns.map((col, i) => (
-          <Text
-            key={`list-header-col-${i}`}
-            fontWeight={600}
-            fontSize={1}
-            textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
-            _css={{ textTransform: 'uppercase' }}
-          >
-            {col.header}
-          </Text>
-        ))}
-      </Box>
-      <Box as="ul" pl={0} _css={{ listStyle: 'none' }} {...rest}>
-        {data.length ? (
-          data.map((row, i) => (
-            <ListItem key={`list-row-${i}`}>
-              <WrapLink href={row.href}>
-                <Box
-                  display="grid"
-                  gridTemplateColumns={[
-                    '1fr',
-                    columns.map((col) => col.gridWidth).join(' '),
-                  ]}
-                  gridGap={[2, 4]}
-                  alignItems="center"
-                  minHeight="50px"
-                  px={4}
-                >
-                  {columns.map((col, j) => (
-                    <Box
-                      key={`list-row-${i}-col-${j}`}
-                      width="100%"
-                      display="flex"
-                      alignItems="center"
-                      textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
-                      _css={{ whiteSpace: 'nowrap', '> *': { width: '100%' } }}
-                    >
-                      {col.cell({
-                        value: col.accessor ? getIn(row, col.accessor) : null,
-                        row,
-                      })}
-                    </Box>
-                  ))}
-                </Box>
-              </WrapLink>
+    <Box overflowX="auto">
+      <Box minWidth="700px">
+        <Box
+          display="grid"
+          gridTemplateColumns={columns.map((col) => col.gridWidth).join(' ')}
+          gridGap={[2, 4]}
+          alignItems="center"
+          px={4}
+          mb={3}
+        >
+          {columns.map((col, i) => (
+            <Text
+              key={`list-header-col-${i}`}
+              fontWeight={600}
+              fontSize={1}
+              textAlign={col.rightAlign ? 'right' : 'left'}
+              _css={{ textTransform: 'uppercase' }}
+            >
+              {col.header}
+            </Text>
+          ))}
+        </Box>
+        <Box as="ul" pl={0} _css={{ listStyle: 'none' }} {...rest}>
+          {data.length ? (
+            data.map((row, i) => (
+              <ListItem key={`list-row-${i}`}>
+                <WrapLink href={row.href}>
+                  <Box
+                    display="grid"
+                    gridTemplateColumns={columns
+                      .map((col) => col.gridWidth)
+                      .join(' ')}
+                    gridGap={[2, 4]}
+                    alignItems="center"
+                    minHeight="50px"
+                    px={4}
+                  >
+                    {columns.map((col, j) => (
+                      <Box
+                        key={`list-row-${i}-col-${j}`}
+                        width="100%"
+                        display="flex"
+                        alignItems="center"
+                        textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
+                        _css={{
+                          whiteSpace: 'nowrap',
+                          '> *': { width: '100%' },
+                        }}
+                      >
+                        {col.cell({
+                          value: col.accessor ? getIn(row, col.accessor) : null,
+                          row,
+                        })}
+                      </Box>
+                    ))}
+                  </Box>
+                </WrapLink>
+              </ListItem>
+            ))
+          ) : (
+            <ListItem>
+              <Box p={4}>
+                <Text color="grey">No items to show.</Text>
+              </Box>
             </ListItem>
-          ))
-        ) : (
-          <ListItem>
-            <Box p={4}>
-              <Text color="grey">No items to show.</Text>
-            </Box>
-          </ListItem>
-        )}
+          )}
+        </Box>
       </Box>
     </Box>
   )
