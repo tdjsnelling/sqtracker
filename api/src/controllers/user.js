@@ -420,7 +420,9 @@ export const fetchUser = async (req, res) => {
           username: 1,
           created: 1,
           role: 1,
-          ...(req.userRole === 'admin' ? { email: 1, invitedBy: 1 } : {}),
+          ...(req.userRole === 'admin'
+            ? { email: 1, emailVerified: 1, invitedBy: 1 }
+            : {}),
           remainingInvites: 1,
           banned: 1,
           bonusPoints: 1,

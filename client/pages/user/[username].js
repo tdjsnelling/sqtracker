@@ -129,6 +129,9 @@ const User = ({ token, user, userRole }) => {
           </Text>
           <ul>
             {user.email && <li>Email: {user.email}</li>}
+            {typeof user.emailVerified === 'boolean' && (
+              <li>Email verified: {user.emailVerified ? 'yes' : 'no'}</li>
+            )}
             {user.invitedBy && (
               <li>
                 Invited by:{' '}
@@ -136,6 +139,12 @@ const User = ({ token, user, userRole }) => {
                   <a>{user.invitedBy.username}</a>
                 </Link>
               </li>
+            )}
+            {typeof user.remainingInvites === 'number' && (
+              <li>Remaining invites: {user.remainingInvites}</li>
+            )}
+            {typeof user.bonusPoints === 'number' && (
+              <li>Bonus points: {user.bonusPoints}</li>
             )}
           </ul>
         </Infobox>
