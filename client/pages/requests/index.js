@@ -55,7 +55,7 @@ const Requests = ({ requests }) => {
                 {value ? <Check size={24} /> : <X size={24} />}{' '}
               </Box>
             ),
-            gridWidth: '0.5fr',
+            gridWidth: '100px',
           },
           {
             header: 'Created',
@@ -64,7 +64,7 @@ const Requests = ({ requests }) => {
               <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
             rightAlign: true,
-            gridWidth: '0.5fr',
+            gridWidth: '175px',
           },
         ]}
       />

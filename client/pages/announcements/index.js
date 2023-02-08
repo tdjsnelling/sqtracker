@@ -60,7 +60,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
                     <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
                   ),
                   rightAlign: true,
-                  gridWidth: '1fr',
+                  gridWidth: '175px',
                 },
               ]}
             />
@@ -95,7 +95,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
               <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
             rightAlign: true,
-            gridWidth: '1fr',
+            gridWidth: '175px',
           },
         ]}
       />

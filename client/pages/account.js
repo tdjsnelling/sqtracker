@@ -27,7 +27,8 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
   return (
     <Box
       display="flex"
-      alignItems="center"
+      flexDirection={['column', 'row']}
+      alignItems={['flex-start', 'center']}
       justifyContent="space-between"
       border="1px solid"
       borderColor="border"
@@ -35,9 +36,11 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
       p={3}
       pl={4}
     >
-      <Text>{text}</Text>
-      <form onSubmit={handleBuy}>
-        <Box display="flex" alignItems="center">
+      <Text mb={[3, 0]} _css={{ whiteSpace: 'nowrap' }}>
+        {text}
+      </Text>
+      <Box as="form" onSubmit={handleBuy} width="100%">
+        <Box display="flex" alignItems="center" justifyContent="flex-end">
           <Text color="grey" mr={4}>
             {unavailable
               ? 'Not available to buy'
@@ -56,7 +59,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
           />
           <Button disabled={unavailable || cannotAfford}>Buy</Button>
         </Box>
-      </form>
+      </Box>
     </Box>
   )
 }
@@ -296,7 +299,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 {moment(value).format('HH:mm Do MMM YYYY')}
               </Text>
             ),
-            gridWidth: '1.2fr',
+            gridWidth: '175px',
           },
           {
             header: 'Created',
@@ -304,7 +307,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             cell: ({ value }) => (
               <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
             ),
-            gridWidth: '1.2fr',
+            gridWidth: '175px',
           },
           ...(userRole === 'admin'
             ? [

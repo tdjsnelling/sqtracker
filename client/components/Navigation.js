@@ -61,6 +61,8 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
 
   const theme = useContext(ThemeContext)
 
+  const { asPath } = useRouter()
+
   const { username, token } = cookies
 
   const {
@@ -85,6 +87,10 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
     if (token) getUserRole()
     setIsServer(false)
   }, [token])
+
+  useEffect(() => {
+    if (isMobile && menuIsOpen) setMenuIsOpen(false)
+  }, [asPath])
 
   if (isMobile && !menuIsOpen) return null
 

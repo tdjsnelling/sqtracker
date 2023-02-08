@@ -38,7 +38,7 @@ const Categories = () => {
       <Box
         as="ul"
         display="grid"
-        gridTemplateColumns="repeat(4, 1fr)"
+        gridTemplateColumns={['1fr', 'repeat(4, 1fr)']}
         gridGap={4}
         _css={{ pl: 0, listStyle: 'none' }}
       >

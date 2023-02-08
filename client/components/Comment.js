@@ -27,12 +27,13 @@ const Comment = ({ comment }) => {
     >
       <Box
         display="flex"
-        alignItems="center"
+        flexDirection={['column', 'row']}
+        alignItems={['flex-start', 'center']}
         justifyContent="space-between"
         mb={3}
       >
         {comment.user?.username ? (
-          <Text color="grey" icon={CommentIcon}>
+          <Text color="grey" icon={CommentIcon} mb={[2, 0]}>
             Comment by{' '}
             <Link href={`/user/${comment.user.username}`} passHref>
               <Text as="a">{comment.user.username}</Text>

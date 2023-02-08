@@ -47,7 +47,7 @@ export const Info = ({ title, items }) => (
         {title}
       </Text>
     )}
-    <Box display="grid" gridTemplateColumns="1fr" gridGap={2}>
+    <Box display="grid" gridTemplateColumns="1fr" gridGap={[3, 2]}>
       {Object.entries(items).map(([key, val], i) => (
         <Box
           key={`infobox-row-${i}`}
@@ -374,12 +374,15 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       <SEO title={torrent.name} />
       <Box
         display="flex"
-        alignItems="center"
+        flexDirection={['column', 'row']}
+        alignItems={['flex-start', 'center']}
         justifyContent="space-between"
         mb={5}
       >
-        <Text as="h1">{torrent.name}</Text>
-        <Box variant="flex" alignItems="center">
+        <Text as="h1" mb={[4, 0]}>
+          {torrent.name}
+        </Text>
+        <Box display="flex" alignItems="center" ml={3}>
           {(userRole === 'admin' || userId === torrent.uploadedBy._id) && (
             <Button
               onClick={() => setShowDeleteModal(true)}
@@ -436,7 +439,11 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           ),
           Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),
           'Info hash': (
-            <Text as="span" fontFamily="mono" _css={{ userSelect: 'all' }}>
+            <Text
+              as="span"
+              fontFamily="mono"
+              _css={{ userSelect: 'all', wordBreak: 'break-all' }}
+            >
               {torrent.infoHash}
             </Text>
           ),

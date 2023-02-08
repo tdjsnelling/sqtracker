@@ -101,7 +101,7 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             cell: ({ value }) => (
               <Text>{moment(value).format('Do MMM YYYY')}</Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '175px',
             rightAlign: true,
           },
         ]}

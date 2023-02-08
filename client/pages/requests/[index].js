@@ -301,7 +301,7 @@ const Request = ({ request, token, user }) => {
                 cell: ({ value }) => (
                   <Text>{moment(value).format('Do MMM YYYY')}</Text>
                 ),
-                gridWidth: '1fr',
+                gridWidth: '175px',
                 rightAlign: true,
               },
               ...(user === request.createdBy._id

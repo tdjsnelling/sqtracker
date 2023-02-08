@@ -99,7 +99,7 @@ const GlobalStyle = createGlobalStyle(
   #__next main {
     min-height: calc(100vh - 109px);
     max-width: ${sizes.body};
-    padding: ${space[4]}px;
+    padding: ${space[4]}px ${space[4]}px 60px;
   }
   @media screen and (min-width: ${breakpoints[0]}) {
     #__next main {
