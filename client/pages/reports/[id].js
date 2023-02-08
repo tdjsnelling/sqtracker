@@ -87,7 +87,15 @@ const Report = ({ report, token, userRole }) => {
             </Link>
           ),
           Description: report.torrent.description,
-          'Info hash': report.torrent.infoHash,
+          'Info hash': (
+            <Text
+              as="span"
+              fontFamily="mono"
+              _css={{ userSelect: 'all', wordBreak: 'break-all' }}
+            >
+              {report.torrent.infoHash}
+            </Text>
+          ),
           Created: moment(report.torrent.created).format('HH:mm Do MMM YYYY'),
         }}
       />
