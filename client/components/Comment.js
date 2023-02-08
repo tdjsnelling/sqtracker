@@ -9,10 +9,6 @@ import Box from './Box'
 import Text from './Text'
 
 const Comment = ({ comment }) => {
-  const isTorrent = !comment.announcement && !comment.request
-  const isAnnouncement = !comment.torrent && !comment.request
-  const isRequest = !comment.torrent && !comment.announcement
-
   return (
     <Box
       p={4}
@@ -39,7 +35,7 @@ const Comment = ({ comment }) => {
               <Text as="a">{comment.user.username}</Text>
             </Link>{' '}
             on{' '}
-            {isTorrent && (
+            {comment.type === 'torrent' && (
               <>
                 {comment.torrent ? (
                   <Link href={`/torrent/${comment.torrent.infoHash}`} passHref>
@@ -59,7 +55,7 @@ const Comment = ({ comment }) => {
                 )}
               </>
             )}
-            {isAnnouncement && (
+            {comment.type === 'announcement' && (
               <>
                 {comment.announcement ? (
                   <Link
@@ -82,7 +78,7 @@ const Comment = ({ comment }) => {
                 )}
               </>
             )}
-            {isRequest && (
+            {comment.type === 'request' && (
               <>
                 {comment.request ? (
                   <Link href={`/requests/${comment.request.index}`} passHref>
