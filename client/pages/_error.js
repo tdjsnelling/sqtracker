@@ -1,9 +1,11 @@
 import React from 'react'
 import Link from 'next/link'
+import NextErrorComponent from 'next/error'
+import * as Sentry from '@sentry/nextjs'
 import SEO from '../components/SEO'
 import Text from '../components/Text'
 
-const Error = () => (
+const ErrorPage = () => (
   <>
     <SEO title="Not found" />
     <Text as="h1" mb={5}>
@@ -23,4 +25,9 @@ const Error = () => (
   </>
 )
 
-export default Error
+ErrorPage.getInitialProps = async (contextData) => {
+  await Sentry.captureUnderscoreErrorException(contextData)
+  return NextErrorComponent.getInitialProps(contextData)
+}
+
+export default ErrorPage

@@ -1,7 +1,8 @@
+const { withSentryConfig } = require('@sentry/nextjs')
 const config = require('../config')
 const { version } = require('./package.json')
 
-module.exports = {
+const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compiler: {
@@ -15,4 +16,13 @@ module.exports = {
     ...config.envs,
     ...config.secrets,
   },
+  sentry: {
+    hideSourceMaps: true,
+  },
 }
+
+const sentryWebpackPluginOptions = {
+  silent: true,
+}
+
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)

@@ -8,6 +8,8 @@
     "start": "babel-node src/index.js"
   },
   "dependencies": {
+    "@sentry/node": "^7.36.0",
+    "@sentry/tracing": "^7.36.0",
     "bcrypt": "^5.0.1",
     "bencode": "^2.0.1",
     "body-parser": "^1.19.0",

@@ -6,6 +6,8 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
+import * as Sentry from '@sentry/node'
+import * as Tracing from '@sentry/tracing'
 import handleAnnounce from './middleware/announce'
 import auth from './middleware/auth'
 import { userTrackerRoutes, otherTrackerRoutes } from './routes/tracker'
@@ -68,6 +70,17 @@ import validateConfig from './utils/validateConfig'
 import createAdminUser from './setup/createAdminUser'
 
 validateConfig()
+
+Sentry.init({
+  dsn: 'https://9b9761216607428180ea3b32bd1c8e58@o140996.ingest.sentry.io/4504645996576768',
+  tracesSampleRate: 1.0,
+})
+
+Sentry.setContext('deployment', {
+  name: process.env.SQ_SITE_NAME,
+  url: process.env.SQ_BASE_URL,
+  adminEmail: process.env.SQ_ADMIN_EMAIL,
+})
 
 const connectToDb = () => {
   console.log('[sq] initiating db connection...')
