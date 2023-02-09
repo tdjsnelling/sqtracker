@@ -13,7 +13,11 @@ const ErrorPage = () => (
     </Text>
     <Text>
       If the error persists, please{' '}
-      <a href="https://github.com/tdjsnelling/sqtracker/issues" target="_blank">
+      <a
+        href="https://github.com/tdjsnelling/sqtracker/issues"
+        target="_blank"
+        rel="noreferrer"
+      >
         report it
       </a>
       . For now,{' '}

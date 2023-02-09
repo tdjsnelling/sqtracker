@@ -487,6 +487,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
           {torrent.tags.map((tag) => (
             <Box
+              key={`tag-${tag}`}
               bg="sidebar"
               border="1px solid"
               borderColor="border"

@@ -239,6 +239,7 @@ const User = ({ token, user, userRole }) => {
         <Box>
           {user.comments.map((comment) => (
             <Comment
+              key={`comment-${comment._id}`}
               comment={{ ...comment, user: { username: user.username } }}
             />
           ))}

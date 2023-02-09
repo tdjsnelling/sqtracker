@@ -23,6 +23,9 @@ const nextConfig = {
 
 const sentryWebpackPluginOptions = {
   silent: true,
+  errorHandler: (err, invokeErr, compilation) => {
+    compilation.warnings.push('Sentry CLI Plugin: ' + err.message)
+  },
 }
 
 module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)

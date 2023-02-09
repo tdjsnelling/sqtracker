@@ -7,7 +7,8 @@
 
   "rules": {
     "object-curly-spacing": ["error", "always"],
-    "react/prop-types": 0
+    "react/prop-types": 0,
+    "linebreak-style": "off"
   },
   "env": {
     "es6": true,

@@ -31,7 +31,7 @@ const StyledSelect = styled.select(
   typography
 )
 
-const Select = ({ label, rows, ...rest }) => {
+const Select = ({ label, ...rest }) => {
   return (
     <WrapLabel label={label}>
       <Box position="relative" display="inline-block">

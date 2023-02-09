@@ -248,7 +248,11 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       >
         <Text color="grey" fontSize={0}>
           Powered by{' '}
-          <a href="https://github.com/tdjsnelling/sqtracker" target="_blank">
+          <a
+            href="https://github.com/tdjsnelling/sqtracker"
+            target="_blank"
+            rel="noreferrer"
+          >
             ■ sqtracker
           </a>{' '}
         </Text>
