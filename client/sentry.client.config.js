@@ -4,6 +4,8 @@ import config from '../config'
 Sentry.init({
   dsn: 'https://22bc43683da04040aa90e7683ffe022a@o140996.ingest.sentry.io/4504646040616960',
   tracesSampleRate: 1.0,
+  environment:
+    process.env.NODE_ENV === 'production' ? 'production' : 'development',
 })
 
 Sentry.setContext('deployment', {
