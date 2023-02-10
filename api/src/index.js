@@ -71,18 +71,20 @@ import createAdminUser from './setup/createAdminUser'
 
 validateConfig()
 
-Sentry.init({
-  dsn: 'https://9b9761216607428180ea3b32bd1c8e58@o140996.ingest.sentry.io/4504645996576768',
-  tracesSampleRate: 1.0,
-  environment:
-    process.env.NODE_ENV === 'production' ? 'production' : 'development',
-})
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    environment:
+      process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  })
 
-Sentry.setContext('deployment', {
-  name: process.env.SQ_SITE_NAME,
-  url: process.env.SQ_BASE_URL,
-  adminEmail: process.env.SQ_ADMIN_EMAIL,
-})
+  Sentry.setContext('deployment', {
+    name: process.env.SQ_SITE_NAME,
+    url: process.env.SQ_BASE_URL,
+    adminEmail: process.env.SQ_ADMIN_EMAIL,
+  })
+}
 
 const connectToDb = () => {
   console.log('[sq] initiating db connection...')
