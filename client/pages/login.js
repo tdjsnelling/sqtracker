@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
@@ -11,6 +11,8 @@ import { NotificationContext } from '../components/Notifications'
 import LoadingContext from '../utils/LoadingContext'
 
 const Login = () => {
+  const [totpRequired, setTotpRequired] = useState(false)
+
   const [, setCookie] = useCookies()
 
   const { addNotification } = useContext(NotificationContext)
@@ -36,11 +38,13 @@ const Login = () => {
         body: JSON.stringify({
           username: form.get('username'),
           password: form.get('password'),
+          totp: form.get('totp'),
         }),
       })
 
       if (res.status !== 200) {
         const reason = await res.text()
+        if (reason === 'One-time code required') setTotpRequired(true)
         throw new Error(reason)
       }
 
@@ -78,6 +82,9 @@ const Login = () => {
           mb={4}
           required
         />
+        {totpRequired && (
+          <Input name="totp" label="One-time code" mb={4} required />
+        )}
         <Button>Log in</Button>
       </form>
       <Link href="/reset-password/initiate" passHref>

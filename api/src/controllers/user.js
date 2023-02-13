@@ -176,7 +176,7 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   if (req.body.username && req.body.password) {
     try {
-      const user = await User.findOne({ username: req.body.username })
+      const user = await User.findOne({ username: req.body.username }).lean()
 
       if (user) {
         if (user.banned) {
@@ -184,7 +184,33 @@ export const login = async (req, res) => {
           return
         }
 
+        if (user.totp.enabled && !req.body.totp) {
+          res.status(401).send('One-time code required')
+          return
+        }
+
         const matches = await bcrypt.compare(req.body.password, user.password)
+
+        if (user.totp.enabled) {
+          const validToken = speakeasy.totp.verify({
+            secret: user.totp.secret,
+            encoding: 'base32',
+            token: req.body.totp,
+            window: 1,
+          })
+
+          if (!validToken) {
+            if (!user.totp.backup.includes(req.body.totp)) {
+              res.status(401).send('Invalid one-time code')
+              return
+            } else {
+              await User.findOneAndUpdate(
+                { username: req.body.username },
+                { $pull: { 'totp.backup': req.body.totp } }
+              )
+            }
+          }
+        }
 
         if (matches) {
           res.send({
