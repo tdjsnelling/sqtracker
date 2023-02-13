@@ -26,6 +26,9 @@ import {
   banUser,
   unbanUser,
   buyItems,
+  generateTotpSecret,
+  enableTotp,
+  disableTotp,
 } from './controllers/user'
 import {
   uploadTorrent,
@@ -186,6 +189,9 @@ app.post('/account/buy', buyItems)
 app.get('/user/:username', fetchUser)
 app.post('/user/ban/:username', banUser)
 app.post('/user/unban/:username', unbanUser)
+app.get('/account/totp/generate', generateTotpSecret)
+app.post('/account/totp/enable', enableTotp)
+app.post('/account/totp/disable', disableTotp)
 
 // torrent routes
 app.post('/torrent/upload', uploadTorrent)

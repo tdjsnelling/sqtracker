@@ -10,6 +10,7 @@ const configSchema = yup
       .object({
         SQ_SITE_NAME: yup.string().min(1).max(20).required(),
         SQ_SITE_DESCRIPTION: yup.string().min(1).max(80).required(),
+        SQ_THEME_COLOUR: yup.string().matches(/#([a-f0-9]){6}/i),
         SQ_ALLOW_REGISTER: yup
           .string()
           .oneOf(['open', 'invite', 'closed'])

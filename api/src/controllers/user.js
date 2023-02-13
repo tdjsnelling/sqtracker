@@ -1,6 +1,8 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
+import speakeasy from 'speakeasy'
+import qrcode from 'qrcode'
 import User from '../schema/user'
 import Invite from '../schema/invite'
 import Progress from '../schema/progress'
@@ -101,6 +103,9 @@ export const register = async (req, res) => {
           remainingInvites: 0,
           emailVerified: false,
           bonusPoints: 0,
+          totp: {
+            enabled: false,
+          },
         })
 
         newUser.uid = crypto
@@ -426,6 +431,7 @@ export const fetchUser = async (req, res) => {
           remainingInvites: 1,
           banned: 1,
           bonusPoints: 1,
+          'totp.enabled': 1,
         },
       },
       {
@@ -823,5 +829,118 @@ export const unbanUser = async (req, res) => {
     res.sendStatus(200)
   } catch (e) {
     res.status(500).send(e.message)
+  }
+}
+
+export const generateTotpSecret = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.userId }).lean()
+    if (user.totp.enabled) {
+      res.status(409).send('TOTP already enabled')
+      return
+    }
+
+    const secret = speakeasy.generateSecret({ length: 20 })
+    const url = speakeasy.otpauthURL({
+      secret: secret.ascii,
+      label: `${process.env.SQ_SITE_NAME}: ${user.username}`,
+    })
+    const imageDataUrl = await qrcode.toDataURL(url)
+
+    await User.findOneAndUpdate(
+      { _id: req.userId },
+      {
+        $set: {
+          'totp.secret': secret.base32,
+          'totp.qr': imageDataUrl,
+        },
+      }
+    )
+
+    res.json({ qr: imageDataUrl, secret: secret.base32 })
+  } catch (e) {
+    res.status(500).send(e.message)
+  }
+}
+
+export const enableTotp = async (req, res) => {
+  if (req.body.token) {
+    try {
+      const user = await User.findOne({ _id: req.userId }).lean()
+      if (user.totp.enabled) {
+        res.status(409).send('TOTP already enabled')
+        return
+      }
+
+      const validToken = speakeasy.totp.verify({
+        secret: user.totp.secret,
+        encoding: 'base32',
+        token: req.body.token,
+        window: 1,
+      })
+
+      if (!validToken) {
+        res.status(400).send('Invalid TOTP code')
+        return
+      }
+
+      const backupCodes = [...Array(10)].map(() =>
+        crypto.randomBytes(32).toString('hex').slice(0, 10)
+      )
+
+      await User.findOneAndUpdate(
+        { _id: req.userId },
+        {
+          $set: {
+            'totp.enabled': true,
+            'totp.backup': backupCodes,
+          },
+        }
+      )
+
+      res.send(backupCodes.join(','))
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include token')
+  }
+}
+
+export const disableTotp = async (req, res) => {
+  if (req.body.token) {
+    try {
+      const user = await User.findOne({ _id: req.userId }).lean()
+
+      const validToken = speakeasy.totp.verify({
+        secret: user.totp.secret,
+        encoding: 'base32',
+        token: req.body.token,
+        window: 1,
+      })
+
+      if (!validToken) {
+        res.status(400).send('Invalid TOTP code')
+        return
+      }
+
+      await User.findOneAndUpdate(
+        { _id: req.userId },
+        {
+          $set: {
+            'totp.enabled': false,
+            'totp.secret': '',
+            'totp.qr': '',
+            'totp.backup': [],
+          },
+        }
+      )
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include token')
   }
 }

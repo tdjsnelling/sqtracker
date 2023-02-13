@@ -7,6 +7,7 @@ module.exports = {
   envs: {
     SQ_SITE_NAME: 'sqtracker demo',
     SQ_SITE_DESCRIPTION: 'A short description for your tracker site',
+    SQ_THEME_COLOUR: '#f45d48',
     SQ_ALLOW_REGISTER: 'invite',
     SQ_ALLOW_ANONYMOUS_UPLOADS: false,
     SQ_MINIMUM_RATIO: 0.75,

@@ -71,6 +71,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
   const [invitesList, setInvitesList] = useState(invites)
   const [showInviteModal, setShowInviteModal] = useState(false)
   const [bonusPoints, setBonusPoints] = useState(user.bonusPoints ?? 0)
+  const [totpEnabled, setTotpEnabled] = useState(user.totp.enabled)
+  const [totpQrData, setTotpQrData] = useState()
+  const [totpBackupCodes, setTotpBackupCodes] = useState()
 
   const { addNotification } = useContext(NotificationContext)
   const { setLoading } = useContext(LoadingContext)
@@ -213,6 +216,72 @@ const Account = ({ token, invites = [], user, userRole }) => {
     setLoading(false)
   }
 
+  const handleToggleTotp = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
+    try {
+      if (!totpEnabled) {
+        const totpToken = form.get('token')
+
+        if (totpToken) {
+          const enableRes = await fetch(`${SQ_API_URL}/account/totp/enable`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ token: totpToken }),
+          })
+          if (enableRes.status === 200) {
+            const backupCodes = await enableRes.text()
+            setTotpBackupCodes(backupCodes)
+            setTotpQrData(undefined)
+            setTotpEnabled(true)
+            addNotification('success', '2FA enabled')
+          } else {
+            const message = await enableRes.text()
+            addNotification('error', message)
+          }
+        } else {
+          const generateRes = await fetch(
+            `${SQ_API_URL}/account/totp/generate`,
+            {
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+          const totpData = await generateRes.json()
+          setTotpQrData(totpData)
+        }
+      } else {
+        const totpToken = form.get('token')
+
+        const disableRes = await fetch(`${SQ_API_URL}/account/totp/disable`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ token: totpToken }),
+        })
+
+        if (disableRes.status === 200) {
+          setTotpEnabled(false)
+          addNotification('success', '2FA disabled')
+        } else {
+          const message = await disableRes.text()
+          addNotification('error', message)
+        }
+      }
+    } catch (e) {
+      addNotification('error', `Could not toggle 2FA: ${e.message}`)
+      console.error(e)
+    }
+  }
+
   return (
     <>
       <SEO title="My account" />
@@ -350,6 +419,104 @@ const Account = ({ token, invites = [], user, userRole }) => {
         ]}
         mb={5}
       />
+      <Box mb={5}>
+        <Text as="h2" mb={4}>
+          Two-factor authentication
+        </Text>
+        <Text mb={4}>
+          Use an authenticator app to add another layer of security to your
+          account.
+        </Text>
+        <form onSubmit={handleToggleTotp}>
+          {totpQrData ? (
+            <Box display="flex" alignItems="center">
+              <Box
+                border="1px solid"
+                borderColor="border"
+                borderRadius={1}
+                p={3}
+                mr={4}
+              >
+                <Box
+                  as="img"
+                  src={totpQrData.qr}
+                  width="180px"
+                  borderRadius={1}
+                  display="block"
+                  mx="auto"
+                  mb={3}
+                />
+                <Text color="grey" fontFamily="mono" fontSize={0}>
+                  {totpQrData.secret}
+                </Text>
+              </Box>
+              <Box>
+                <Text color="grey" mb={4}>
+                  Scan the QR code with your authenticator app and enter the
+                  one-time code
+                </Text>
+                <Input
+                  name="token"
+                  type="number"
+                  label="One-time code"
+                  width="300px"
+                  autoComplete="off"
+                  required
+                  mb={4}
+                />
+                <Box display="flex" alignItems="center">
+                  <Button mr={3}>Enable 2FA</Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={() => setTotpQrData(undefined)}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              {totpBackupCodes ? (
+                <>
+                  <Text mb={3}>
+                    2FA enabled successfully. These backup codes can be used to
+                    log in if you lose access to your authenticator app. Save
+                    them now, they will not be visible again.
+                  </Text>
+                  <Box as="ul">
+                    {totpBackupCodes.split(',').map((code) => (
+                      <Text
+                        as="li"
+                        key={`totp-backup-${code}`}
+                        fontFamily="mono"
+                      >
+                        {code}
+                      </Text>
+                    ))}
+                  </Box>
+                </>
+              ) : (
+                <>
+                  {totpEnabled && (
+                    <Input
+                      name="token"
+                      type="number"
+                      label="One-time code"
+                      width="300px"
+                      autoComplete="off"
+                      required
+                      mb={4}
+                    />
+                  )}
+                  <Button>{totpEnabled ? 'Disable' : 'Enable'} 2FA</Button>
+                </>
+              )}
+            </>
+          )}
+        </form>
+      </Box>
       <Text as="h2" mb={4}>
         Change password
       </Text>

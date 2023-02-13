@@ -13,6 +13,12 @@ const User = new mongoose.Schema({
   remainingInvites: Number,
   emailVerified: Boolean,
   bonusPoints: Number,
+  totp: {
+    enabled: Boolean,
+    secret: String,
+    qr: String,
+    backup: [String],
+  },
 })
 
 export default mongoose.model('user', User)
