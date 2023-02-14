@@ -1,15 +1,16 @@
 {
   "name": "@sqtracker/api",
-  "version": "1.0.0-beta.4",
+  "version": "1.0.0-beta.5",
   "private": true,
   "license": "GPL-3.0-only",
-  "type": "module",
   "scripts": {
-    "build": "esbuild src/index.js --bundle --platform=node --target=node16 --format=esm --packages=external --outdir=dist",
-    "start": "node dist/index.js",
-    "dev": "conc \"yarn build --watch\" \"nodemon dist/index.js\""
+    "dev": "nodemon --exec babel-node src/index.js",
+    "start": "babel-node src/index.js"
   },
   "dependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/node": "^7.14.7",
+    "@babel/preset-env": "^7.14.7",
     "@sentry/node": "^7.36.0",
     "@sentry/tracing": "^7.36.0",
     "bcrypt": "^5.0.1",
@@ -19,7 +20,6 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "esbuild": "^0.17.8",
     "express": "^4.17.1",
     "http-proxy-middleware": "^2.0.1",
     "jsonwebtoken": "^8.5.1",
