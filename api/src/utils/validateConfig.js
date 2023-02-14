@@ -1,5 +1,5 @@
 import * as yup from 'yup'
-import config from '../../../config'
+import config from '../../../config.js'
 
 const httpRegex = /http(s)?:\/\/.*/
 const mongoRegex = /mongodb:\/\/.*/
@@ -58,8 +58,13 @@ const configSchema = yup
   .noUnknown()
   .required()
 
-const validateConfig = async () => {
+const validateConfig = async (config) => {
   try {
+    process.env = {
+      ...process.env,
+      ...config.envs,
+      ...config.secrets,
+    }
     await configSchema.validate(config)
     console.log('[sq] configuration is valid')
   } catch (e) {
