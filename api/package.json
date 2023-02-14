@@ -1,11 +1,13 @@
 {
   "name": "@sqtracker/api",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "private": true,
   "license": "GPL-3.0-only",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon --exec babel-node src/index.js",
-    "start": "babel-node src/index.js"
+    "build": "esbuild src/index.js --bundle --platform=node --target=node16 --format=esm --packages=external --outdir=dist",
+    "start": "node dist/index.js",
+    "dev": "conc \"yarn build --watch\" \"nodemon dist/index.js\""
   },
   "dependencies": {
     "@sentry/node": "^7.36.0",
@@ -17,6 +19,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
+    "esbuild": "^0.17.8",
     "express": "^4.17.1",
     "http-proxy-middleware": "^2.0.1",
     "jsonwebtoken": "^8.5.1",
@@ -33,9 +36,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.6",
-    "@babel/node": "^7.14.7",
-    "@babel/preset-env": "^7.14.7",
+    "concurrently": "^7.6.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
