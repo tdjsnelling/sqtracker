@@ -9,9 +9,9 @@ if (process.env.SENTRY_DSN) {
       process.env.NODE_ENV === 'production' ? 'production' : 'development',
   })
 
-  Sentry.setContext('deployment', {
-    name: config.envs.SQ_SITE_NAME,
-    url: config.envs.SQ_BASE_URL,
-    adminEmail: config.secrets.SQ_ADMIN_EMAIL,
-  })
+  // Sentry.setContext('deployment', {
+  //   name: config.envs.SQ_SITE_NAME,
+  //   url: config.envs.SQ_BASE_URL,
+  //   adminEmail: config.secrets.SQ_ADMIN_EMAIL,
+  // })
 }

@@ -1,6 +1,6 @@
 {
   "name": "@sqtracker/api",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.6",
   "private": true,
   "license": "GPL-3.0-only",
   "scripts": {
@@ -8,6 +8,9 @@
     "start": "babel-node src/index.js"
   },
   "dependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/node": "^7.14.7",
+    "@babel/preset-env": "^7.14.7",
     "@sentry/node": "^7.36.0",
     "@sentry/tracing": "^7.36.0",
     "bcrypt": "^5.0.1",
@@ -33,9 +36,7 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.6",
-    "@babel/node": "^7.14.7",
-    "@babel/preset-env": "^7.14.7",
+    "concurrently": "^7.6.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
