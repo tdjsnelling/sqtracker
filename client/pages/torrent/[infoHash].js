@@ -71,13 +71,17 @@ export const Info = ({ title, items }) => (
 )
 
 const FileItem = ({ file, depth = 0 }) => (
-  <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.6 }}>
-    <Text icon={file.children.length ? Folder : File} iconSize="18px">
+  <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.75 }}>
+    <Text
+      fontSize={1}
+      icon={file.children.length ? Folder : File}
+      iconSize="18px"
+    >
       {file.name}
       {file.size !== undefined ? (
         <>
           {' '}
-          <Text as="span" color="grey" fontSize={1}>
+          <Text as="span" color="grey">
             ({prettyBytes(file.size)})
           </Text>
         </>
@@ -484,24 +488,28 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         >
           Tags
         </Text>
-        <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
-          {torrent.tags.map((tag) => (
-            <Box
-              key={`tag-${tag}`}
-              bg="sidebar"
-              border="1px solid"
-              borderColor="border"
-              borderRadius={1}
-              m={1}
-            >
-              <Link href={`/tags/${tag}`} passHref>
-                <Text as="a" display="block" color="text" px={3} py={1}>
-                  {tag}
-                </Text>
-              </Link>
-            </Box>
-          ))}
-        </Box>
+        {torrent.tags.filter((t) => !!t).length ? (
+          <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
+            {torrent.tags.map((tag) => (
+              <Box
+                key={`tag-${tag}`}
+                bg="sidebar"
+                border="1px solid"
+                borderColor="border"
+                borderRadius={1}
+                m={1}
+              >
+                <Link href={`/tags/${tag}`} passHref>
+                  <Text as="a" display="block" color="text" px={3} py={1}>
+                    {tag}
+                  </Text>
+                </Link>
+              </Box>
+            ))}
+          </Box>
+        ) : (
+          <Text color="grey">This torrent has no tags.</Text>
+        )}
       </Box>
       <Infobox mb={5}>
         <Text
