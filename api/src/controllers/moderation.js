@@ -177,6 +177,18 @@ export const getStats = async (req, res) => {
     })
     const totalComments = await Comment.countDocuments()
 
+    const statsData = {
+      registeredUsers,
+      bannedUsers,
+      uploadedTorrents,
+      completedDownloads,
+      totalInvitesSent,
+      invitesAccepted,
+      totalRequests,
+      filledRequests,
+      totalComments,
+    }
+
     try {
       const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
 
@@ -195,28 +207,11 @@ export const getStats = async (req, res) => {
       const activeTorrentsRegex = /opentracker serving ([0-9]+) torrents/
       const [, activeTorrents] = activeTorrentsLine.match(activeTorrentsRegex)
 
-      res.json({
-        registeredUsers,
-        bannedUsers,
-        uploadedTorrents,
-        completedDownloads,
-        peers,
-        seeds,
-        leechers,
-        activeTorrents,
-      })
+      res.json({ ...statsData, peers, seeds, leechers, activeTorrents })
     } catch (e) {
       console.error('[DEBUG] Error: could not fetch stats from tracker')
       res.json({
-        registeredUsers,
-        bannedUsers,
-        uploadedTorrents,
-        completedDownloads,
-        totalInvitesSent,
-        invitesAccepted,
-        totalRequests,
-        filledRequests,
-        totalComments,
+        ...statsData,
         peers: '?',
         seeds: '?',
         leechers: '?',
