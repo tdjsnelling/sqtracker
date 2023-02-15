@@ -27,6 +27,7 @@ export const createUserTrackerRoutes = () =>
       console.log(params)
 
       proxyReq.url = `${base}?${qs.stringify(params, { encoder: escape })}`
+      req.url = `${base}?${qs.stringify(params, { encoder: escape })}`
 
       console.log(proxyReq)
     },
