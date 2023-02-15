@@ -48,12 +48,11 @@ const Upload = ({ token, userId }) => {
     if (file) {
       const reader = new FileReader()
       reader.onload = async () => {
-        const b64 = btoa(
-          String.fromCharCode.apply(null, new Uint8Array(reader.result))
-        )
+        console.log(reader.result)
+        const [, b64] = reader.result.split('base64,')
         setTorrentFile({ name: file.name, b64 })
       }
-      reader.readAsArrayBuffer(file)
+      reader.readAsDataURL(file)
     }
   }, [])
 

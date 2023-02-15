@@ -161,7 +161,7 @@ validateConfig(config).then(() => {
   app.use('/sq/*/scrape', userTrackerRoutes)
   app.use('/stats', otherTrackerRoutes)
 
-  app.use(bodyParser.json())
+  app.use(bodyParser.json({ limit: '5mb' }))
   app.use(cookieParser())
   app.use(cors())
 
