@@ -3,6 +3,7 @@ import {
   responseInterceptor,
 } from 'http-proxy-middleware'
 import bencode from 'bencode'
+import qs from 'qs'
 
 export const createUserTrackerRoutes = () =>
   createProxyMiddleware({
@@ -12,6 +13,22 @@ export const createUserTrackerRoutes = () =>
     selfHandleResponse: true,
     pathRewrite: {
       '^/sq/(.*)/': '',
+    },
+    onProxyReq: (proxyReq, req, res) => {
+      const ip = req.headers['x-forwarded-for'] || req.ip
+      const [realIp] = ip.split(',').map((a) => a.trim())
+      console.log(`[DEBUG] request from: ${ip}`)
+
+      const [base, query] = req.url.split('?')
+
+      const params = qs.parse(query, { decoder: unescape })
+      params.ip = realIp
+
+      console.log(params)
+
+      proxyReq.url = `${base}?${qs.stringify(params, { encoder: escape })}`
+
+      console.log(proxyReq)
     },
     onProxyRes: responseInterceptor(async (responseBuffer, proxyRes, req) => {
       const trackerResponse = bencode.decode(responseBuffer)

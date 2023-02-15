@@ -11,9 +11,6 @@ export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
 
 const handleAnnounce = async (req, res, next) => {
-  const ip = req.headers['x-forwarded-for'] || req.ip
-  console.log(`[DEBUG] request from: ${ip}`)
-
   const userId = req.baseUrl.split('/')[2]
   req.userId = userId
 
