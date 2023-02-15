@@ -7,7 +7,7 @@ import bencode from 'bencode'
 export const createUserTrackerRoutes = () =>
   createProxyMiddleware({
     target: process.env.SQ_TRACKER_URL,
-    xfwd: true,
+    //xfwd: true,
     selfHandleResponse: true,
     pathRewrite: {
       '^/sq/(.*)/': '',
@@ -30,5 +30,5 @@ export const createUserTrackerRoutes = () =>
 export const createOtherTrackerRoutes = () =>
   createProxyMiddleware({
     target: process.env.SQ_TRACKER_URL,
-    xfwd: true,
+    //xfwd: true,
   })
