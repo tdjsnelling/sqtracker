@@ -179,7 +179,7 @@ const Upload = ({ token, userId }) => {
       </form>
       <Infobox mt={5}>
         <Text color="grey" fontSize={1}>
-          Note: if you have started seeding a torrent before uploading, you made
+          Note: if you have started seeding a torrent before uploading, you may
           need to refresh trackers in your torrent client once the upload is
           complete.
         </Text>
