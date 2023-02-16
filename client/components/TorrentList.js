@@ -50,7 +50,7 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             header: 'Name',
             accessor: 'name',
             cell: ({ value, row }) => (
-              <Text>
+              <Text title={value}>
                 {value}
                 {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
                   <Text as="span" fontSize={0} color="primary" ml={3}>
@@ -64,14 +64,17 @@ const TorrentList = ({ torrents = [], categories, total }) => {
           {
             header: 'Category',
             accessor: 'type',
-            cell: ({ value }) => (
-              <Text icon={ListUl}>
-                {categories.find(
-                  (c) => slugify(c, { lower: true }) === value
-                ) || 'None'}
-              </Text>
-            ),
-            gridWidth: '2fr',
+            cell: ({ value }) => {
+              const category =
+                categories.find((c) => slugify(c, { lower: true }) === value) ||
+                'None'
+              return (
+                <Text icon={ListUl} title={category}>
+                  {category}
+                </Text>
+              )
+            },
+            gridWidth: '1.5fr',
           },
           {
             header: 'Seeders',

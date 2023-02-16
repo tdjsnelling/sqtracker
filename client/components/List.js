@@ -93,8 +93,13 @@ const List = ({ data = [], columns = [], ...rest }) => {
                         alignItems="center"
                         textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
                         _css={{
-                          whiteSpace: 'nowrap',
-                          '> *': { width: '100%' },
+                          overflow: 'hidden',
+                          '> *': {
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                          },
                         }}
                       >
                         {col.cell({
