@@ -37,6 +37,7 @@ const FileUpload = styled(Box)(() =>
 
 const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState()
+  const [dropError, setDropError] = useState('')
 
   const { addNotification } = useContext(NotificationContext)
   const { setLoading } = useContext(LoadingContext)
@@ -44,15 +45,19 @@ const Upload = ({ token, userId }) => {
   const router = useRouter()
 
   const onDrop = useCallback((acceptedFiles) => {
-    const [file] = acceptedFiles
-    if (file) {
-      const reader = new FileReader()
-      reader.onload = async () => {
-        console.log(reader.result)
-        const [, b64] = reader.result.split('base64,')
-        setTorrentFile({ name: file.name, b64 })
+    try {
+      const [file] = acceptedFiles
+      if (file) {
+        const reader = new FileReader()
+        reader.onload = async () => {
+          const [, b64] = reader.result.split('base64,')
+          setTorrentFile({ name: file.name, b64 })
+        }
+        reader.readAsDataURL(file)
+        setDropError('')
       }
-      reader.readAsDataURL(file)
+    } catch (e) {
+      setDropError(e.message)
     }
   }, [])
 
@@ -147,6 +152,11 @@ const Upload = ({ token, userId }) => {
               )}
             </FileUpload>
           </WrapLabel>
+          {dropError && (
+            <Text color="error" mt={3}>
+              Could not upload .torrent: {dropError}
+            </Text>
+          )}
         </Box>
         <Input name="name" label="Name" mb={4} required />
         <Select name="category" label="Category" mb={4} required>
