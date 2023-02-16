@@ -10,7 +10,7 @@ import Button from '../../components/Button'
 import Box from '../../components/Box'
 import TorrentList from '../../components/TorrentList'
 
-const Search = ({ results }) => {
+const Search = ({ results, error }) => {
   const router = useRouter()
   let {
     query: { query },
@@ -35,19 +35,30 @@ const Search = ({ results }) => {
         {query ? `Search results for “${query}”` : 'Search'}
       </Text>
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
-        <Input placeholder="Search torrents" name="query" mr={3} required />
+        <Input
+          placeholder="Search torrents (text or RegExp)"
+          name="query"
+          mr={3}
+          required
+        />
         <Button>Search</Button>
       </Box>
-      {query && (
+      {error ? (
+        <Text color="error">Search error: {error}</Text>
+      ) : (
         <>
-          {results.torrents.length ? (
-            <TorrentList
-              torrents={results.torrents}
-              categories={SQ_TORRENT_CATEGORIES}
-              total={results.total}
-            />
-          ) : (
-            <Text color="grey">No results.</Text>
+          {query && (
+            <>
+              {results.torrents.length ? (
+                <TorrentList
+                  torrents={results.torrents}
+                  categories={SQ_TORRENT_CATEGORIES}
+                  total={results.total}
+                />
+              ) : (
+                <Text color="grey">No results.</Text>
+              )}
+            </>
           )}
         </>
       )}
@@ -84,12 +95,16 @@ export const getServerSideProps = withAuthServerSideProps(
         (await searchRes.text()) === 'User is banned'
       ) {
         throw 'banned'
+      } else if (searchRes.status === 500) {
+        const message = await searchRes.text()
+        return { props: { error: message } }
+      } else {
+        const results = await searchRes.json()
+        return { props: { results } }
       }
-      const results = await searchRes.json()
-      return { props: { results } }
     } catch (e) {
       if (e === 'banned') throw 'banned'
-      return { props: {} }
+      return { props: { results: { torrents: [] } } }
     }
   }
 )

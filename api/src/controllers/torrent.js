@@ -464,7 +464,7 @@ export const searchTorrents = async (req, res) => {
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
-      query,
+      query: decodeURIComponent(query),
       category,
       tag,
     })
