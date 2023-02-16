@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
+import ratelimit from 'express-rate-limit'
 import * as Sentry from '@sentry/node'
 import * as Tracing from '@sentry/tracing'
 import config from '../../config'
@@ -151,6 +152,13 @@ validateConfig(config).then(() => {
       ].join(' ')
     })
   )
+
+  // rate limit
+  const limiter = ratelimit({
+    windowMs: 1000 * 60,
+    max: 30,
+  })
+  app.use(limiter)
 
   // custom logic implementing user tracking, ratio control etc
   app.use('/sq/*/announce', handleAnnounce)
