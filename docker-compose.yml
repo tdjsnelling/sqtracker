@@ -13,6 +13,8 @@ services:
       - "--providers.file=true"
       - "--providers.file.filename=/config/traefik.yml"
       - "--entrypoints.web.address=:80"
+      - "--entryPoints.web.proxyProtocol.insecure"
+      - "--entryPoints.web.forwardedHeaders.insecure"
     ports:
       - "80:80"
       - "8080:8080"
