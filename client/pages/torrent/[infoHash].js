@@ -406,21 +406,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               {isFreeleech ? 'Unset' : 'Set'} freeleech
             </Button>
           )}
-          <Button onClick={handleDownload} mr={3}>
-            .torrent
-          </Button>
-          <Link
-            href={`magnet:?xt=urn:btih:${
-              torrent.infoHash
-            }&dn=${encodeURIComponent(torrent.name)}&tr=${encodeURIComponent(
-              `${SQ_BASE_URL}/sq/${uid}/announce`
-            )}`}
-            passHref
-          >
-            <a>
-              <Button>Magnet</Button>
-            </a>
-          </Link>
+          <Button onClick={handleDownload}>.torrent</Button>
         </Box>
       </Box>
       <Info
