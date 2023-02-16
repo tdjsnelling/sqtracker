@@ -89,6 +89,13 @@ export const register = async (req, res) => {
       })
 
       if (!user) {
+        if (!/^[a-z0-9.]+$/i.test(req.body.username)) {
+          res
+            .status(400)
+            .send('Username can only consist of letters, numbers, and “.”')
+          return
+        }
+
         const hash = await bcrypt.hash(req.body.password, 10)
         const role = invite?.role || 'user'
 

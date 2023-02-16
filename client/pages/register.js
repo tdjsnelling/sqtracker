@@ -13,6 +13,8 @@ import Box from '../components/Box'
 import { NotificationContext } from '../components/Notifications'
 import LoadingContext from '../utils/LoadingContext'
 
+export const usernamePattern = '[A-Za-z0-9.]+'
+
 const Register = ({ token: inviteToken, tokenError }) => {
   const [, setCookie] = useCookies()
 
@@ -90,7 +92,14 @@ const Register = ({ token: inviteToken, tokenError }) => {
       {!tokenError ? (
         <form onSubmit={handleRegister}>
           <Input name="email" type="email" label="Email" mb={4} required />
-          <Input name="username" label="Username" mb={4} required />
+          <Input
+            name="username"
+            label="Username"
+            placeholder={`Can only consist of letters, numbers, and “.”`}
+            pattern={usernamePattern}
+            mb={4}
+            required
+          />
           <Input
             name="password"
             type="password"

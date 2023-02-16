@@ -9,6 +9,7 @@ import Input from '../components/Input'
 import Button from '../components/Button'
 import { NotificationContext } from '../components/Notifications'
 import LoadingContext from '../utils/LoadingContext'
+import { usernamePattern } from './register'
 
 const Login = () => {
   const [totpRequired, setTotpRequired] = useState(false)
@@ -74,7 +75,13 @@ const Login = () => {
         Log in
       </Text>
       <form onSubmit={handleLogin}>
-        <Input name="username" label="Username" mb={4} required />
+        <Input
+          name="username"
+          label="Username"
+          pattern={usernamePattern}
+          mb={4}
+          required
+        />
         <Input
           name="password"
           type="password"
