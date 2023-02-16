@@ -249,6 +249,13 @@ export const login = async (req, res) => {
 }
 
 export const generateInvite = async (req, res) => {
+  if (process.env.SQ_ALLOW_REGISTER !== 'invite') {
+    res
+      .status(403)
+      .send('Can only send invites when tracker is in invite only mode')
+    return
+  }
+
   if (req.body.email && req.body.role) {
     const user = await User.findOne({ _id: req.userId }).lean()
 

@@ -84,6 +84,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
       SQ_BP_EARNED_PER_GB,
       SQ_BP_COST_PER_INVITE,
       SQ_BP_COST_PER_GB,
+      SQ_ALLOW_REGISTER,
     },
   } = getConfig()
 
@@ -302,12 +303,14 @@ const Account = ({ token, invites = [], user, userRole }) => {
         every GB you upload.
       </Text>
       <Box _css={{ '> * + *': { mt: 3 } }} mb={5}>
-        <BuyItem
-          text="Purchase invites"
-          cost={SQ_BP_COST_PER_INVITE}
-          wallet={bonusPoints}
-          handleBuy={(e) => handleBuy(e, 'invite')}
-        />
+        {SQ_ALLOW_REGISTER === 'invite' && (
+          <BuyItem
+            text="Purchase invites"
+            cost={SQ_BP_COST_PER_INVITE}
+            wallet={bonusPoints}
+            handleBuy={(e) => handleBuy(e, 'invite')}
+          />
+        )}
         <BuyItem
           text="Purchase upload (1 GB)"
           cost={SQ_BP_COST_PER_GB}
@@ -315,110 +318,117 @@ const Account = ({ token, invites = [], user, userRole }) => {
           handleBuy={(e) => handleBuy(e, 'upload')}
         />
       </Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        mb={4}
-      >
-        <Text as="h2">Invites</Text>
-        <Box
-          display="flex"
-          alignItems="center"
-          bg="sidebar"
-          borderRadius={1}
-          p={2}
-          pl={4}
-        >
-          <Text color="grey" mr={4}>
-            {remainingInvites.toLocaleString()} remaining
-          </Text>
-          <Button
-            onClick={() => setShowInviteModal(true)}
-            disabled={remainingInvites < 1}
+      {SQ_ALLOW_REGISTER === 'invite' && (
+        <>
+          {' '}
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            mb={4}
           >
-            Send invite
-          </Button>
-        </Box>
-      </Box>
-      <List
-        data={invitesList}
-        columns={[
-          {
-            header: 'Email',
-            accessor: 'email',
-            cell: ({ value }) => <Text>{value}</Text>,
-            gridWidth: '1.75fr',
-          },
-          {
-            header: 'Claimed',
-            accessor: 'claimed',
-            cell: ({ value }) => (
-              <Box color={value ? 'success' : 'grey'}>
-                {value ? <Check size={24} /> : <X size={24} />}{' '}
-              </Box>
-            ),
-            gridWidth: '0.5fr',
-          },
-          {
-            header: 'Valid until',
-            accessor: 'validUntil',
-            cell: ({ value }) => (
-              <Text color={value < Date.now() ? 'error' : 'text'}>
-                {moment(value).format('HH:mm Do MMM YYYY')}
+            <Text as="h2">Invites</Text>
+            <Box
+              display="flex"
+              alignItems="center"
+              bg="sidebar"
+              borderRadius={1}
+              p={2}
+              pl={4}
+            >
+              <Text color="grey" mr={4}>
+                {remainingInvites.toLocaleString()} remaining
               </Text>
-            ),
-            gridWidth: '175px',
-          },
-          {
-            header: 'Created',
-            accessor: 'created',
-            cell: ({ value }) => (
-              <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
-            ),
-            gridWidth: '175px',
-          },
-          ...(userRole === 'admin'
-            ? [
-                {
-                  header: 'Role',
-                  accessor: 'role',
-                  cell: ({ value }) => (
-                    <Text _css={{ textTransform: 'capitalize' }}>{value}</Text>
-                  ),
-                  gridWidth: '0.6fr',
+              <Button
+                onClick={() => setShowInviteModal(true)}
+                disabled={remainingInvites < 1}
+              >
+                Send invite
+              </Button>
+            </Box>
+          </Box>
+          <List
+            data={invitesList}
+            columns={[
+              {
+                header: 'Email',
+                accessor: 'email',
+                cell: ({ value }) => <Text>{value}</Text>,
+                gridWidth: '1.75fr',
+              },
+              {
+                header: 'Claimed',
+                accessor: 'claimed',
+                cell: ({ value }) => (
+                  <Box color={value ? 'success' : 'grey'}>
+                    {value ? <Check size={24} /> : <X size={24} />}{' '}
+                  </Box>
+                ),
+                gridWidth: '0.5fr',
+              },
+              {
+                header: 'Valid until',
+                accessor: 'validUntil',
+                cell: ({ value }) => (
+                  <Text color={value < Date.now() ? 'error' : 'text'}>
+                    {moment(value).format('HH:mm Do MMM YYYY')}
+                  </Text>
+                ),
+                gridWidth: '175px',
+              },
+              {
+                header: 'Created',
+                accessor: 'created',
+                cell: ({ value }) => (
+                  <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+                ),
+                gridWidth: '175px',
+              },
+              ...(userRole === 'admin'
+                ? [
+                    {
+                      header: 'Role',
+                      accessor: 'role',
+                      cell: ({ value }) => (
+                        <Text _css={{ textTransform: 'capitalize' }}>
+                          {value}
+                        </Text>
+                      ),
+                      gridWidth: '0.6fr',
+                    },
+                  ]
+                : []),
+              {
+                header: 'Copy link',
+                cell: ({ row }) => {
+                  return (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        copy(
+                          `${location.protocol}//${location.host}/register?token=${row.token}`
+                        )
+                        addNotification(
+                          'success',
+                          'Invite link copied to clipboard'
+                        )
+                      }}
+                      disabled={row.claimed || row.validUntil < Date.now()}
+                      px={1}
+                      py={1}
+                    >
+                      <Copy size={24} />
+                    </Button>
+                  )
                 },
-              ]
-            : []),
-          {
-            header: 'Copy link',
-            cell: ({ row }) => {
-              return (
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    copy(
-                      `${location.protocol}//${location.host}/register?token=${row.token}`
-                    )
-                    addNotification(
-                      'success',
-                      'Invite link copied to clipboard'
-                    )
-                  }}
-                  disabled={row.claimed || row.validUntil < Date.now()}
-                  px={1}
-                  py={1}
-                >
-                  <Copy size={24} />
-                </Button>
-              )
-            },
-            rightAlign: true,
-            gridWidth: '80px',
-          },
-        ]}
-        mb={5}
-      />
+                rightAlign: true,
+                gridWidth: '80px',
+              },
+            ]}
+            mb={5}
+          />
+        </>
+      )}
       <Box mb={5}>
         <Text as="h2" mb={4}>
           Two-factor authentication
