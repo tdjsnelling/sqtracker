@@ -11,5 +11,9 @@ export const getUserRatio = async (_id) => {
     totalDown += Number(userTorrent.downloaded.total)
   }
 
-  return totalDown === 0 ? -1 : Number((totalUp / totalDown).toFixed(2))
+  return {
+    up: totalUp,
+    down: totalDown,
+    ratio: totalDown === 0 ? -1 : Number((totalUp / totalDown).toFixed(2)),
+  }
 }

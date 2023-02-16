@@ -9,11 +9,15 @@ import styled, {
   keyframes,
 } from 'styled-components'
 import { useCookies } from 'react-cookie'
+import prettyBytes from 'pretty-bytes'
 import { Menu } from '@styled-icons/boxicons-regular/Menu'
 import { Sun } from '@styled-icons/boxicons-regular/Sun'
 import { Moon } from '@styled-icons/boxicons-regular/Moon'
 import { Bell } from '@styled-icons/boxicons-regular/Bell'
 import { LoaderAlt } from '@styled-icons/boxicons-regular/LoaderAlt'
+import { Sort } from '@styled-icons/boxicons-regular/Sort'
+import { CaretUp } from '@styled-icons/boxicons-regular/CaretUp'
+import { CaretDown } from '@styled-icons/boxicons-regular/CaretDown'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
@@ -139,6 +143,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [theme, setTheme] = useState(initialTheme || 'light')
   const [isServer, setIsServer] = useState(true)
   const [loading, setLoading] = useState(false)
+  const [userStats, setUserStats] = useState()
 
   const router = useRouter()
 
@@ -149,7 +154,12 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const { token } = cookies
 
   const {
-    publicRuntimeConfig: { SQ_THEME_COLOUR, SQ_SITE_WIDE_FREELEECH },
+    publicRuntimeConfig: {
+      SQ_THEME_COLOUR,
+      SQ_SITE_WIDE_FREELEECH,
+      SQ_API_URL,
+      SQ_MINIMUM_RATIO,
+    },
   } = getConfig()
 
   const setThemeAndSave = (theme) => {
@@ -180,6 +190,25 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
     Router.events.on('routeChangeComplete', () => setLoading(false))
     Router.events.on('routeChangeError', () => setLoading(false))
   }, [])
+
+  const fetchUserStats = async () => {
+    try {
+      const res = await fetch(`${SQ_API_URL}/account/get-stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      const stats = await res.json()
+      setUserStats(stats)
+    } catch (e) {
+      console.error(`could not fetch stats: ${e}`)
+    }
+  }
+
+  useEffect(() => {
+    if (token) fetchUserStats()
+    else setUserStats(undefined)
+  }, [token])
 
   const appTheme = {
     ...baseTheme,
@@ -264,7 +293,37 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                   )}
                 </Box>
                 {!isServer && token && (
-                  <Box display="flex">
+                  <Box display="flex" alignItems="center">
+                    {userStats && (
+                      <Box
+                        display={['none', 'flex']}
+                        alignItems="center"
+                        color="grey"
+                      >
+                        <Sort size={14} />
+                        <Text
+                          color={
+                            userStats.ratio !== -1 &&
+                            userStats.ratio < SQ_MINIMUM_RATIO
+                              ? 'error'
+                              : 'grey'
+                          }
+                          fontSize={0}
+                          ml={1}
+                          mr={2}
+                        >
+                          {userStats.ratio === -1 ? 'N/A' : userStats.ratio}
+                        </Text>
+                        <CaretUp size={16} />
+                        <Text fontSize={0} ml={0} mr={2}>
+                          {prettyBytes(userStats.up ?? 0)}
+                        </Text>
+                        <CaretDown size={16} />
+                        <Text fontSize={0} ml={0} mr={4}>
+                          {prettyBytes(userStats.down ?? 0)}
+                        </Text>
+                      </Box>
+                    )}
                     <Box as="form" onSubmit={handleSearch}>
                       <Input
                         name="query"

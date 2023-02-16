@@ -59,7 +59,7 @@ const handleAnnounce = async (req, res, next) => {
     return
   }
 
-  const ratio = await getUserRatio(user._id)
+  const { ratio } = await getUserRatio(user._id)
 
   console.log(`[DEBUG] user ratio: ${ratio}`)
 

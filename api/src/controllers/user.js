@@ -659,7 +659,8 @@ export const fetchUser = async (req, res) => {
       return
     }
 
-    user.ratio = await getUserRatio(user._id)
+    const { ratio } = await getUserRatio(user._id)
+    user.ratio = ratio
 
     const { torrents } = await getTorrentsPage({ userId: user._id })
     user.torrents = torrents
@@ -667,6 +668,21 @@ export const fetchUser = async (req, res) => {
     res.json(user)
   } catch (e) {
     console.error(e)
+    res.status(500).send(e.message)
+  }
+}
+
+export const getUserStats = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.userId }).lean()
+
+    if (!user) {
+      res.status(404).send('User does not exist')
+      return
+    }
+
+    res.json(await getUserRatio(user._id))
+  } catch (e) {
     res.status(500).send(e.message)
   }
 }

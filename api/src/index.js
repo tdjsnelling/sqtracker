@@ -25,6 +25,7 @@ import {
   initiatePasswordReset,
   finalisePasswordReset,
   fetchUser,
+  getUserStats,
   getUserRole,
   getUserVerifiedEmailStatus,
   verifyUserEmail,
@@ -190,6 +191,7 @@ validateConfig(config).then(() => {
   app.get('/account/invites', fetchInvites)
   app.post('/account/generate-invite', generateInvite)
   app.post('/account/change-password', changePassword)
+  app.get('/account/get-stats', getUserStats)
   app.get('/account/get-role', getUserRole)
   app.get('/account/get-verified', getUserVerifiedEmailStatus)
   app.post('/account/buy', buyItems)
