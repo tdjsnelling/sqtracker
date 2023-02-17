@@ -103,49 +103,48 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
   )
 }
 
-export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
-  if (!token) return { props: {} }
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, fetchHeaders }) => {
+    if (!token) return { props: {} }
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  try {
-    const announcementsRes = await fetch(`${SQ_API_URL}/announcements/page/0`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    if (
-      announcementsRes.status === 403 &&
-      (await announcementsRes.text()) === 'User is banned'
-    ) {
-      throw 'banned'
-    }
-    const announcements = await announcementsRes.json()
-
-    const pinnedAnnouncementsRes = await fetch(
-      `${SQ_API_URL}/announcements/pinned`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+    try {
+      const announcementsRes = await fetch(
+        `${SQ_API_URL}/announcements/page/0`,
+        {
+          headers: fetchHeaders,
+        }
+      )
+      if (
+        announcementsRes.status === 403 &&
+        (await announcementsRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
       }
-    )
-    const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+      const announcements = await announcementsRes.json()
 
-    return {
-      props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
+      const pinnedAnnouncementsRes = await fetch(
+        `${SQ_API_URL}/announcements/pinned`,
+        {
+          headers: fetchHeaders,
+        }
+      )
+      const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+
+      return {
+        props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
+      }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
     }
-  } catch (e) {
-    if (e === 'banned') throw 'banned'
-    return { props: {} }
   }
-})
+)
 
 export default Announcements

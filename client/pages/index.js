@@ -92,41 +92,38 @@ const Index = ({ token, latest, emailVerified }) => {
   )
 }
 
-export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
-  if (!token) return { props: {} }
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, fetchHeaders }) => {
+    if (!token) return { props: {} }
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+    } = getConfig()
 
-  try {
-    const latestRes = await fetch(`${SQ_API_URL}/torrents/latest`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    if (
-      latestRes.status === 403 &&
-      (await latestRes.text()) === 'User is banned'
-    ) {
-      throw 'banned'
+    try {
+      const latestRes = await fetch(`${SQ_API_URL}/torrents/latest`, {
+        headers: fetchHeaders,
+      })
+      if (
+        latestRes.status === 403 &&
+        (await latestRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
+      const latest = await latestRes.json()
+
+      const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
+        headers: fetchHeaders,
+      })
+      const emailVerified = await verifiedRes.json()
+
+      return { props: { latest, emailVerified, token } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
     }
-    const latest = await latestRes.json()
-
-    const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    const emailVerified = await verifiedRes.json()
-
-    return { props: { latest, emailVerified, token } }
-  } catch (e) {
-    if (e === 'banned') throw 'banned'
-    return { props: {} }
-  }
-}, true)
+  },
+  true
+)
 
 export default Index

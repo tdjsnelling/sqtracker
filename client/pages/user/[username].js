@@ -269,7 +269,7 @@ const User = ({ token, user, userRole }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { username } }) => {
+  async ({ token, fetchHeaders, query: { username } }) => {
     if (!token) return { props: {} }
 
     const {
@@ -281,10 +281,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     try {
       const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: fetchHeaders,
       })
 
       if (

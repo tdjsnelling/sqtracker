@@ -1,5 +1,4 @@
 import * as yup from 'yup'
-import config from '../../../config.js'
 
 const httpRegex = /http(s)?:\/\/.*/
 const mongoRegex = /mongodb:\/\/.*/
@@ -46,6 +45,7 @@ const configSchema = yup
     secrets: yup
       .object({
         SQ_JWT_SECRET: yup.string().required(),
+        SQ_SERVER_SECRET: yup.string().required(),
         SQ_ADMIN_EMAIL: yup.string().email().required(),
         SQ_SMTP_USER: yup.string().required(),
         SQ_SMTP_PASS: yup.string().required(),

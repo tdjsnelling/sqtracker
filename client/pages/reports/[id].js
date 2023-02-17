@@ -117,7 +117,7 @@ const Report = ({ report, token, userRole }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { id } }) => {
+  async ({ token, fetchHeaders, query: { id } }) => {
     if (!token) return { props: {} }
 
     const {
@@ -131,10 +131,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     try {
       const reportRes = await fetch(`${SQ_API_URL}/reports/${id}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: fetchHeaders,
       })
       if (
         reportRes.status === 403 &&

@@ -602,7 +602,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, userId, query: { infoHash } }) => {
+  async ({ token, userId, fetchHeaders, query: { infoHash } }) => {
     if (!token) return { props: {} }
 
     const {
@@ -614,10 +614,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     try {
       const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: fetchHeaders,
       })
 
       if (

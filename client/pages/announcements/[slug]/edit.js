@@ -109,7 +109,7 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { slug } }) => {
+  async ({ token, fetchHeaders, query: { slug } }) => {
     if (!token) return { props: {} }
 
     const {
@@ -123,10 +123,7 @@ export const getServerSideProps = withAuthServerSideProps(
       const announcementRes = await fetch(
         `${SQ_API_URL}/announcements/${slug}`,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          headers: fetchHeaders,
         }
       )
       if (

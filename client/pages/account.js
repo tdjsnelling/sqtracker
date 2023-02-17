@@ -580,39 +580,38 @@ const Account = ({ token, invites = [], user, userRole }) => {
   )
 }
 
-export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
-  if (!token) return { props: {} }
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, fetchHeaders }) => {
+    if (!token) return { props: {} }
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const { role, username } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role, username } = jwt.verify(token, SQ_JWT_SECRET)
 
-  try {
-    const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    if (userRes.status === 403 && (await userRes.text()) === 'User is banned') {
-      throw 'banned'
+    try {
+      const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
+        headers: fetchHeaders,
+      })
+      if (
+        userRes.status === 403 &&
+        (await userRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
+      const user = await userRes.json()
+      const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
+        headers: fetchHeaders,
+      })
+      const invites = await invitesRes.json()
+      return { props: { invites, user, userRole: role } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
     }
-    const user = await userRes.json()
-    const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    const invites = await invitesRes.json()
-    return { props: { invites, user, userRole: role } }
-  } catch (e) {
-    if (e === 'banned') throw 'banned'
-    return { props: {} }
   }
-})
+)
 
 export default Account

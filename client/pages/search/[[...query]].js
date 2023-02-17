@@ -67,7 +67,7 @@ const Search = ({ results, error }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { query, page: pageParam } }) => {
+  async ({ token, fetchHeaders, query: { query, page: pageParam } }) => {
     if (!token || !query) return { props: {} }
 
     const {
@@ -84,10 +84,7 @@ export const getServerSideProps = withAuthServerSideProps(
       const searchRes = await fetch(
         `${SQ_API_URL}/torrents/search?${qs.stringify(params)}`,
         {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+          headers: fetchHeaders,
         }
       )
       if (

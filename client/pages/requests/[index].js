@@ -381,7 +381,7 @@ const Request = ({ request, token, user }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, query: { index } }) => {
+  async ({ token, fetchHeaders, query: { index } }) => {
     if (!token) return { props: {} }
 
     const {
@@ -393,10 +393,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     try {
       const requestRes = await fetch(`${SQ_API_URL}/requests/${index}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
+        headers: fetchHeaders,
       })
       if (
         requestRes.status === 403 &&

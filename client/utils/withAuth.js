@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+import getConfig from 'next/config'
 import { useCookies } from 'react-cookie'
 import getReqCookies from './getReqCookies'
 
@@ -45,10 +46,23 @@ export const withAuthServerSideProps = (
     if (!token && noRedirect) return { props: {} }
 
     try {
+      const {
+        serverRuntimeConfig: { SQ_SERVER_SECRET },
+      } = getConfig()
+
+      const fetchHeaders = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'X-Forwarded-For':
+          ctx.req.headers['x-forwarded-for'] ?? ctx.req.socket.remoteAddress,
+        'X-Sq-Server-Secret': SQ_SERVER_SECRET,
+      }
+
       const { props: ssProps } = await getServerSideProps({
         ...ctx,
         token,
         userId,
+        fetchHeaders,
       })
       return { props: { ...ssProps, token } }
     } catch (e) {

@@ -49,36 +49,36 @@ const Stats = ({ stats, userRole }) => {
   )
 }
 
-export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
-  if (!token) return { props: {} }
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, fetchHeaders }) => {
+    if (!token) return { props: {} }
 
-  const {
-    publicRuntimeConfig: { SQ_API_URL },
-    serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+      serverRuntimeConfig: { SQ_JWT_SECRET },
+    } = getConfig()
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role } = jwt.verify(token, SQ_JWT_SECRET)
 
-  if (role !== 'admin') return { props: { reports: [], userRole: role } }
+    if (role !== 'admin') return { props: { reports: [], userRole: role } }
 
-  try {
-    const statsRes = await fetch(`${SQ_API_URL}/admin/stats`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    if (
-      statsRes.status === 403 &&
-      (await statsRes.text()) === 'User is banned'
-    ) {
-      throw 'banned'
+    try {
+      const statsRes = await fetch(`${SQ_API_URL}/admin/stats`, {
+        headers: fetchHeaders,
+      })
+      if (
+        statsRes.status === 403 &&
+        (await statsRes.text()) === 'User is banned'
+      ) {
+        throw 'banned'
+      }
+      const stats = await statsRes.json()
+      return { props: { stats, userRole: role } }
+    } catch (e) {
+      if (e === 'banned') throw 'banned'
+      return { props: {} }
     }
-    const stats = await statsRes.json()
-    return { props: { stats, userRole: role } }
-  } catch (e) {
-    if (e === 'banned') throw 'banned'
-    return { props: {} }
   }
-})
+)
 
 export default Stats

@@ -143,10 +143,9 @@ validateConfig(config).then(() => {
 
   app.use(
     morgan((tokens, req, res) => {
-      const ip = req.headers['x-forwarded-for'] || req.ip
       return [
         chalk.grey(new Date().toISOString()),
-        chalk.magenta(ip),
+        chalk.magenta(req.headers['x-forwarded-for'] ?? req.ip),
         chalk.yellow(tokens.method(req, res)),
         tokens.url(req, res),
         colorizeStatus(tokens.status(req, res)),
@@ -155,10 +154,22 @@ validateConfig(config).then(() => {
     })
   )
 
-  // rate limit
+  // rate limit all API routes. if the request comes from Next SSR rather than
+  // the client browser, we need to make use of the forwarded IP rather than
+  // the origin of the request, as this will be the same for all users. to
+  // prevent avoiding a client spoofing this to avoid the limit, we also verify
+  // a secret only available to the server
   const limiter = ratelimit({
     windowMs: 1000 * 60,
     max: 30,
+    keyGenerator: (req) => {
+      if (
+        req.headers['x-forwarded-for'] &&
+        req.headers['x-sq-server-secret'] === process.env.SQ_SERVER_SECET
+      )
+        return req.headers['x-forwarded-for'].split(',')[0]
+      return req.ip
+    },
   })
   app.use(limiter)
 

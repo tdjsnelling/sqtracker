@@ -27,6 +27,7 @@ module.exports = {
   },
   secrets: {
     SQ_JWT_SECRET: 'long_random_string',
+    SQ_SERVER_SECRET: 'another_long_random_string',
     SQ_ADMIN_EMAIL: 'admin@example.com',
     SQ_SMTP_USER: 'smtp_username',
     SQ_SMTP_PASS: 'smtp_password',
