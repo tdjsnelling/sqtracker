@@ -143,8 +143,10 @@ validateConfig(config).then(() => {
 
   app.use(
     morgan((tokens, req, res) => {
+      const ip = req.headers['x-forwarded-for'] || req.ip
       return [
         chalk.grey(new Date().toISOString()),
+        chalk.magenta(ip),
         chalk.yellow(tokens.method(req, res)),
         tokens.url(req, res),
         colorizeStatus(tokens.status(req, res)),
