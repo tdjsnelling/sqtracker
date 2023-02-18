@@ -8,11 +8,12 @@ const createTrackerRoute = (action, onRequest) => async (req, res) => {
     if (res.writableEnded) return
   }
 
+  // bittorrent-tracker will only parse a single IP in x-forwarded-for, and will
+  // fail if it includes a comma-separated list
   if (req.headers['x-forwarded-for']) {
     req.headers['x-forwarded-for'] =
       req.headers['x-forwarded-for'].split(',')[0]
   }
-  console.log('headers', req.headers)
 
   let params
   try {
