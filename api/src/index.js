@@ -15,64 +15,23 @@ import validateConfig from './utils/validateConfig'
 import createTrackerRoute from './tracker/routes'
 import auth from './middleware/auth'
 import {
+  accountRoutes,
+  userRoutes,
+  torrentRoutes,
+  announcementRoutes,
+  reportRoutes,
+  adminRoutes,
+  requestRoutes,
+} from './routes'
+import {
   register,
   login,
-  generateInvite,
-  fetchInvites,
-  changePassword,
   initiatePasswordReset,
   finalisePasswordReset,
-  fetchUser,
-  getUserStats,
-  getUserRole,
-  getUserVerifiedEmailStatus,
   verifyUserEmail,
-  banUser,
-  unbanUser,
-  buyItems,
-  generateTotpSecret,
-  enableTotp,
-  disableTotp,
 } from './controllers/user'
-import {
-  uploadTorrent,
-  downloadTorrent,
-  fetchTorrent,
-  deleteTorrent,
-  addComment as addCommentTorrent,
-  listLatest,
-  searchTorrents,
-  addVote,
-  removeVote,
-  toggleFreeleech,
-} from './controllers/torrent'
-import {
-  createAnnouncement,
-  fetchAnnouncement,
-  getAnnouncements,
-  getPinnedAnnouncements,
-  deleteAnnouncement,
-  pinAnnouncement,
-  editAnnouncement,
-  addComment as addCommentAnnouncement,
-} from './controllers/announcement'
-import {
-  createReport,
-  fetchReport,
-  getReports,
-  setReportResolved,
-  getStats,
-} from './controllers/moderation'
+import { downloadTorrent } from './controllers/torrent'
 import { rssFeed } from './controllers/rss'
-import {
-  createRequest,
-  getRequests,
-  fetchRequest,
-  deleteRequest,
-  addComment as addCommentRequest,
-  addCandidate,
-  acceptCandidate,
-} from './controllers/request'
 import createAdminUser from './setup/createAdminUser'
 
 let mail
@@ -184,7 +143,6 @@ validateConfig(config).then(() => {
   app.use(cookieParser())
   app.use(cors())
 
-  // root
   app.get('/', (req, res) =>
     res.send(`■ sqtracker running: ${process.env.SQ_SITE_NAME}`).status(200)
   )
@@ -205,57 +163,13 @@ validateConfig(config).then(() => {
   // everything from here on requires user auth
   app.use(auth)
 
-  // user/account routes
-  app.get('/account/invites', fetchInvites)
-  app.post('/account/generate-invite', generateInvite)
-  app.post('/account/change-password', changePassword)
-  app.get('/account/get-stats', getUserStats)
-  app.get('/account/get-role', getUserRole)
-  app.get('/account/get-verified', getUserVerifiedEmailStatus)
-  app.post('/account/buy', buyItems)
-  app.get('/user/:username', fetchUser(tracker))
-  app.post('/user/ban/:username', banUser)
-  app.post('/user/unban/:username', unbanUser)
-  app.get('/account/totp/generate', generateTotpSecret)
-  app.post('/account/totp/enable', enableTotp)
-  app.post('/account/totp/disable', disableTotp)
-
-  // torrent routes
-  app.post('/torrent/upload', uploadTorrent)
-  app.get('/torrent/info/:infoHash', fetchTorrent(tracker))
-  app.delete('/torrent/delete/:infoHash', deleteTorrent)
-  app.post('/torrent/comment/:infoHash', addCommentTorrent)
-  app.post('/torrent/vote/:infoHash/:vote', addVote)
-  app.post('/torrent/unvote/:infoHash/:vote', removeVote)
-  app.post('/torrent/report/:infoHash', createReport)
-  app.post('/torrent/toggle-freeleech/:infoHash', toggleFreeleech)
-  app.get('/torrents/latest', listLatest(tracker))
-  app.get('/torrents/search', searchTorrents(tracker))
-
-  // announcement routes
-  app.post('/announcements/new', createAnnouncement)
-  app.get('/announcements/pinned', getPinnedAnnouncements)
-  app.get('/announcements/:slug', fetchAnnouncement)
-  app.get('/announcements/page/:page', getAnnouncements)
-  app.delete('/announcements/:slug', deleteAnnouncement)
-  app.post('/announcements/pin/:announcementId/:action', pinAnnouncement)
-  app.post('/announcements/edit/:announcementId', editAnnouncement)
-  app.post('/announcements/comment/:announcementId', addCommentAnnouncement)
-
-  // moderation routes
-  app.get('/reports/page/:page', getReports)
-  app.post('/reports/resolve/:reportId', setReportResolved)
-  app.get('/reports/:reportId', fetchReport)
-  app.get('/admin/stats', getStats(tracker))
-
-  // request routes
-  app.post('/requests/new', createRequest)
-  app.get('/requests/page/:page', getRequests)
-  app.get('/requests/:index', fetchRequest)
-  app.delete('/requests/:index', deleteRequest)
-  app.post('/requests/comment/:requestId', addCommentRequest)
-  app.post('/requests/suggest/:requestId', addCandidate)
-  app.post('/requests/accept/:requestId', acceptCandidate)
+  app.use('/account', accountRoutes())
+  app.use('/user', userRoutes(tracker))
+  app.use('/torrent', torrentRoutes(tracker))
+  app.use('/announcements', announcementRoutes())
+  app.use('/reports', reportRoutes())
+  app.use('/admin', adminRoutes(tracker))
+  app.use('/requests', requestRoutes())
 
   const port = process.env.SQ_PORT || 3001
   app.listen(port, () => {

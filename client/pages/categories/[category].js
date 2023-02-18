@@ -57,7 +57,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     try {
       const searchRes = await fetch(
-        `${SQ_API_URL}/torrents/search?${qs.stringify(params)}`,
+        `${SQ_API_URL}/torrent/search?${qs.stringify(params)}`,
         {
           headers: fetchHeaders,
         }

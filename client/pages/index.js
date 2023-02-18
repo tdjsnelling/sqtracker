@@ -101,7 +101,7 @@ export const getServerSideProps = withAuthServerSideProps(
     } = getConfig()
 
     try {
-      const latestRes = await fetch(`${SQ_API_URL}/torrents/latest`, {
+      const latestRes = await fetch(`${SQ_API_URL}/torrent/latest`, {
         headers: fetchHeaders,
       })
       if (
