@@ -131,7 +131,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         <Link href="/" passHref>
           <Text
             as="a"
-            fontSize={3}
+            fontSize={[2, 3]}
             fontWeight={600}
             color="text"
             _css={{ textDecoration: 'none', '&:visited': { color: 'text' } }}

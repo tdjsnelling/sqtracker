@@ -20,7 +20,7 @@ const PublicLanding = ({ name, allowRegister }) => (
     justifyContent="center"
     flexDirection="column"
   >
-    <Text as="h1" fontSize={6}>
+    <Text as="h1" fontSize={6} textAlign="center" lineHeight={1.2}>
       {name}
     </Text>
     <Box display="flex" mt={4}>

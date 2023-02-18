@@ -250,8 +250,11 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
             <Box
               width="100%"
               height="60px"
+              bg="background"
               borderBottom="1px solid"
               borderColor="border"
+              position={['fixed', 'static']}
+              top={0}
             >
               <Box
                 display="flex"
@@ -352,9 +355,9 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                 )}
               </Box>
             </Box>
-            <main>
+            <Box as="main" mt={['60px', 0]}>
               <Component {...pageProps} />
-            </main>
+            </Box>
           </NotificationsProvider>
         </LoadingContext.Provider>
       </ThemeProvider>

@@ -59,7 +59,7 @@ const Notification = ({ type, text, dismiss }) => {
       borderLeftWidth="5px"
       borderRadius={1}
       boxShadow="edge"
-      minWidth="400px"
+      minWidth={['calc(100vw - 40px)', '400px']}
       maxWidth="400px"
       px={4}
       py={3}

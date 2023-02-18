@@ -102,7 +102,7 @@ const Comment = ({ comment }) => {
         ) : (
           <Text>Comment by deleted user</Text>
         )}
-        <Text color="grey">
+        <Text color="grey" textAlign="right">
           Posted {moment(comment.created).format('HH:mm Do MMM YYYY')}
         </Text>
       </Box>
