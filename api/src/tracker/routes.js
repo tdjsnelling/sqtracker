@@ -10,7 +10,7 @@ const createTrackerRoute = (action, onRequest) => async (req, res) => {
 
   let params
   try {
-    params = parseHttpRequest(req, { action })
+    params = parseHttpRequest(req, { action, trustProxy: true })
     params.httpReq = req
     params.httpRes = res
   } catch (err) {
