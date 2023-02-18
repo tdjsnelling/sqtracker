@@ -8,6 +8,12 @@ const createTrackerRoute = (action, onRequest) => async (req, res) => {
     if (res.writableEnded) return
   }
 
+  if (req.headers['x-forwarded-for']) {
+    req.headers['x-forwarded-for'] =
+      req.headers['x-forwarded-for'].split(',')[0]
+  }
+  console.log('headers', req.headers)
+
   let params
   try {
     params = parseHttpRequest(req, { action, trustProxy: true })
@@ -22,6 +28,7 @@ const createTrackerRoute = (action, onRequest) => async (req, res) => {
   }
   onRequest(params, (err, response) => {
     let finalResponse = response
+    delete finalResponse.action
     if (err) {
       finalResponse = {
         'failure reason': err.message,
