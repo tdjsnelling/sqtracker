@@ -14,10 +14,10 @@ import {
 
 const router = express.Router()
 
-export default () => {
+export default (mail) => {
   router.get('/invites', fetchInvites)
-  router.post('/generate-invite', generateInvite)
-  router.post('/change-password', changePassword)
+  router.post('/generate-invite', generateInvite(mail))
+  router.post('/change-password', changePassword(mail))
   router.get('/get-stats', getUserStats)
   router.get('/get-role', getUserRole)
   router.get('/get-verified', getUserVerifiedEmailStatus)

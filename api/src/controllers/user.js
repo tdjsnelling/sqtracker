@@ -8,10 +8,9 @@ import Invite from '../schema/invite'
 import Progress from '../schema/progress'
 import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
-import { mail } from '../index'
 import { BYTES_GB } from '../tracker/announce'
 
-export const sendVerificationEmail = async (address, token) => {
+export const sendVerificationEmail = async (mail, address, token) => {
   await mail.sendMail({
     from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
     to: address,
@@ -22,7 +21,7 @@ ${process.env.SQ_BASE_URL}/verify-email?token=${token}`,
   })
 }
 
-export const register = async (req, res) => {
+export const register = (mail) => async (req, res) => {
   if (
     process.env.SQ_ALLOW_REGISTER !== 'open' &&
     process.env.SQ_ALLOW_REGISTER !== 'invite'
@@ -131,7 +130,11 @@ export const register = async (req, res) => {
           },
           process.env.SQ_JWT_SECRET
         )
-        await sendVerificationEmail(req.body.email, emailVerificationToken)
+        await sendVerificationEmail(
+          mail,
+          req.body.email,
+          emailVerificationToken
+        )
 
         if (createdUser) {
           if (req.body.invite) {
@@ -248,7 +251,7 @@ export const login = async (req, res) => {
   }
 }
 
-export const generateInvite = async (req, res) => {
+export const generateInvite = (mail) => async (req, res) => {
   if (process.env.SQ_ALLOW_REGISTER !== 'invite') {
     res
       .status(403)
@@ -311,7 +314,7 @@ export const fetchInvites = async (req, res) => {
   }
 }
 
-export const changePassword = async (req, res) => {
+export const changePassword = (mail) => async (req, res) => {
   if (req.body.password && req.body.newPassword) {
     try {
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -357,7 +360,7 @@ ${process.env.SQ_BASE_URL}/reset-password/initiate`,
   }
 }
 
-export const initiatePasswordReset = async (req, res) => {
+export const initiatePasswordReset = (mail) => async (req, res) => {
   if (req.body.email) {
     try {
       const user = await User.findOne({ email: req.body.email }).lean()

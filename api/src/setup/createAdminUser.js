@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken'
 import User from '../schema/user'
 import { sendVerificationEmail } from '../controllers/user'
 
-const createAdminUser = async () => {
+const createAdminUser = async (mail) => {
   const existingAdmin = await User.findOne({ username: 'admin' }).lean()
   if (!existingAdmin) {
     const created = Date.now()
@@ -44,9 +44,12 @@ const createAdminUser = async () => {
       process.env.SQ_JWT_SECRET
     )
     await sendVerificationEmail(
+      mail,
       process.env.SQ_ADMIN_EMAIL,
       emailVerificationToken
     )
+
+    console.log('[sq] created initial admin user')
   }
 }
 

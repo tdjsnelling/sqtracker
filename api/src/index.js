@@ -34,8 +34,6 @@ import { downloadTorrent } from './controllers/torrent'
 import { rssFeed } from './controllers/rss'
 import createAdminUser from './setup/createAdminUser'
 
-let mail
-
 validateConfig(config).then(() => {
   if (process.env.SENTRY_DSN) {
     Sentry.init({
@@ -51,6 +49,16 @@ validateConfig(config).then(() => {
       adminEmail: process.env.SQ_ADMIN_EMAIL,
     })
   }
+
+  const mail = nodemailer.createTransport({
+    host: process.env.SQ_SMTP_HOST,
+    port: process.env.SQ_SMTP_PORT,
+    secure: process.env.SQ_SMTP_SECURE,
+    auth: {
+      user: process.env.SQ_SMTP_USER,
+      pass: process.env.SQ_SMTP_PASS,
+    },
+  })
 
   const connectToDb = () => {
     console.log('[sq] initiating db connection...')
@@ -69,17 +77,7 @@ validateConfig(config).then(() => {
 
   mongoose.connection.once('open', async () => {
     console.log('[sq] connected to mongodb successfully')
-    await createAdminUser()
-  })
-
-  mail = nodemailer.createTransport({
-    host: process.env.SQ_SMTP_HOST,
-    port: process.env.SQ_SMTP_PORT,
-    secure: process.env.SQ_SMTP_SECURE,
-    auth: {
-      user: process.env.SQ_SMTP_USER,
-      pass: process.env.SQ_SMTP_PASS,
-    },
+    await createAdminUser(mail)
   })
 
   const app = express()
@@ -133,7 +131,6 @@ validateConfig(config).then(() => {
     http: false,
     udp: false,
     ws: false,
-    trustProxy: true,
   })
   const onTrackerRequest = tracker._onRequest.bind(tracker)
   app.get('/sq/*/announce', createTrackerRoute('announce', onTrackerRequest))
@@ -148,9 +145,9 @@ validateConfig(config).then(() => {
   )
 
   // auth routes
-  app.post('/register', register)
+  app.post('/register', register(mail))
   app.post('/login', login)
-  app.post('/reset-password/initiate', initiatePasswordReset)
+  app.post('/reset-password/initiate', initiatePasswordReset(mail))
   app.post('/reset-password/finalise', finalisePasswordReset)
   app.post('/verify-email', verifyUserEmail)
 
@@ -163,7 +160,7 @@ validateConfig(config).then(() => {
   // everything from here on requires user auth
   app.use(auth)
 
-  app.use('/account', accountRoutes())
+  app.use('/account', accountRoutes(mail))
   app.use('/user', userRoutes(tracker))
   app.use('/torrent', torrentRoutes(tracker))
   app.use('/announcements', announcementRoutes())
@@ -176,5 +173,3 @@ validateConfig(config).then(() => {
     console.log(`[sq] ■ sqtracker running http://localhost:${port}`)
   })
 })
-
-export { mail }
