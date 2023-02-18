@@ -35,11 +35,7 @@ It implements all of the features required to run a private (or public) tracker 
 
 ### Components
 
-An sqtracker deployment is made up of 5 separate components. These are:
-
-#### A BitTorrent tracker
-
-sqtracker does not implement the BitTorrent tracker spec itself. Instead, it works alongside a tracker server such as [opentracker](https://erdgeist.org/arts/software/opentracker/). In theory, other generic BitTorrent tracker software should work, but opentracker is recommended for the time being.
+An sqtracker deployment is made up of 4 separate components. These are:
 
 #### A MongoDB database
 
@@ -47,7 +43,7 @@ sqtracker does not implement the BitTorrent tracker spec itself. Instead, it wor
 
 #### The sqtracker API service
 
-The sqtracker API service handles all actions taken by users (authentication, uploads, searching etc.), provides the RSS feed, and proxies announce requests to the tracker server. 
+The sqtracker API service handles all actions taken by users (authentication, uploads, searching etc.), implements the BitTorrent tracker specification to handle announces and scrapes, and provides the RSS feed. 
 
 #### The sqtracker client service
 
@@ -88,7 +84,6 @@ If your configuration is not valid, sqtracker will fail to start.
 | SQ_TORRENT_CATEGORIES      | envs    | `["Movies", "TV"]`             | An array of categories available on your tracker site                                                                                                                                                                                                                                        |
 | SQ_BASE_URL                | envs    | https://demo.sqtracker.dev     | The URL of your tracker site                                                                                                                                                                                                                                                                 |
 | SQ_API_URL                 | envs    | https://demo.sqtracker.dev/api | The URL of your API. Under the recommended setup, it should be `${SQ_BASE_URL}/api`                                                                                                                                                                                                          |
-| SQ_TRACKER_URL             | envs    | http://sq_opentracker:6969     | The URL of your tracker server. Under the recommended setup, it should be `http://sq_opentracker:6969`                                                                                                                                                                                       |
 | SQ_MONGO_URL               | envs    | mongodb://sq_mongodb/sq        | The URL of your MongoDB server. Under the recommended setup, it should be `mongodb://sq_mongodb/sq`                                                                                                                                                                                          |
 | SQ_MAIL_FROM_ADDRESS       | envs    | mail@sqtracker.dev             | The address that mail will be sent from                                                                                                                                                                                                                                                      |
 | SQ_SMTP_HOST               | envs    | smtp.example.com               | The hostname of your SMTP server                                                                                                                                                                                                                                                             |

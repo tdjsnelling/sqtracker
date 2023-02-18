@@ -9,7 +9,7 @@ import Progress from '../schema/progress'
 import { getTorrentsPage } from './torrent'
 import { getUserRatio } from '../utils/ratio'
 import { mail } from '../index'
-import { BYTES_GB } from '../middleware/announce'
+import { BYTES_GB } from '../tracker/announce'
 
 export const sendVerificationEmail = async (address, token) => {
   await mail.sendMail({
@@ -285,7 +285,7 @@ export const generateInvite = async (req, res) => {
     const createdInvite = await invite.save()
 
     if (createdInvite) {
-      mail.sendMail({
+      await mail.sendMail({
         from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
         to: email,
         subject: 'Invite',
@@ -451,7 +451,7 @@ export const finalisePasswordReset = async (req, res) => {
   }
 }
 
-export const fetchUser = async (req, res) => {
+export const fetchUser = (tracker) => async (req, res) => {
   try {
     const { username } = req.params
 
@@ -676,7 +676,7 @@ export const fetchUser = async (req, res) => {
     const { ratio } = await getUserRatio(user._id)
     user.ratio = ratio
 
-    const { torrents } = await getTorrentsPage({ userId: user._id })
+    const { torrents } = await getTorrentsPage({ userId: user._id, tracker })
     user.torrents = torrents
 
     res.json(user)

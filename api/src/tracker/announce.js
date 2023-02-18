@@ -10,8 +10,9 @@ export const BYTES_GB = 1e9
 export const binaryToHex = (b) => Buffer.from(b, 'binary').toString('hex')
 export const hexToBinary = (h) => Buffer.from(h, 'hex').toString('binary')
 
-const handleAnnounce = async (req, res, next) => {
-  const userId = req.baseUrl.split('/')[2]
+const handleAnnounce = async (req, res) => {
+  //console.log(req)
+  const userId = req.originalUrl.split('/')[2]
   req.userId = userId
 
   console.log(`[DEBUG] userId: ${userId}`)
@@ -205,8 +206,6 @@ const handleAnnounce = async (req, res, next) => {
       { upsert: true }
     )
   }
-
-  next()
 }
 
 export default handleAnnounce
