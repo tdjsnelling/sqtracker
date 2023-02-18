@@ -1,45 +1,22 @@
 import bencode from 'bencode'
 import crypto from 'crypto'
-import fetch from 'node-fetch'
 import mongoose from 'mongoose'
-import qs from 'qs'
 import slugify from 'slugify'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Comment from '../schema/comment'
-import { hexToBinary } from '../middleware/announce'
+import { tracker } from '../index'
 
-export const embellishTorrentsWithTrackerScrape = async (torrents) => {
+export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   if (!torrents.length) return []
 
   try {
-    const infoHashes = torrents.map((torrent) => hexToBinary(torrent.infoHash))
-    const query = qs.stringify(
-      { info_hash: infoHashes },
-      { encoder: escape, indices: false }
-    )
-
-    const trackerRes = await fetch(
-      `${process.env.SQ_TRACKER_URL}/scrape?${query}`
-    )
-
-    if (!trackerRes.ok) {
-      const body = await trackerRes.text()
-      throw new Error(
-        `[DEBUG] Error performing tracker scrape: ${trackerRes.status} ${body}`
-      )
-    }
-
-    const bencoded = await trackerRes.arrayBuffer()
-    const scrape = bencode.decode(bencoded)
-
     return torrents.map((torrent) => {
-      const scrapeForInfoHash =
-        scrape.files[Buffer.from(hexToBinary(torrent.infoHash), 'binary')]
+      const torrentFromTracker = tracker.torrents[torrent.infoHash]
       return {
         ...torrent,
-        seeders: scrapeForInfoHash?.complete || 0,
-        leechers: scrapeForInfoHash?.incomplete || 0,
+        seeders: torrentFromTracker?.complete || 0,
+        leechers: torrentFromTracker?.incomplete || 0,
       }
     })
   } catch (e) {
@@ -169,7 +146,7 @@ export const downloadTorrent = async (req, res) => {
   res.end()
 }
 
-export const fetchTorrent = async (req, res) => {
+export const fetchTorrent = (tracker) => async (req, res) => {
   const { infoHash } = req.params
 
   try {
@@ -264,9 +241,10 @@ export const fetchTorrent = async (req, res) => {
 
     if (torrent.anonymous) delete torrent.uploadedBy
 
-    const [embellishedTorrent] = await embellishTorrentsWithTrackerScrape([
-      torrent,
-    ])
+    const [embellishedTorrent] = await embellishTorrentsWithTrackerScrape(
+      tracker,
+      [torrent]
+    )
 
     res.json(embellishedTorrent)
   } catch (e) {
@@ -309,6 +287,7 @@ export const getTorrentsPage = async ({
   category,
   tag,
   userId,
+  tracker,
 }) => {
   const torrents = await Torrent.aggregate([
     {
@@ -442,24 +421,24 @@ export const getTorrentsPage = async ({
   ])
 
   return {
-    torrents: await embellishTorrentsWithTrackerScrape(torrents),
+    torrents: await embellishTorrentsWithTrackerScrape(tracker, torrents),
     ...count,
   }
 }
 
-export const listLatest = async (req, res) => {
+export const listLatest = (tracker) => async (req, res) => {
   let { count } = req.query
   count = parseInt(count) || 25
   count = Math.min(count, 100)
   try {
-    const { torrents } = await getTorrentsPage({ limit: count })
+    const { torrents } = await getTorrentsPage({ limit: count, tracker })
     res.json(torrents)
   } catch (e) {
     res.status(500).send(e.message)
   }
 }
 
-export const searchTorrents = async (req, res) => {
+export const searchTorrents = (tracker) => async (req, res) => {
   const { query, category, tag, page } = req.query
   try {
     const torrents = await getTorrentsPage({
@@ -467,6 +446,7 @@ export const searchTorrents = async (req, res) => {
       query: decodeURIComponent(query),
       category,
       tag,
+      tracker,
     })
     res.json(torrents)
   } catch (e) {

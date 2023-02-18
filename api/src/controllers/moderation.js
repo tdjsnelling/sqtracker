@@ -1,4 +1,3 @@
-import fetch from 'node-fetch'
 import Report from '../schema/report'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
@@ -6,6 +5,7 @@ import Progress from '../schema/progress'
 import Invite from '../schema/invite'
 import Request from '../schema/request'
 import Comment from '../schema/comment'
+import { all } from 'express/lib/application'
 
 export const createReport = async (req, res) => {
   if (req.body.reason) {
@@ -158,7 +158,7 @@ export const setReportResolved = async (req, res) => {
   }
 }
 
-export const getStats = async (req, res) => {
+export const getStats = (tracker) => async (req, res) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to view tracker stats')
@@ -177,7 +177,37 @@ export const getStats = async (req, res) => {
     })
     const totalComments = await Comment.countDocuments()
 
-    const statsData = {
+    const allPeers = {}
+    let activeTorrents = 0
+
+    Object.keys(tracker.torrents).forEach((infoHash) => {
+      const { peers } = tracker.torrents[infoHash]
+      const keys = peers.keys
+      if (keys.length > 0) activeTorrents++
+
+      keys.forEach((peerId) => {
+        // Don't mark the peer as most recently used for stats
+        const peer = peers.peek(peerId)
+        if (peer == null) return // peers.peek() can evict the peer
+
+        if (!allPeers[peerId]) {
+          allPeers[peerId] = {
+            seeder: false,
+            leecher: false,
+          }
+        }
+
+        if (peer.complete) {
+          allPeers[peerId].seeder = true
+        } else {
+          allPeers[peerId].leecher = true
+        }
+
+        allPeers[peerId].peerId = peer.peerId
+      })
+    })
+
+    res.json({
       registeredUsers,
       bannedUsers,
       uploadedTorrents,
@@ -187,38 +217,17 @@ export const getStats = async (req, res) => {
       totalRequests,
       filledRequests,
       totalComments,
-    }
-
-    try {
-      const trackerRes = await fetch(`${process.env.SQ_TRACKER_URL}/stats`)
-
-      if (!trackerRes.ok) {
-        const body = await trackerRes.text()
-        throw new Error(
-          `Error performing tracker scrape: ${trackerRes.status} ${body}`
-        )
-      }
-
-      const body = await trackerRes.text()
-      const [peers, seeds, activeTorrentsLine] = body.split('\n')
-
-      const leechers = parseInt(peers) - parseInt(seeds)
-
-      const activeTorrentsRegex = /opentracker serving ([0-9]+) torrents/
-      const [, activeTorrents] = activeTorrentsLine.match(activeTorrentsRegex)
-
-      res.json({ ...statsData, peers, seeds, leechers, activeTorrents })
-    } catch (e) {
-      console.error('[DEBUG] Error: could not fetch stats from tracker')
-      res.json({
-        ...statsData,
-        peers: '?',
-        seeds: '?',
-        leechers: '?',
-        activeTorrents: '?',
-      })
-    }
+      activeTorrents,
+      peers: Object.keys(allPeers).length,
+      seeders: Object.values(allPeers).filter(
+        (peer) => peer.seeder && !peer.leecher
+      ).length,
+      leechers: Object.values(allPeers).filter(
+        (peer) => peer.leecher && !peer.seeder
+      ).length,
+    })
   } catch (e) {
+    console.error(e)
     res.status(500).send(e.message)
   }
 }

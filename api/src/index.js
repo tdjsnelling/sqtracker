@@ -7,16 +7,13 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 import nodemailer from 'nodemailer'
 import ratelimit from 'express-rate-limit'
+import Tracker from 'bittorrent-tracker'
 import * as Sentry from '@sentry/node'
 import * as Tracing from '@sentry/tracing'
 import config from '../../config'
 import validateConfig from './utils/validateConfig'
-import handleAnnounce from './middleware/announce'
+import createTrackerRoute from './tracker/routes'
 import auth from './middleware/auth'
-import {
-  createUserTrackerRoutes,
-  createOtherTrackerRoutes,
-} from './routes/tracker'
 import {
   register,
   login,
@@ -173,15 +170,15 @@ validateConfig(config).then(() => {
   })
   app.use(limiter)
 
-  // custom logic implementing user tracking, ratio control etc
-  app.use('/sq/*/announce', handleAnnounce)
-
-  // proxy and manipulate tracker routes
-  const userTrackerRoutes = createUserTrackerRoutes()
-  const otherTrackerRoutes = createOtherTrackerRoutes()
-  app.use('/sq/*/announce', userTrackerRoutes)
-  app.use('/sq/*/scrape', userTrackerRoutes)
-  app.use('/stats', otherTrackerRoutes)
+  const tracker = new Tracker.Server({
+    http: false,
+    udp: false,
+    ws: false,
+    trustProxy: true,
+  })
+  const onTrackerRequest = tracker._onRequest.bind(tracker)
+  app.get('/sq/*/announce', createTrackerRoute('announce', onTrackerRequest))
+  app.get('/sq/*/scrape', createTrackerRoute('scrape', onTrackerRequest))
 
   app.use(bodyParser.json({ limit: '5mb' }))
   app.use(cookieParser())
@@ -200,7 +197,7 @@ validateConfig(config).then(() => {
   app.post('/verify-email', verifyUserEmail)
 
   // rss feed (auth handled in cookies)
-  app.get('/rss', rssFeed)
+  app.get('/rss', rssFeed(tracker))
 
   // torrent file download (can download without auth, will not be able to announce)
   app.get('/torrent/download/:infoHash/:userId', downloadTorrent)
@@ -216,7 +213,7 @@ validateConfig(config).then(() => {
   app.get('/account/get-role', getUserRole)
   app.get('/account/get-verified', getUserVerifiedEmailStatus)
   app.post('/account/buy', buyItems)
-  app.get('/user/:username', fetchUser)
+  app.get('/user/:username', fetchUser(tracker))
   app.post('/user/ban/:username', banUser)
   app.post('/user/unban/:username', unbanUser)
   app.get('/account/totp/generate', generateTotpSecret)
@@ -225,15 +222,15 @@ validateConfig(config).then(() => {
 
   // torrent routes
   app.post('/torrent/upload', uploadTorrent)
-  app.get('/torrent/info/:infoHash', fetchTorrent)
+  app.get('/torrent/info/:infoHash', fetchTorrent(tracker))
   app.delete('/torrent/delete/:infoHash', deleteTorrent)
   app.post('/torrent/comment/:infoHash', addCommentTorrent)
   app.post('/torrent/vote/:infoHash/:vote', addVote)
   app.post('/torrent/unvote/:infoHash/:vote', removeVote)
   app.post('/torrent/report/:infoHash', createReport)
   app.post('/torrent/toggle-freeleech/:infoHash', toggleFreeleech)
-  app.get('/torrents/latest', listLatest)
-  app.get('/torrents/search', searchTorrents)
+  app.get('/torrents/latest', listLatest(tracker))
+  app.get('/torrents/search', searchTorrents(tracker))
 
   // announcement routes
   app.post('/announcements/new', createAnnouncement)
@@ -249,7 +246,7 @@ validateConfig(config).then(() => {
   app.get('/reports/page/:page', getReports)
   app.post('/reports/resolve/:reportId', setReportResolved)
   app.get('/reports/:reportId', fetchReport)
-  app.get('/admin/stats', getStats)
+  app.get('/admin/stats', getStats(tracker))
 
   // request routes
   app.post('/requests/new', createRequest)

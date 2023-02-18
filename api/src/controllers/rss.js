@@ -26,7 +26,7 @@ const getTorrentXml = (torrent, userId) => {
     </item>`
 }
 
-export const rssFeed = async (req, res) => {
+export const rssFeed = (tracker) => async (req, res) => {
   const { username, password } = req.cookies
   const { query } = req.query
 
@@ -67,6 +67,7 @@ export const rssFeed = async (req, res) => {
     }
 
     const torrentsWithScrape = await embellishTorrentsWithTrackerScrape(
+      tracker,
       torrents
     )
 
