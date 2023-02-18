@@ -32,7 +32,6 @@ const configSchema = yup
           .required(),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
-        SQ_TRACKER_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),
         SQ_MAIL_FROM_ADDRESS: yup.string().email().required(),
         SQ_SMTP_HOST: yup.string().required(),

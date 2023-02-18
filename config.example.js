@@ -18,7 +18,6 @@ module.exports = {
     SQ_SITE_WIDE_FREELEECH: false,
     SQ_BASE_URL: 'https://sqtracker.dev',
     SQ_API_URL: 'https://sqtracker.dev/api',
-    SQ_TRACKER_URL: 'http://sq_opentracker:6969',
     SQ_MONGO_URL: 'mongodb://sq_mongodb',
     SQ_MAIL_FROM_ADDRESS: 'mail@sqtracker.dev',
     SQ_SMTP_HOST: 'smtp.example.com',
