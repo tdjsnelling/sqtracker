@@ -50,8 +50,20 @@ const Upload = ({ token, userId }) => {
       if (file) {
         const reader = new FileReader()
         reader.onload = async () => {
+          console.log(
+            `[DEBUG] upload complete: ${reader.result.slice(0, 64)}...`
+          )
           const [, b64] = reader.result.split('base64,')
           setTorrentFile({ name: file.name, b64 })
+        }
+        reader.onerror = () => {
+          console.log(`[DEBUG] upload error: ${reader.error}`)
+        }
+        reader.onabort = () => {
+          console.log(`[DEBUG] upload aborted`)
+        }
+        reader.onprogress = (e) => {
+          console.log(`[DEBUG] progress: ${e.loaded} bytes`)
         }
         reader.readAsDataURL(file)
         setDropError('')
