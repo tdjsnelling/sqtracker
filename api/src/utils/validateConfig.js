@@ -23,7 +23,7 @@ const configSchema = yup
         SQ_TORRENT_CATEGORIES: yup
           .array()
           .of(yup.string())
-          .min(1)
+          .min(0)
           .test('items-unique', 'Categories must be unique', (value) =>
             value.every(
               (category) => value.filter((c) => c === category).length === 1

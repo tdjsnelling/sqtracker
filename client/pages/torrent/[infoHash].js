@@ -48,24 +48,26 @@ export const Info = ({ title, items }) => (
       </Text>
     )}
     <Box display="grid" gridTemplateColumns="1fr" gridGap={[3, 2]}>
-      {Object.entries(items).map(([key, val], i) => (
-        <Box
-          key={`infobox-row-${i}`}
-          display="grid"
-          gridTemplateColumns={['1fr', '1fr 2fr']}
-          gridGap={2}
-          alignItems="center"
-        >
-          <Text
-            fontWeight={600}
-            fontSize={1}
-            _css={{ textTransform: 'uppercase' }}
+      {Object.entries(items).map(([key, val], i) =>
+        val !== null && val !== undefined ? (
+          <Box
+            key={`infobox-row-${i}`}
+            display="grid"
+            gridTemplateColumns={['1fr', '1fr 2fr']}
+            gridGap={2}
+            alignItems="center"
           >
-            {key}
-          </Text>
-          <Text>{val}</Text>
-        </Box>
-      ))}
+            <Text
+              fontWeight={600}
+              fontSize={1}
+              _css={{ textTransform: 'uppercase' }}
+            >
+              {key}
+            </Text>
+            <Text>{val}</Text>
+          </Box>
+        ) : null
+      )}
     </Box>
   </Infobox>
 )
@@ -424,14 +426,14 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               )}
             </>
           ),
-          Category: (
+          Category: category ? (
             <Link
               href={`/categories/${slugify(category, { lower: true })}`}
               passHref
             >
               <Text as="a">{category}</Text>
             </Link>
-          ),
+          ) : undefined,
           Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),
           'Info hash': (
             <Text

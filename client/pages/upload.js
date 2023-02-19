@@ -159,13 +159,15 @@ const Upload = ({ token, userId }) => {
           )}
         </Box>
         <Input name="name" label="Name" mb={4} required />
-        <Select name="category" label="Category" mb={4} required>
-          {SQ_TORRENT_CATEGORIES.map((category) => (
-            <option key={category} value={slugify(category, { lower: true })}>
-              {category}
-            </option>
-          ))}
-        </Select>
+        {!!SQ_TORRENT_CATEGORIES.length && (
+          <Select name="category" label="Category" mb={4} required>
+            {SQ_TORRENT_CATEGORIES.map((category) => (
+              <option key={category} value={slugify(category, { lower: true })}>
+                {category}
+              </option>
+            ))}
+          </Select>
+        )}
         <Input
           name="description"
           label="Description"

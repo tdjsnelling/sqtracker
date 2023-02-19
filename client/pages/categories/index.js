@@ -35,24 +35,28 @@ const Categories = () => {
       <Text as="h1" mb={5}>
         Categories
       </Text>
-      <Box
-        as="ul"
-        display="grid"
-        gridTemplateColumns={['1fr', 'repeat(4, 1fr)']}
-        gridGap={4}
-        _css={{ pl: 0, listStyle: 'none' }}
-      >
-        {SQ_TORRENT_CATEGORIES.map((category) => (
-          <CategoryItem key={category}>
-            <Link
-              href={`/categories/${slugify(category, { lower: true })}`}
-              passHref
-            >
-              <a>{category}</a>
-            </Link>
-          </CategoryItem>
-        ))}
-      </Box>
+      {SQ_TORRENT_CATEGORIES.length ? (
+        <Box
+          as="ul"
+          display="grid"
+          gridTemplateColumns={['1fr', 'repeat(4, 1fr)']}
+          gridGap={4}
+          _css={{ pl: 0, listStyle: 'none' }}
+        >
+          {SQ_TORRENT_CATEGORIES.map((category) => (
+            <CategoryItem key={category}>
+              <Link
+                href={`/categories/${slugify(category, { lower: true })}`}
+                passHref
+              >
+                <a>{category}</a>
+              </Link>
+            </CategoryItem>
+          ))}
+        </Box>
+      ) : (
+        <Text color="grey">No categories have been defined.</Text>
+      )}
     </>
   )
 }

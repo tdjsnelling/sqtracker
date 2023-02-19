@@ -71,6 +71,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       SQ_API_URL,
       SQ_ALLOW_REGISTER,
       SQ_VERSION,
+      SQ_TORRENT_CATEGORIES,
     },
   } = getConfig()
 
@@ -150,12 +151,14 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <Home size={24} />
                 </NavLink>
               </Link>
-              <Link href="/categories" passHref>
-                <NavLink>
-                  <Text>Browse</Text>
-                  <ListUl size={24} />
-                </NavLink>
-              </Link>
+              {!!SQ_TORRENT_CATEGORIES.length && (
+                <Link href="/categories" passHref>
+                  <NavLink>
+                    <Text>Browse</Text>
+                    <ListUl size={24} />
+                  </NavLink>
+                </Link>
+              )}
               <Link href="/search" passHref>
                 <NavLink>
                   <Text>Search</Text>

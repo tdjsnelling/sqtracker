@@ -26,12 +26,7 @@ export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
 }
 
 export const uploadTorrent = async (req, res) => {
-  if (
-    req.body.torrent &&
-    req.body.name &&
-    req.body.description &&
-    req.body.type
-  ) {
+  if (req.body.torrent && req.body.name && req.body.description) {
     try {
       const torrent = Buffer.from(req.body.torrent, 'base64')
       const parsed = bencode.decode(torrent)
@@ -43,6 +38,11 @@ export const uploadTorrent = async (req, res) => {
 
       if (!parsed.announce || parsed['announce-list']) {
         res.status(400).send('One and only one announce URL must be set')
+        return
+      }
+
+      if (process.env.SQ_TORRENT_CATEGORIES.length) {
+        res.status(400).send('Torrent must have a category')
         return
       }
 
