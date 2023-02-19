@@ -41,7 +41,7 @@ export const uploadTorrent = async (req, res) => {
         return
       }
 
-      if (process.env.SQ_TORRENT_CATEGORIES.length) {
+      if (process.env.SQ_TORRENT_CATEGORIES.length && !req.body.type) {
         res.status(400).send('Torrent must have a category')
         return
       }
