@@ -135,8 +135,6 @@ export const downloadTorrent = async (req, res) => {
   parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
   parsed.info.private = 1
 
-  await Torrent.findOneAndUpdate({ infoHash }, { $inc: { downloads: 1 } })
-
   res.setHeader('Content-Type', 'application/x-bittorrent')
   res.setHeader(
     'Content-Disposition',

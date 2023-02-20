@@ -70,13 +70,14 @@ const handleAnnounce = async (req, res) => {
     const response = bencode.encode({
       'failure reason': `Announce denied: Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}.`,
       peers: [],
+      peers6: [],
     })
     res.send(response)
     return
   }
 
   const uploaded = Number(params.uploaded)
-  const downloaded = Number(params.downloaded)
+  const downloaded = params.event === 'started' ? 0 : Number(params.downloaded)
 
   const prevProgressRecord = await Progress.findOne({
     userId: user._id,
@@ -85,11 +86,11 @@ const handleAnnounce = async (req, res) => {
 
   const alreadyUploadedSession = prevProgressRecord?.uploaded?.session ?? 0
   const uploadDeltaSession =
-    uploaded > alreadyUploadedSession ? uploaded - alreadyUploadedSession : 0
+    uploaded >= alreadyUploadedSession ? uploaded - alreadyUploadedSession : 0
 
   const alreadyDownloadedSession = prevProgressRecord?.downloaded?.session ?? 0
   const downloadDeltaSession =
-    downloaded > alreadyDownloadedSession
+    downloaded >= alreadyDownloadedSession
       ? downloaded - alreadyDownloadedSession
       : 0
 
@@ -131,80 +132,48 @@ const handleAnnounce = async (req, res) => {
     downloadDeltaSession,
   })
 
-  if (uploadDeltaSession === 0) {
-    await Progress.findOneAndUpdate(
-      { userId: user._id, infoHash },
-      {
-        $set: {
-          userId: user._id,
-          infoHash,
-          uploaded: {
-            session: 0,
-            total: prevProgressRecord?.uploaded?.total ?? 0,
-          },
-          left: Number(params.left),
+  await Progress.findOneAndUpdate(
+    { userId: user._id, infoHash },
+    {
+      $set: {
+        userId: user._id,
+        infoHash,
+        uploaded: {
+          session: uploaded,
+          total:
+            (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
         },
+        left: Number(params.left),
       },
-      { upsert: true }
-    )
-  } else {
-    await Progress.findOneAndUpdate(
-      { userId: user._id, infoHash },
-      {
-        $set: {
-          userId: user._id,
-          infoHash,
-          uploaded: {
-            session: uploaded,
-            total:
-              (prevProgressRecord?.uploaded?.total ?? 0) + uploadDeltaSession,
-          },
-          left: Number(params.left),
-        },
-      },
-      { upsert: true }
-    )
-  }
+    },
+    { upsert: true }
+  )
 
-  if (downloadDeltaSession === 0) {
-    await Progress.findOneAndUpdate(
-      { userId: user._id, infoHash },
-      {
-        $set: {
-          userId: user._id,
-          infoHash,
-          downloaded: {
-            session: 0,
-            total: prevProgressRecord?.downloaded?.total ?? 0,
-          },
-          left: Number(params.left),
+  await Progress.findOneAndUpdate(
+    { userId: user._id, infoHash },
+    {
+      $set: {
+        userId: user._id,
+        infoHash,
+        downloaded: {
+          session:
+            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+              ? prevProgressRecord?.downloaded?.session ?? 0
+              : downloaded,
+          total:
+            torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
+              ? prevProgressRecord?.downloaded?.total ?? 0
+              : (prevProgressRecord?.downloaded?.total ?? 0) +
+                downloadDeltaSession,
         },
+        left: Number(params.left),
       },
-      { upsert: true }
-    )
-  } else {
-    await Progress.findOneAndUpdate(
-      { userId: user._id, infoHash },
-      {
-        $set: {
-          userId: user._id,
-          infoHash,
-          downloaded: {
-            session:
-              torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-                ? prevProgressRecord?.downloaded?.session ?? 0
-                : downloaded,
-            total:
-              torrent.freeleech || process.env.SQ_SITE_WIDE_FREELEECH === true
-                ? prevProgressRecord?.downloaded?.total ?? 0
-                : (prevProgressRecord?.downloaded?.total ?? 0) +
-                  downloadDeltaSession,
-          },
-          left: Number(params.left),
-        },
-      },
-      { upsert: true }
-    )
+    },
+    { upsert: true }
+  )
+
+  if (params.event === 'completed') {
+    await Torrent.findOneAndUpdate({ infoHash }, { $inc: { downloads: 1 } })
   }
 }
 
