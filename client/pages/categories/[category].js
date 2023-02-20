@@ -42,7 +42,11 @@ const Category = ({ results }) => {
 }
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders, query: { category, page: pageParam } }) => {
+  async ({
+    token,
+    fetchHeaders,
+    query: { category, source, page: pageParam },
+  }) => {
     if (!token) return { props: {} }
 
     const {
@@ -51,6 +55,7 @@ export const getServerSideProps = withAuthServerSideProps(
 
     const params = {
       category: encodeURIComponent(category),
+      source: source ? encodeURIComponent(source) : undefined,
     }
     const page = pageParam ? parseInt(pageParam) : 0
     if (page > 0) params.page = page

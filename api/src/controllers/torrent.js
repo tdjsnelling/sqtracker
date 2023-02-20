@@ -301,6 +301,7 @@ export const getTorrentsPage = async ({
   limit = 25,
   query,
   category,
+  source,
   tag,
   userId,
   tracker,
@@ -312,6 +313,7 @@ export const getTorrentsPage = async ({
         name: 1,
         description: 1,
         type: 1,
+        source: 1,
         downloads: 1,
         uploadedBy: 1,
         created: 1,
@@ -336,6 +338,15 @@ export const getTorrentsPage = async ({
           {
             $match: {
               type: category,
+            },
+          },
+        ]
+      : []),
+    ...(source
+      ? [
+          {
+            $match: {
+              source,
             },
           },
         ]
@@ -413,6 +424,15 @@ export const getTorrentsPage = async ({
           },
         ]
       : []),
+    ...(source
+      ? [
+          {
+            $match: {
+              source,
+            },
+          },
+        ]
+      : []),
     ...(tag
       ? [
           {
@@ -455,12 +475,13 @@ export const listLatest = (tracker) => async (req, res) => {
 }
 
 export const searchTorrents = (tracker) => async (req, res) => {
-  const { query, category, tag, page } = req.query
+  const { query, category, source, tag, page } = req.query
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
       query: query ? decodeURIComponent(query) : undefined,
       category,
+      source,
       tag,
       tracker,
     })
