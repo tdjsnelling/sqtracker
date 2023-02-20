@@ -18,7 +18,7 @@ const Category = ({ results }) => {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
   } = getConfig()
 
-  const category = SQ_TORRENT_CATEGORIES.find(
+  const category = Object.keys(SQ_TORRENT_CATEGORIES).find(
     (c) => slugify(c, { lower: true }) === categorySlug
   )
 

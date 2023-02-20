@@ -129,7 +129,6 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     publicRuntimeConfig: {
       SQ_SITE_NAME,
       SQ_API_URL,
-      SQ_BASE_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_SITE_WIDE_FREELEECH,
     },
@@ -367,8 +366,12 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
     setLoading(false)
   }
 
-  const category = SQ_TORRENT_CATEGORIES.find(
+  const category = Object.keys(SQ_TORRENT_CATEGORIES).find(
     (c) => slugify(c, { lower: true }) === torrent.type
+  )
+
+  const source = SQ_TORRENT_CATEGORIES[category].find(
+    (s) => slugify(s, { lower: true }) === torrent.source
   )
 
   const parsedFiles = torrent.files
@@ -432,6 +435,16 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               passHref
             >
               <Text as="a">{category}</Text>
+            </Link>
+          ) : undefined,
+          Source: source ? (
+            <Link
+              href={`/categories/${slugify(category, {
+                lower: true,
+              })}?source=${slugify(source, { lower: true })}`}
+              passHref
+            >
+              <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
           Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),

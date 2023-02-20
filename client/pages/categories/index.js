@@ -35,7 +35,7 @@ const Categories = () => {
       <Text as="h1" mb={5}>
         Categories
       </Text>
-      {SQ_TORRENT_CATEGORIES.length ? (
+      {Object.keys(SQ_TORRENT_CATEGORIES).length ? (
         <Box
           as="ul"
           display="grid"
@@ -43,7 +43,7 @@ const Categories = () => {
           gridGap={4}
           _css={{ pl: 0, listStyle: 'none' }}
         >
-          {SQ_TORRENT_CATEGORIES.map((category) => (
+          {Object.keys(SQ_TORRENT_CATEGORIES).map((category) => (
             <CategoryItem key={category}>
               <Link
                 href={`/categories/${slugify(category, { lower: true })}`}

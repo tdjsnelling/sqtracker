@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useContext } from 'react'
+import React, { useState, useCallback, useContext, useEffect } from 'react'
 import getConfig from 'next/config'
 import { useRouter } from 'next/router'
 import styled from 'styled-components'
@@ -39,10 +39,36 @@ const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState()
   const [dropError, setDropError] = useState('')
 
+  const {
+    publicRuntimeConfig: {
+      SQ_BASE_URL,
+      SQ_API_URL,
+      SQ_TORRENT_CATEGORIES,
+      SQ_ALLOW_ANONYMOUS_UPLOAD,
+    },
+  } = getConfig()
+
+  const [category, setCategory] = useState(
+    slugify(Object.keys(SQ_TORRENT_CATEGORIES)[0], { lower: true })
+  )
+  const [sources, setSources] = useState([])
+
   const { addNotification } = useContext(NotificationContext)
   const { setLoading } = useContext(LoadingContext)
 
   const router = useRouter()
+
+  useEffect(() => {
+    setSources(
+      category
+        ? SQ_TORRENT_CATEGORIES[
+            Object.keys(SQ_TORRENT_CATEGORIES).find(
+              (cat) => slugify(cat, { lower: true }) === category
+            )
+          ]
+        : []
+    )
+  }, [category])
 
   const onDrop = useCallback((acceptedFiles) => {
     try {
@@ -79,15 +105,6 @@ const Upload = ({ token, userId }) => {
     maxFiles: 1,
   })
 
-  const {
-    publicRuntimeConfig: {
-      SQ_BASE_URL,
-      SQ_API_URL,
-      SQ_TORRENT_CATEGORIES,
-      SQ_ALLOW_ANONYMOUS_UPLOAD,
-    },
-  } = getConfig()
-
   const handleUpload = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -104,6 +121,7 @@ const Upload = ({ token, userId }) => {
           name: form.get('name'),
           description: form.get('description'),
           type: form.get('category'),
+          source: form.get('source'),
           anonymous: !!form.get('anonymous'),
           torrent: torrentFile.b64,
           tags: form.get('tags'),
@@ -171,11 +189,29 @@ const Upload = ({ token, userId }) => {
           )}
         </Box>
         <Input name="name" label="Name" mb={4} required />
-        {!!SQ_TORRENT_CATEGORIES.length && (
-          <Select name="category" label="Category" mb={4} required>
-            {SQ_TORRENT_CATEGORIES.map((category) => (
-              <option key={category} value={slugify(category, { lower: true })}>
-                {category}
+        {!!Object.keys(SQ_TORRENT_CATEGORIES).length && (
+          <Select
+            name="category"
+            label="Category"
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value)
+            }}
+            mb={4}
+            required
+          >
+            {Object.keys(SQ_TORRENT_CATEGORIES).map((cat) => (
+              <option key={cat} value={slugify(cat, { lower: true })}>
+                {cat}
+              </option>
+            ))}
+          </Select>
+        )}
+        {!!sources.length && (
+          <Select name="source" label="Source" mb={4} required>
+            {sources.map((source) => (
+              <option key={source} value={slugify(source, { lower: true })}>
+                {source}
               </option>
             ))}
           </Select>

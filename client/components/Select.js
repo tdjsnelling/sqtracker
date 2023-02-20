@@ -31,11 +31,11 @@ const StyledSelect = styled.select(
   typography
 )
 
-const Select = ({ label, ...rest }) => {
+const Select = ({ label, fRef, ...rest }) => {
   return (
     <WrapLabel label={label}>
       <Box position="relative" display="inline-block">
-        <StyledSelect {...rest} />
+        <StyledSelect {...rest} ref={fRef} />
         <Box
           position="absolute"
           top="7px"
@@ -50,4 +50,6 @@ const Select = ({ label, ...rest }) => {
   )
 }
 
-export default Select
+export default React.forwardRef((props, ref) => (
+  <Select {...props} fRef={ref} />
+))

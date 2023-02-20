@@ -274,7 +274,7 @@ const Request = ({ request, token, user }) => {
                 accessor: 'type',
                 cell: ({ value }) => (
                   <Text icon={ListUl}>
-                    {SQ_TORRENT_CATEGORIES.find(
+                    {Object.keys(SQ_TORRENT_CATEGORIES).find(
                       (c) => slugify(c, { lower: true }) === value
                     ) || 'None'}
                   </Text>

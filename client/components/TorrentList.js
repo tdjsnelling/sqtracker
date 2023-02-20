@@ -66,8 +66,9 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             accessor: 'type',
             cell: ({ value }) => {
               const category =
-                categories.find((c) => slugify(c, { lower: true }) === value) ||
-                'None'
+                Object.keys(categories).find(
+                  (c) => slugify(c, { lower: true }) === value
+                ) || 'None'
               return (
                 <Text icon={ListUl} title={category}>
                   {category}

@@ -20,16 +20,24 @@ const configSchema = yup
         SQ_BP_COST_PER_INVITE: yup.number().min(0).required(),
         SQ_BP_COST_PER_GB: yup.number().min(0).required(),
         SQ_SITE_WIDE_FREELEECH: yup.boolean().required(),
-        SQ_TORRENT_CATEGORIES: yup
-          .array()
-          .of(yup.string())
-          .min(0)
-          .test('items-unique', 'Categories must be unique', (value) =>
-            value.every(
-              (category) => value.filter((c) => c === category).length === 1
-            )
-          )
-          .required(),
+        SQ_TORRENT_CATEGORIES: yup.lazy((value) => {
+          const entries = Object.keys(value).reduce((obj, key) => {
+            obj[key] = yup
+              .array()
+              .of(yup.string())
+              .min(0)
+              .test(
+                `${key}-items-unique`,
+                `Sources in category "${key}" must be unique`,
+                (value) =>
+                  value.every(
+                    (source) => value.filter((c) => c === source).length === 1
+                  )
+              )
+            return obj
+          }, {})
+          return yup.object(entries).required()
+        }),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),

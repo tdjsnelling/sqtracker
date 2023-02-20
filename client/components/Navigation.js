@@ -151,7 +151,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <Home size={24} />
                 </NavLink>
               </Link>
-              {!!SQ_TORRENT_CATEGORIES.length && (
+              {!!Object.keys(SQ_TORRENT_CATEGORIES).length && (
                 <Link href="/categories" passHref>
                   <NavLink>
                     <Text>Browse</Text>

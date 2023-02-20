@@ -5,7 +5,6 @@ import slugify from 'slugify'
 import Torrent from '../schema/torrent'
 import User from '../schema/user'
 import Comment from '../schema/comment'
-import { tracker } from '../index'
 
 export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   if (!torrents.length) return []
@@ -44,6 +43,23 @@ export const uploadTorrent = async (req, res) => {
       if (process.env.SQ_TORRENT_CATEGORIES.length && !req.body.type) {
         res.status(400).send('Torrent must have a category')
         return
+      }
+
+      if (process.env.SQ_TORRENT_CATEGORIES.length) {
+        const sources =
+          process.env.SQ_TORRENT_CATEGORIES[
+            Object.keys(process.env.SQ_TORRENT_CATEGORIES).find(
+              (cat) => slugify(cat, { lower: true }) === req.body.type
+            )
+          ]
+        if (
+          !sources
+            .map((source) => slugify(source, { lower: true }))
+            .includes(req.body.source)
+        ) {
+          res.status(400).send('Torrent must have a source')
+          return
+        }
       }
 
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -87,6 +103,7 @@ export const uploadTorrent = async (req, res) => {
         name: req.body.name,
         description: req.body.description,
         type: req.body.type,
+        source: req.body.source,
         infoHash,
         binary: req.body.torrent,
         uploadedBy: req.userId,
@@ -157,6 +174,7 @@ export const fetchTorrent = (tracker) => async (req, res) => {
           name: 1,
           description: 1,
           type: 1,
+          source: 1,
           infoHash: 1,
           uploadedBy: 1,
           downloads: 1,
@@ -441,7 +459,7 @@ export const searchTorrents = (tracker) => async (req, res) => {
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
-      query: decodeURIComponent(query),
+      query: query ? decodeURIComponent(query) : undefined,
       category,
       tag,
       tracker,
