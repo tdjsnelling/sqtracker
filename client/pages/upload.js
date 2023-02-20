@@ -58,15 +58,15 @@ const Upload = ({ token, userId }) => {
         }
         reader.onerror = () => {
           console.log(`[DEBUG] upload error: ${reader.error}`)
-        }
-        reader.onabort = () => {
-          console.log(`[DEBUG] upload aborted`)
+          setDropError(reader.error.message)
         }
         reader.onprogress = (e) => {
           console.log(`[DEBUG] progress: ${e.loaded} bytes`)
         }
         reader.readAsDataURL(file)
         setDropError('')
+      } else {
+        setDropError('Must be a .torrent file')
       }
     } catch (e) {
       setDropError(e.message)
@@ -75,7 +75,7 @@ const Upload = ({ token, userId }) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: 'application/x-bittorrent',
+    accept: { 'application/x-bittorrent': ['.torrent'] },
     maxFiles: 1,
   })
 
@@ -120,7 +120,7 @@ const Upload = ({ token, userId }) => {
       const infoHash = await uploadRes.text()
       router.push(`/torrent/${infoHash}`)
     } catch (e) {
-      addNotification('error', `Could not upload torrent: ${e.message}`)
+      addNotification('error', `Could not upload file: ${e.message}`)
       console.error(e)
     }
 
