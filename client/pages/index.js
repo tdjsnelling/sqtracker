@@ -11,6 +11,8 @@ import Button from '../components/Button'
 import TorrentList from '../components/TorrentList'
 import Infobox from '../components/Infobox'
 import { ErrorCircle } from '@styled-icons/boxicons-regular/ErrorCircle'
+import { News } from '@styled-icons/boxicons-regular/News'
+import moment from 'moment/moment'
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -40,7 +42,12 @@ const PublicLanding = ({ name, allowRegister }) => (
   </Box>
 )
 
-const Index = ({ token, latest, emailVerified }) => {
+const Index = ({
+  token,
+  latestTorrents,
+  latestAnnouncement,
+  emailVerified,
+}) => {
   const {
     publicRuntimeConfig: {
       SQ_SITE_NAME,
@@ -66,6 +73,8 @@ const Index = ({ token, latest, emailVerified }) => {
     if (query) router.push(`/search/${encodeURIComponent(query)}`)
   }
 
+  console.log(latestAnnouncement)
+
   return (
     <>
       <SEO title="Home" />
@@ -80,6 +89,51 @@ const Index = ({ token, latest, emailVerified }) => {
           </Text>
         </Infobox>
       )}
+      {latestAnnouncement && (
+        <Link href={`/announcements/${latestAnnouncement.slug}`} passHref>
+          <Box
+            as="a"
+            _css={{
+              '&:hover': {
+                textDecoration: 'none',
+                h2: { textDecoration: 'underline' },
+              },
+            }}
+          >
+            <Infobox mb={5}>
+              <Text
+                icon={News}
+                iconColor="primary"
+                color="grey"
+                fontWeight={600}
+                fontSize={1}
+                _css={{ textTransform: 'uppercase' }}
+                mb={3}
+              >
+                Latest announcement
+              </Text>
+              <Text as="h2" fontSize={3} mb={3}>
+                {latestAnnouncement.title}
+              </Text>
+              <Text color="grey">
+                Posted{' '}
+                {moment(latestAnnouncement.created).format('HH:mm Do MMM YYYY')}{' '}
+                by{' '}
+                {latestAnnouncement.createdBy?.username ? (
+                  <Link
+                    href={`/user/${latestAnnouncement.createdBy.username}`}
+                    passHref
+                  >
+                    <a>{latestAnnouncement.createdBy.username}</a>
+                  </Link>
+                ) : (
+                  'deleted user'
+                )}
+              </Text>
+            </Infobox>
+          </Box>
+        </Link>
+      )}
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
         <Input placeholder="Search torrents" name="query" mr={3} required />
         <Button>Search</Button>
@@ -87,7 +141,10 @@ const Index = ({ token, latest, emailVerified }) => {
       <Text as="h2" mb={4}>
         Latest torrents
       </Text>
-      <TorrentList torrents={latest} categories={SQ_TORRENT_CATEGORIES} />
+      <TorrentList
+        torrents={latestTorrents}
+        categories={SQ_TORRENT_CATEGORIES}
+      />
     </>
   )
 }
@@ -101,23 +158,33 @@ export const getServerSideProps = withAuthServerSideProps(
     } = getConfig()
 
     try {
-      const latestRes = await fetch(`${SQ_API_URL}/torrent/latest`, {
+      const latestTorrentsRes = await fetch(`${SQ_API_URL}/torrent/latest`, {
         headers: fetchHeaders,
       })
       if (
-        latestRes.status === 403 &&
-        (await latestRes.text()) === 'User is banned'
+        latestTorrentsRes.status === 403 &&
+        (await latestTorrentsRes.text()) === 'User is banned'
       ) {
         throw 'banned'
       }
-      const latest = await latestRes.json()
+      const latestTorrents = await latestTorrentsRes.json()
+
+      const latestAnnouncementRes = await fetch(
+        `${SQ_API_URL}/announcements/page/0?count=1`,
+        {
+          headers: fetchHeaders,
+        }
+      )
+      const [latestAnnouncement] = await latestAnnouncementRes.json()
 
       const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
         headers: fetchHeaders,
       })
       const emailVerified = await verifiedRes.json()
 
-      return { props: { latest, emailVerified, token } }
+      return {
+        props: { latestTorrents, latestAnnouncement, emailVerified, token },
+      }
     } catch (e) {
       if (e === 'banned') throw 'banned'
       return { props: {} }

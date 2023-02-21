@@ -127,10 +127,11 @@ export const fetchAnnouncement = async (req, res, next) => {
 }
 
 export const getAnnouncements = async (req, res, next) => {
-  const pageSize = 25
   try {
-    let { page } = req.query
+    let { page, count } = req.query
     page = parseInt(page) || 0
+    count = parseInt(count) || 25
+    count = Math.min(count, 100)
 
     const announcements = await Announcement.aggregate([
       {
@@ -140,10 +141,10 @@ export const getAnnouncements = async (req, res, next) => {
         $sort: { created: -1 },
       },
       {
-        $skip: page * pageSize,
+        $skip: page * count,
       },
       {
-        $limit: pageSize,
+        $limit: count,
       },
       {
         $lookup: {
