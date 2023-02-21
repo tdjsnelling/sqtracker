@@ -59,7 +59,7 @@ const baseTheme = {
   breakpoints: ['768px', '1400px'],
   space: [0, 2, 4, 8, 16, 32, 64, 128, 256],
   sizes: {
-    body: '1000px',
+    body: '1200px',
   },
   fonts: {
     heading: 'Inter, system-ui, sans-serif',

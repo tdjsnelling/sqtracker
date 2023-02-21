@@ -75,29 +75,49 @@ const TorrentList = ({ torrents = [], categories, total }) => {
                 </Text>
               )
             },
-            gridWidth: '1.5fr',
+            gridWidth: '1fr',
           },
           {
             header: 'Seeders',
             accessor: 'seeders',
             cell: ({ value }) => (
-              <Text icon={Upload}>{value !== undefined ? value : '?'}</Text>
+              <Text
+                icon={Upload}
+                iconTextWrapperProps={{ justifyContent: 'flex-end' }}
+              >
+                {value !== undefined ? value : '?'}
+              </Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '100px',
+            rightAlign: true,
           },
           {
             header: 'Leechers',
             accessor: 'leechers',
             cell: ({ value }) => (
-              <Text icon={Download}>{value !== undefined ? value : '?'}</Text>
+              <Text
+                icon={Download}
+                iconTextWrapperProps={{ justifyContent: 'flex-end' }}
+              >
+                {value !== undefined ? value : '?'}
+              </Text>
             ),
-            gridWidth: '1fr',
+            gridWidth: '100px',
+            rightAlign: true,
           },
           {
             header: 'Comments',
             accessor: 'comments.count',
-            cell: ({ value }) => <Text icon={Chat}>{value || 0}</Text>,
-            gridWidth: '1fr',
+            cell: ({ value }) => (
+              <Text
+                icon={Chat}
+                iconTextWrapperProps={{ justifyContent: 'flex-end' }}
+              >
+                {value || 0}
+              </Text>
+            ),
+            gridWidth: '100px',
+            rightAlign: true,
           },
           {
             header: 'Uploaded',
@@ -105,7 +125,7 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             cell: ({ value }) => (
               <Text>{moment(value).format('Do MMM YYYY')}</Text>
             ),
-            gridWidth: '175px',
+            gridWidth: '140px',
             rightAlign: true,
           },
         ]}
