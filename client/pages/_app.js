@@ -18,6 +18,7 @@ import { LoaderAlt } from '@styled-icons/boxicons-regular/LoaderAlt'
 import { Sort } from '@styled-icons/boxicons-regular/Sort'
 import { CaretUp } from '@styled-icons/boxicons-regular/CaretUp'
 import { CaretDown } from '@styled-icons/boxicons-regular/CaretDown'
+import { Award } from '@styled-icons/boxicons-regular/Award'
 import Navigation from '../components/Navigation'
 import Box from '../components/Box'
 import Button from '../components/Button'
@@ -322,8 +323,12 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                           {prettyBytes(userStats.up ?? 0)}
                         </Text>
                         <CaretDown size={16} />
-                        <Text fontSize={0} ml={0} mr={4}>
+                        <Text fontSize={0} ml={0} mr={2}>
                           {prettyBytes(userStats.down ?? 0)}
+                        </Text>
+                        <Award size={16} />
+                        <Text fontSize={0} ml={0} mr={4}>
+                          {userStats.bp ?? 0} BP
                         </Text>
                       </Box>
                     )}

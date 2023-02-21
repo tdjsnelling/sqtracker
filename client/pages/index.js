@@ -73,8 +73,6 @@ const Index = ({
     if (query) router.push(`/search/${encodeURIComponent(query)}`)
   }
 
-  console.log(latestAnnouncement)
-
   return (
     <>
       <SEO title="Home" />

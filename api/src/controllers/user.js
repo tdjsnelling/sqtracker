@@ -697,7 +697,8 @@ export const getUserStats = async (req, res, next) => {
       return
     }
 
-    res.json(await getUserRatio(user._id))
+    const ratioStats = await getUserRatio(user._id)
+    res.json({ ...ratioStats, bp: user.bonusPoints })
   } catch (e) {
     next(e)
   }
