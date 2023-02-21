@@ -11,7 +11,12 @@ module.exports = {
     SQ_ALLOW_REGISTER: 'invite',
     SQ_ALLOW_ANONYMOUS_UPLOADS: false,
     SQ_MINIMUM_RATIO: 0.75,
-    SQ_TORRENT_CATEGORIES: ['Movies', 'TV', 'Music', 'Books'],
+    SQ_TORRENT_CATEGORIES: {
+      Movies: ['BluRay', 'WebDL', 'HDRip', 'WebRip', 'DVD', 'Cam'],
+      TV: [],
+      Music: [],
+      Books: [],
+    },
     SQ_BP_EARNED_PER_GB: 1,
     SQ_BP_COST_PER_INVITE: 3,
     SQ_BP_COST_PER_GB: 3,
