@@ -9,7 +9,7 @@ const StyledButton = styled.button(
     css({
       appearance: 'none',
       bg: 'primary',
-      color: getLuminance(theme.colors.primary) >= 0.5 ? '#000' : '#fff',
+      color: getLuminance(theme.colors.primary) >= 0.5 ? '#202224' : '#f8f8f8',
       border: '2px solid',
       borderColor: 'primary',
       borderRadius: 1,
@@ -97,6 +97,35 @@ const StyledButton = styled.button(
               theme.name === 'light'
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
+          },
+        },
+        danger: {
+          bg: 'error',
+          color: '#f8f8f8',
+          borderColor: 'error',
+          '&:hover': {
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.error)
+                : lighten(0.1, theme.colors.error),
+          },
+          '&:focus, &:active': {
+            bg:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.error)
+                : lighten(0.1, theme.colors.error),
+            borderColor:
+              theme.name === 'light'
+                ? darken(0.1, theme.colors.error)
+                : lighten(0.1, theme.colors.error),
+          },
+          '&[disabled]': {
+            '&:hover': {
+              borderColor: 'sidebar',
+            },
+            '&:focus, &:active': {
+              bg: 'sidebar',
+            },
           },
         },
       },

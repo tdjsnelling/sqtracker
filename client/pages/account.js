@@ -1,9 +1,12 @@
 import React, { useState, useContext } from 'react'
 import getConfig from 'next/config'
+import { useRouter } from 'next/router'
 import moment from 'moment'
 import copy from 'copy-to-clipboard'
 import jwt from 'jsonwebtoken'
 import pluralize from 'pluralize'
+import { ThemeContext } from 'styled-components'
+import { transparentize } from 'polished'
 import { Copy } from '@styled-icons/boxicons-regular/Copy'
 import { Check } from '@styled-icons/boxicons-regular/Check'
 import { X } from '@styled-icons/boxicons-regular/X'
@@ -74,9 +77,12 @@ const Account = ({ token, invites = [], user, userRole }) => {
   const [totpEnabled, setTotpEnabled] = useState(user.totp.enabled)
   const [totpQrData, setTotpQrData] = useState()
   const [totpBackupCodes, setTotpBackupCodes] = useState()
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false)
 
   const { addNotification } = useContext(NotificationContext)
   const { setLoading } = useContext(LoadingContext)
+
+  const theme = useContext(ThemeContext)
 
   const {
     publicRuntimeConfig: {
@@ -87,6 +93,8 @@ const Account = ({ token, invites = [], user, userRole }) => {
       SQ_ALLOW_REGISTER,
     },
   } = getConfig()
+
+  const router = useRouter()
 
   const handleGenerateInvite = async (e) => {
     e.preventDefault()
@@ -279,6 +287,34 @@ const Account = ({ token, invites = [], user, userRole }) => {
       }
     } catch (e) {
       addNotification('error', `Could not toggle 2FA: ${e.message}`)
+      console.error(e)
+    }
+  }
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault()
+    const form = new FormData(e.target)
+
+    try {
+      const deleteAccountRes = await fetch(`${SQ_API_URL}/account/delete`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          password: form.get('password'),
+        }),
+      })
+
+      if (deleteAccountRes.status !== 200) {
+        const reason = await deleteAccountRes.text()
+        throw new Error(reason)
+      }
+
+      await router.push('/logout')
+    } catch (e) {
+      addNotification('error', `Could not delete account: ${e.message}`)
       console.error(e)
     }
   }
@@ -527,27 +563,46 @@ const Account = ({ token, invites = [], user, userRole }) => {
           )}
         </form>
       </Box>
-      <Text as="h2" mb={4}>
-        Change password
-      </Text>
-      <form onSubmit={handleChangePassword}>
-        <Input
-          name="password"
-          type="password"
-          label="Current password"
-          mb={4}
-          required
-        />
-        <Input
-          name="newPassword"
-          type="password"
-          label="New password"
-          autoComplete="new-password"
-          mb={4}
-          required
-        />
-        <Button>Change password</Button>
-      </form>
+      <Box mb={5}>
+        <Text as="h2" mb={4}>
+          Change password
+        </Text>
+        <form onSubmit={handleChangePassword}>
+          <Input
+            name="password"
+            type="password"
+            label="Current password"
+            mb={4}
+            required
+          />
+          <Input
+            name="newPassword"
+            type="password"
+            label="New password"
+            autoComplete="new-password"
+            mb={4}
+            required
+          />
+          <Button>Change password</Button>
+        </form>
+      </Box>
+      {user.username !== 'admin' && (
+        <Box
+          bg={transparentize(0.7, theme.colors.error)}
+          borderRadius={1}
+          p={4}
+        >
+          <Text as="h2" mb={4}>
+            Danger zone
+          </Text>
+          <Button
+            variant="danger"
+            onClick={() => setShowDeleteAccountModal(true)}
+          >
+            Delete my account
+          </Button>
+        </Box>
+      )}
       {showInviteModal && (
         <Modal close={() => setShowInviteModal(false)}>
           <Text mb={5}>
@@ -566,12 +621,42 @@ const Account = ({ token, invites = [], user, userRole }) => {
             <Box display="flex" justifyContent="flex-end">
               <Button
                 onClick={() => setShowInviteModal(false)}
+                type="button"
                 variant="secondary"
                 mr={3}
               >
                 Cancel
               </Button>
               <Button>Send invite</Button>
+            </Box>
+          </form>
+        </Modal>
+      )}
+      {showDeleteAccountModal && (
+        <Modal close={() => setShowDeleteAccountModal(false)}>
+          <Text mb={5}>
+            Are you sure you want to delete your account? This action cannot be
+            undone, and you may not be able to register again. Your personal
+            information will be deleted but your uploaded torrents will remain.
+          </Text>
+          <form onSubmit={handleDeleteAccount}>
+            <Input
+              name="password"
+              type="password"
+              label="Password"
+              mb={4}
+              required
+            />
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                onClick={() => setShowDeleteAccountModal(false)}
+                type="button"
+                variant="secondary"
+                mr={3}
+              >
+                Cancel
+              </Button>
+              <Button variant="danger">Yes, delete my account</Button>
             </Box>
           </form>
         </Modal>

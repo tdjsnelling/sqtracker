@@ -100,7 +100,12 @@ const Comment = ({ comment }) => {
             )}
           </Text>
         ) : (
-          <Text>Comment by deleted user</Text>
+          <Text>
+            Comment by{' '}
+            <Text as="span" color="grey">
+              deleted user
+            </Text>
+          </Text>
         )}
         <Text color="grey" textAlign="right">
           Posted {moment(comment.created).format('HH:mm Do MMM YYYY')}

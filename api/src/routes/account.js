@@ -10,6 +10,7 @@ import {
   generateTotpSecret,
   enableTotp,
   disableTotp,
+  deleteAccount,
 } from '../controllers/user'
 
 const router = express.Router()
@@ -25,5 +26,6 @@ export default (mail) => {
   router.get('/totp/generate', generateTotpSecret)
   router.post('/totp/enable', enableTotp)
   router.post('/totp/disable', disableTotp)
+  router.post('/delete', deleteAccount)
   return router
 }

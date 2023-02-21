@@ -1003,3 +1003,36 @@ export const disableTotp = async (req, res) => {
     res.status(400).send('Request must include token')
   }
 }
+
+export const deleteAccount = async (req, res) => {
+  if (req.body.password) {
+    try {
+      const user = await User.findOne({ _id: req.userId }).lean()
+
+      if (!user) {
+        res.status(404).send('User does not exist')
+        return
+      }
+
+      if (user.username === 'admin') {
+        res.status(403).send('Primary admin account cannot be deleted')
+        return
+      }
+
+      const matches = await bcrypt.compare(req.body.password, user.password)
+
+      if (!matches) {
+        res.status(401).send('Incorrect password')
+        return
+      }
+
+      await User.deleteOne({ _id: req.userId })
+
+      res.sendStatus(200)
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
+  } else {
+    res.status(400).send('Request must include password')
+  }
+}
