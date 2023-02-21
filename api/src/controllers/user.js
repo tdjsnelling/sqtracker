@@ -21,7 +21,7 @@ ${process.env.SQ_BASE_URL}/verify-email?token=${token}`,
   })
 }
 
-export const register = (mail) => async (req, res) => {
+export const register = (mail) => async (req, res, next) => {
   if (
     process.env.SQ_ALLOW_REGISTER !== 'open' &&
     process.env.SQ_ALLOW_REGISTER !== 'invite'
@@ -175,15 +175,15 @@ export const register = (mail) => async (req, res) => {
           .status(409)
           .send('An account with that email address or username already exists')
       }
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include email, username and password')
   }
 }
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   if (req.body.username && req.body.password) {
     try {
       const user = await User.findOne({ username: req.body.username }).lean()
@@ -243,15 +243,15 @@ export const login = async (req, res) => {
       } else {
         res.status(404).send('Incorrect login details')
       }
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include username and password')
   }
 }
 
-export const generateInvite = (mail) => async (req, res) => {
+export const generateInvite = (mail) => async (req, res, next) => {
   if (process.env.SQ_ALLOW_REGISTER !== 'invite') {
     res
       .status(403)
@@ -303,18 +303,18 @@ ${process.env.SQ_BASE_URL}/register?token=${createdInvite.token}`,
   }
 }
 
-export const fetchInvites = async (req, res) => {
+export const fetchInvites = async (req, res, next) => {
   try {
     const invites = await Invite.find({ invitingUser: req.userId }, null, {
       sort: { created: -1 },
     }).lean()
     res.json(invites)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const changePassword = (mail) => async (req, res) => {
+export const changePassword = (mail) => async (req, res, next) => {
   if (req.body.password && req.body.newPassword) {
     try {
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -352,15 +352,15 @@ ${process.env.SQ_BASE_URL}/reset-password/initiate`,
       })
 
       res.sendStatus(200)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include password and newPassword')
   }
 }
 
-export const initiatePasswordReset = (mail) => async (req, res) => {
+export const initiatePasswordReset = (mail) => async (req, res, next) => {
   if (req.body.email) {
     try {
       const user = await User.findOne({ email: req.body.email }).lean()
@@ -393,15 +393,15 @@ ${process.env.SQ_BASE_URL}/reset-password/finalise?token=${token}`,
       })
 
       res.send(token)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include email')
   }
 }
 
-export const finalisePasswordReset = async (req, res) => {
+export const finalisePasswordReset = async (req, res, next) => {
   if (req.body.email && req.body.newPassword && req.body.token) {
     try {
       const user = await User.findOne({ email: req.body.email }).lean()
@@ -446,15 +446,15 @@ export const finalisePasswordReset = async (req, res) => {
       )
 
       res.sendStatus(200)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include email, newPassword and token')
   }
 }
 
-export const fetchUser = (tracker) => async (req, res) => {
+export const fetchUser = (tracker) => async (req, res, next) => {
   try {
     const { username } = req.params
 
@@ -684,12 +684,11 @@ export const fetchUser = (tracker) => async (req, res) => {
 
     res.json(user)
   } catch (e) {
-    console.error(e)
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getUserStats = async (req, res) => {
+export const getUserStats = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.userId }).lean()
 
@@ -700,29 +699,29 @@ export const getUserStats = async (req, res) => {
 
     res.json(await getUserRatio(user._id))
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getUserRole = async (req, res) => {
+export const getUserRole = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.userId }).lean()
     res.send(user.role)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getUserVerifiedEmailStatus = async (req, res) => {
+export const getUserVerifiedEmailStatus = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.userId }).lean()
     res.send(!!user.emailVerified)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const verifyUserEmail = async (req, res) => {
+export const verifyUserEmail = async (req, res, next) => {
   if (req.body.token) {
     try {
       const { user: email, validUntil } = jwt.verify(
@@ -751,14 +750,14 @@ export const verifyUserEmail = async (req, res) => {
 
       res.sendStatus(200)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include token')
   }
 }
 
-export const banUser = async (req, res) => {
+export const banUser = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to ban a user')
@@ -778,11 +777,11 @@ export const banUser = async (req, res) => {
 
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const buyItems = async (req, res) => {
+export const buyItems = async (req, res, next) => {
   if (req.body.type && req.body.amount) {
     try {
       const amount = parseInt(req.body.amount)
@@ -860,14 +859,14 @@ export const buyItems = async (req, res) => {
         return
       }
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include type, amount')
   }
 }
 
-export const unbanUser = async (req, res) => {
+export const unbanUser = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to unban a user')
@@ -887,11 +886,11 @@ export const unbanUser = async (req, res) => {
 
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const generateTotpSecret = async (req, res) => {
+export const generateTotpSecret = async (req, res, next) => {
   try {
     const user = await User.findOne({ _id: req.userId }).lean()
     if (user.totp.enabled) {
@@ -918,11 +917,11 @@ export const generateTotpSecret = async (req, res) => {
 
     res.json({ qr: imageDataUrl, secret: secret.base32 })
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const enableTotp = async (req, res) => {
+export const enableTotp = async (req, res, next) => {
   if (req.body.token) {
     try {
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -959,14 +958,14 @@ export const enableTotp = async (req, res) => {
 
       res.send(backupCodes.join(','))
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include token')
   }
 }
 
-export const disableTotp = async (req, res) => {
+export const disableTotp = async (req, res, next) => {
   if (req.body.token) {
     try {
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -997,14 +996,14 @@ export const disableTotp = async (req, res) => {
 
       res.sendStatus(200)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include token')
   }
 }
 
-export const deleteAccount = async (req, res) => {
+export const deleteAccount = async (req, res, next) => {
   if (req.body.password) {
     try {
       const user = await User.findOne({ _id: req.userId }).lean()
@@ -1030,7 +1029,7 @@ export const deleteAccount = async (req, res) => {
 
       res.sendStatus(200)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include password')

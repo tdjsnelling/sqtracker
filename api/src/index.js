@@ -140,9 +140,10 @@ validateConfig(config).then(() => {
   app.use(cookieParser())
   app.use(cors())
 
-  app.get('/', (req, res) =>
+  app.get('/', (req, res) => {
+    res.setHeader('Content-Type', 'text/plain')
     res.send(`■ sqtracker running: ${process.env.SQ_SITE_NAME}`).status(200)
-  )
+  })
 
   // auth routes
   app.post('/register', register(mail))
@@ -167,6 +168,11 @@ validateConfig(config).then(() => {
   app.use('/reports', reportRoutes())
   app.use('/admin', adminRoutes(tracker))
   app.use('/requests', requestRoutes())
+
+  app.use((err, req, res, next) => {
+    console.error(`[sq] error in ${req.url}:`, err)
+    res.status(500).send(`sqtracker API error: ${err}`)
+  })
 
   const port = process.env.SQ_PORT || 3001
   app.listen(port, () => {

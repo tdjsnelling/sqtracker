@@ -26,7 +26,7 @@ const getTorrentXml = (torrent, userId) => {
     </item>`
 }
 
-export const rssFeed = (tracker) => async (req, res) => {
+export const rssFeed = (tracker) => async (req, res, next) => {
   const { username, password } = req.cookies
   const { query } = req.query
 
@@ -84,7 +84,7 @@ export const rssFeed = (tracker) => async (req, res) => {
     ${torrentsXml}
   </channel>
 </rss>`)
-  } catch (err) {
-    res.status(500).send(err.message)
+  } catch (e) {
+    next(e)
   }
 }

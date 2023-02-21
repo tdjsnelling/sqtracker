@@ -2,7 +2,7 @@ import Request from '../schema/request'
 import Comment from '../schema/comment'
 import Torrent from '../schema/torrent'
 
-export const createRequest = async (req, res) => {
+export const createRequest = async (req, res, next) => {
   if (req.body.title && req.body.body) {
     try {
       const existing = await Request.countDocuments()
@@ -21,14 +21,14 @@ export const createRequest = async (req, res) => {
       await request.save()
       res.send({ index })
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include title and body')
   }
 }
 
-export const getRequests = async (req, res) => {
+export const getRequests = async (req, res, next) => {
   const pageSize = 25
   try {
     let { page } = req.query
@@ -75,11 +75,11 @@ export const getRequests = async (req, res) => {
     ])
     res.json(requests)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const fetchRequest = async (req, res) => {
+export const fetchRequest = async (req, res, next) => {
   try {
     const [request] = await Request.aggregate([
       {
@@ -181,11 +181,11 @@ export const fetchRequest = async (req, res) => {
     res.send(request)
   } catch (e) {
     console.error(e)
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const deleteRequest = async (req, res) => {
+export const deleteRequest = async (req, res, next) => {
   try {
     const request = await Request.findOne({
       index: parseInt(req.params.index),
@@ -199,11 +199,11 @@ export const deleteRequest = async (req, res) => {
     await Request.deleteOne({ index: parseInt(req.params.index) })
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const addComment = async (req, res) => {
+export const addComment = async (req, res, next) => {
   if (req.body.comment) {
     try {
       const request = await Request.findOne({
@@ -225,15 +225,15 @@ export const addComment = async (req, res) => {
       await comment.save()
 
       res.sendStatus(200)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include comment')
   }
 }
 
-export const addCandidate = async (req, res) => {
+export const addCandidate = async (req, res, next) => {
   if (req.body.infoHash) {
     try {
       const request = await Request.findOne({
@@ -267,15 +267,15 @@ export const addCandidate = async (req, res) => {
       )
 
       res.status(200).send({ torrent })
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include infoHash')
   }
 }
 
-export const acceptCandidate = async (req, res) => {
+export const acceptCandidate = async (req, res, next) => {
   if (req.body.infoHash) {
     try {
       const request = await Request.findOne({
@@ -311,7 +311,7 @@ export const acceptCandidate = async (req, res) => {
 
       res.status(200).send({ torrent: torrent._id })
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include infoHash')

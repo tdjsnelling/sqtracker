@@ -411,7 +411,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               {isFreeleech ? 'Unset' : 'Set'} freeleech
             </Button>
           )}
-          <Button onClick={handleDownload}>.torrent</Button>
+          <Button onClick={handleDownload}>Download .torrent</Button>
         </Box>
       </Box>
       <Info

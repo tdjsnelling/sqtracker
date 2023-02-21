@@ -24,7 +24,7 @@ export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   }
 }
 
-export const uploadTorrent = async (req, res) => {
+export const uploadTorrent = async (req, res, next) => {
   if (req.body.torrent && req.body.name && req.body.description) {
     try {
       const torrent = Buffer.from(req.body.torrent, 'base64')
@@ -128,40 +128,44 @@ export const uploadTorrent = async (req, res) => {
 
       res.status(200).send(infoHash)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Form is incomplete')
   }
 }
 
-export const downloadTorrent = async (req, res) => {
-  const { infoHash, userId } = req.params
+export const downloadTorrent = async (req, res, next) => {
+  try {
+    const { infoHash, userId } = req.params
 
-  const user = await User.findOne({ uid: userId }).lean()
+    const user = await User.findOne({ uid: userId }).lean()
 
-  if (!user) {
-    res.status(401).send(`User does not exist`)
-    return
+    if (!user) {
+      res.status(401).send(`User does not exist`)
+      return
+    }
+
+    const torrent = await Torrent.findOne({ infoHash }).lean()
+    const { binary } = torrent
+    const parsed = bencode.decode(Buffer.from(binary, 'base64'))
+
+    parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
+    parsed.info.private = 1
+
+    res.setHeader('Content-Type', 'application/x-bittorrent')
+    res.setHeader(
+      'Content-Disposition',
+      `attachment;filename=${parsed.info.name.toString()}.torrent`
+    )
+    res.write(bencode.encode(parsed))
+    res.end()
+  } catch (e) {
+    next(e)
   }
-
-  const torrent = await Torrent.findOne({ infoHash }).lean()
-  const { binary } = torrent
-  const parsed = bencode.decode(Buffer.from(binary, 'base64'))
-
-  parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
-  parsed.info.private = 1
-
-  res.setHeader('Content-Type', 'application/x-bittorrent')
-  res.setHeader(
-    'Content-Disposition',
-    `attachment;filename=${parsed.info.name.toString()}.torrent`
-  )
-  res.write(bencode.encode(parsed))
-  res.end()
 }
 
-export const fetchTorrent = (tracker) => async (req, res) => {
+export const fetchTorrent = (tracker) => async (req, res, next) => {
   const { infoHash } = req.params
 
   try {
@@ -264,12 +268,11 @@ export const fetchTorrent = (tracker) => async (req, res) => {
 
     res.json(embellishedTorrent)
   } catch (e) {
-    console.error(e)
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const deleteTorrent = async (req, res) => {
+export const deleteTorrent = async (req, res, next) => {
   try {
     const torrent = await Torrent.findOne({
       infoHash: req.params.infoHash,
@@ -292,7 +295,7 @@ export const deleteTorrent = async (req, res) => {
 
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
@@ -462,7 +465,7 @@ export const getTorrentsPage = async ({
   }
 }
 
-export const listLatest = (tracker) => async (req, res) => {
+export const listLatest = (tracker) => async (req, res, next) => {
   let { count } = req.query
   count = parseInt(count) || 25
   count = Math.min(count, 100)
@@ -470,11 +473,11 @@ export const listLatest = (tracker) => async (req, res) => {
     const { torrents } = await getTorrentsPage({ limit: count, tracker })
     res.json(torrents)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const searchTorrents = (tracker) => async (req, res) => {
+export const searchTorrents = (tracker) => async (req, res, next) => {
   const { query, category, source, tag, page } = req.query
   try {
     const torrents = await getTorrentsPage({
@@ -487,11 +490,11 @@ export const searchTorrents = (tracker) => async (req, res) => {
     })
     res.json(torrents)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const addComment = async (req, res) => {
+export const addComment = async (req, res, next) => {
   if (req.body.comment) {
     try {
       const { infoHash } = req.params
@@ -513,15 +516,15 @@ export const addComment = async (req, res) => {
       await comment.save()
 
       res.sendStatus(200)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include comment')
   }
 }
 
-export const addVote = async (req, res) => {
+export const addVote = async (req, res, next) => {
   const { infoHash, vote } = req.params
   try {
     const torrent = await Torrent.findOne({ infoHash }).lean()
@@ -551,11 +554,11 @@ export const addVote = async (req, res) => {
       res.status(400).send('Vote must be one of up, down')
     }
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const removeVote = async (req, res) => {
+export const removeVote = async (req, res, next) => {
   const { infoHash, vote } = req.params
   try {
     const torrent = await Torrent.findOne({ infoHash }).lean()
@@ -581,11 +584,11 @@ export const removeVote = async (req, res) => {
       res.status(400).send('Vote must be one of (up, down)')
     }
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const toggleFreeleech = async (req, res) => {
+export const toggleFreeleech = async (req, res, next) => {
   const { infoHash } = req.params
   try {
     if (req.userRole !== 'admin') {
@@ -606,6 +609,6 @@ export const toggleFreeleech = async (req, res) => {
     )
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }

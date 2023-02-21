@@ -2,7 +2,7 @@ import slugify from 'slugify'
 import Announcement from '../schema/announcement'
 import Comment from '../schema/comment'
 
-export const createAnnouncement = async (req, res) => {
+export const createAnnouncement = async (req, res, next) => {
   if (req.body.title && req.body.body) {
     try {
       if (req.userRole !== 'admin') {
@@ -38,14 +38,14 @@ export const createAnnouncement = async (req, res) => {
       await announcement.save()
       res.send(slug)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include title and body')
   }
 }
 
-export const fetchAnnouncement = async (req, res) => {
+export const fetchAnnouncement = async (req, res, next) => {
   try {
     const [announcement] = await Announcement.aggregate([
       {
@@ -122,11 +122,11 @@ export const fetchAnnouncement = async (req, res) => {
     }
     res.send(announcement)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getAnnouncements = async (req, res) => {
+export const getAnnouncements = async (req, res, next) => {
   const pageSize = 25
   try {
     let { page } = req.query
@@ -176,11 +176,11 @@ export const getAnnouncements = async (req, res) => {
     ])
     res.json(announcements)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getPinnedAnnouncements = async (req, res) => {
+export const getPinnedAnnouncements = async (req, res, next) => {
   try {
     const announcements = await Announcement.aggregate([
       {
@@ -220,11 +220,11 @@ export const getPinnedAnnouncements = async (req, res) => {
     ])
     res.json(announcements)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const deleteAnnouncement = async (req, res) => {
+export const deleteAnnouncement = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res
@@ -236,11 +236,11 @@ export const deleteAnnouncement = async (req, res) => {
     await Announcement.deleteOne({ slug: req.params.slug })
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const pinAnnouncement = async (req, res) => {
+export const pinAnnouncement = async (req, res, next) => {
   try {
     await Announcement.findOneAndUpdate(
       { _id: req.params.announcementId },
@@ -248,11 +248,11 @@ export const pinAnnouncement = async (req, res) => {
     )
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const editAnnouncement = async (req, res) => {
+export const editAnnouncement = async (req, res, next) => {
   if (req.body.title && req.body.body) {
     try {
       if (req.userRole !== 'admin') {
@@ -277,14 +277,14 @@ export const editAnnouncement = async (req, res) => {
 
       res.send(announcement.slug)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include title and body')
   }
 }
 
-export const addComment = async (req, res) => {
+export const addComment = async (req, res, next) => {
   if (req.body.comment) {
     try {
       const announcement = await Announcement.findOne({
@@ -311,8 +311,8 @@ export const addComment = async (req, res) => {
       await comment.save()
 
       res.sendStatus(200)
-    } catch (err) {
-      res.status(500).send(err.message)
+    } catch (e) {
+      next(e)
     }
   } else {
     res.status(400).send('Request must include comment')

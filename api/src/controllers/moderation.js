@@ -5,9 +5,8 @@ import Progress from '../schema/progress'
 import Invite from '../schema/invite'
 import Request from '../schema/request'
 import Comment from '../schema/comment'
-import { all } from 'express/lib/application'
 
-export const createReport = async (req, res) => {
+export const createReport = async (req, res, next) => {
   if (req.body.reason) {
     try {
       const torrent = await Torrent.findOne({
@@ -30,14 +29,14 @@ export const createReport = async (req, res) => {
       await report.save()
       res.sendStatus(200)
     } catch (e) {
-      res.status(500).send(e.message)
+      next(e)
     }
   } else {
     res.status(400).send('Request must include reason')
   }
 }
 
-export const fetchReport = async (req, res) => {
+export const fetchReport = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to view a report')
@@ -60,11 +59,11 @@ export const fetchReport = async (req, res) => {
 
     res.json(report)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getReports = async (req, res) => {
+export const getReports = async (req, res, next) => {
   const pageSize = 25
   try {
     if (req.userRole !== 'admin') {
@@ -136,11 +135,11 @@ export const getReports = async (req, res) => {
     ])
     res.json(reports)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const setReportResolved = async (req, res) => {
+export const setReportResolved = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to resolve a report')
@@ -154,11 +153,11 @@ export const setReportResolved = async (req, res) => {
 
     res.sendStatus(200)
   } catch (e) {
-    res.status(500).send(e.message)
+    next(e)
   }
 }
 
-export const getStats = (tracker) => async (req, res) => {
+export const getStats = (tracker) => async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {
       res.status(401).send('You do not have permission to view tracker stats')
@@ -228,6 +227,6 @@ export const getStats = (tracker) => async (req, res) => {
     })
   } catch (e) {
     console.error(e)
-    res.status(500).send(e.message)
+    next(e)
   }
 }
