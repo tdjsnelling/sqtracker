@@ -35,6 +35,86 @@ const FileUpload = styled(Box)(() =>
   })
 );
 
+export const TorrentFields = ({ categories, values }) => {
+  const [category, setCategory] = useState(
+    values?.type ?? slugify(Object.keys(categories)[0], { lower: true })
+  );
+  const [sources, setSources] = useState([]);
+
+  useEffect(() => {
+    setSources(
+      category
+        ? categories[
+            Object.keys(categories).find(
+              (cat) => slugify(cat, { lower: true }) === category
+            )
+          ]
+        : []
+    );
+  }, [category]);
+
+  return (
+    <>
+      <Input
+        name="name"
+        label="Name"
+        defaultValue={values?.name}
+        mb={4}
+        required
+      />
+      {!!Object.keys(categories).length && (
+        <Select
+          name="category"
+          label="Category"
+          value={category}
+          onChange={(e) => {
+            setCategory(e.target.value);
+          }}
+          mb={4}
+          required
+        >
+          {Object.keys(categories).map((cat) => (
+            <option key={cat} value={slugify(cat, { lower: true })}>
+              {cat}
+            </option>
+          ))}
+        </Select>
+      )}
+      {!!sources.length && (
+        <Select
+          name="source"
+          label="Source"
+          defaultValue={values?.source}
+          mb={4}
+          required
+        >
+          {sources.map((source) => (
+            <option key={source} value={slugify(source, { lower: true })}>
+              {source}
+            </option>
+          ))}
+        </Select>
+      )}
+      <Input
+        name="description"
+        label="Description"
+        rows="10"
+        placeholder="Markdown supported"
+        defaultValue={values?.description}
+        mb={4}
+        required
+      />
+      <Input
+        name="tags"
+        label="Tags"
+        placeholder="Separated by commas"
+        defaultValue={values?.tags}
+        mb={4}
+      />
+    </>
+  );
+};
+
 const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState();
   const [dropError, setDropError] = useState("");
@@ -48,27 +128,10 @@ const Upload = ({ token, userId }) => {
     },
   } = getConfig();
 
-  const [category, setCategory] = useState(
-    slugify(Object.keys(SQ_TORRENT_CATEGORIES)[0], { lower: true })
-  );
-  const [sources, setSources] = useState([]);
-
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
 
   const router = useRouter();
-
-  useEffect(() => {
-    setSources(
-      category
-        ? SQ_TORRENT_CATEGORIES[
-            Object.keys(SQ_TORRENT_CATEGORIES).find(
-              (cat) => slugify(cat, { lower: true }) === category
-            )
-          ]
-        : []
-    );
-  }, [category]);
 
   const onDrop = useCallback((acceptedFiles) => {
     try {
@@ -188,48 +251,7 @@ const Upload = ({ token, userId }) => {
             </Text>
           )}
         </Box>
-        <Input name="name" label="Name" mb={4} required />
-        {!!Object.keys(SQ_TORRENT_CATEGORIES).length && (
-          <Select
-            name="category"
-            label="Category"
-            value={category}
-            onChange={(e) => {
-              setCategory(e.target.value);
-            }}
-            mb={4}
-            required
-          >
-            {Object.keys(SQ_TORRENT_CATEGORIES).map((cat) => (
-              <option key={cat} value={slugify(cat, { lower: true })}>
-                {cat}
-              </option>
-            ))}
-          </Select>
-        )}
-        {!!sources.length && (
-          <Select name="source" label="Source" mb={4} required>
-            {sources.map((source) => (
-              <option key={source} value={slugify(source, { lower: true })}>
-                {source}
-              </option>
-            ))}
-          </Select>
-        )}
-        <Input
-          name="description"
-          label="Description"
-          rows="10"
-          placeholder="Markdown supported"
-          mb={4}
-          required
-        />
-        <Input
-          name="tags"
-          label="Tags"
-          placeholder="Separated by commas"
-          mb={4}
-        />
+        <TorrentFields categories={SQ_TORRENT_CATEGORIES} />
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
           <Checkbox name="anonymous" label="Anonymous upload" />
         )}

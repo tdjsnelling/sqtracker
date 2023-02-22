@@ -135,6 +135,59 @@ export const uploadTorrent = async (req, res, next) => {
   }
 };
 
+export const editTorrent = async (req, res, next) => {
+  if (
+    req.body.name &&
+    req.body.type &&
+    req.body.source &&
+    req.body.description
+  ) {
+    try {
+      const { infoHash } = req.params;
+
+      const torrent = await Torrent.findOne({
+        infoHash,
+      }).lean();
+
+      if (!torrent) {
+        res
+          .status(404)
+          .send(`Torrent with info hash ${infoHash} does not exist`);
+        return;
+      }
+
+      if (
+        req.userRole !== "admin" &&
+        req.userId.toString() !== torrent.uploadedBy.toString()
+      ) {
+        res.status(403).send("You do not have permission to edit this torrent");
+        return;
+      }
+
+      await Torrent.findOneAndUpdate(
+        { infoHash },
+        {
+          $set: {
+            name: req.body.name,
+            type: req.body.type,
+            source: req.body.source,
+            description: req.body.description,
+            tags: (req.body.tags ?? "")
+              .split(",")
+              .map((t) => slugify(t.trim(), { lower: true })),
+          },
+        }
+      );
+
+      res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  } else {
+    res.status(400).send("Form is incomplete");
+  }
+};
+
 export const downloadTorrent = async (req, res, next) => {
   try {
     const { infoHash, userId } = req.params;
@@ -287,7 +340,7 @@ export const deleteTorrent = async (req, res, next) => {
       req.userRole !== "admin" &&
       req.userId.toString() !== torrent.uploadedBy.toString()
     ) {
-      res.status(401).send("You do not have permission to delete this torrent");
+      res.status(403).send("You do not have permission to delete this torrent");
       return;
     }
 

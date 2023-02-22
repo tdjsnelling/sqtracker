@@ -9,6 +9,7 @@ import {
   searchTorrents,
   toggleFreeleech,
   uploadTorrent,
+  editTorrent,
 } from "../controllers/torrent";
 import { createReport } from "../controllers/moderation";
 
@@ -18,6 +19,7 @@ export default (tracker) => {
   router.post("/upload", uploadTorrent);
   router.get("/info/:infoHash", fetchTorrent(tracker));
   router.delete("/delete/:infoHash", deleteTorrent);
+  router.post("/edit/:infoHash", editTorrent);
   router.post("/comment/:infoHash", addCommentTorrent);
   router.post("/vote/:infoHash/:vote", addVote);
   router.post("/unvote/:infoHash/:vote", removeVote);

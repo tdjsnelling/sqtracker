@@ -25,6 +25,7 @@ import Comment from "../../components/Comment";
 import Modal from "../../components/Modal";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import { TorrentFields } from "../upload";
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
@@ -108,6 +109,7 @@ const FileItem = ({ file, depth = 0 }) => (
 const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [userVote, setUserVote] = useState(
     (torrent.userHasUpvoted && "up") ||
       (torrent.userHasDownvoted && "down") ||
@@ -165,6 +167,46 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       window.URL.revokeObjectURL(url);
     } catch (e) {
       addNotification("error", `Could not download torrent: ${e.message}`);
+      console.error(e);
+    }
+
+    setLoading(false);
+  };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
+
+    try {
+      const uploadRes = await fetch(
+        `${SQ_API_URL}/torrent/edit/${torrent.infoHash}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: form.get("name"),
+            description: form.get("description"),
+            type: form.get("category"),
+            source: form.get("source"),
+            tags: form.get("tags"),
+          }),
+        }
+      );
+
+      if (uploadRes.status !== 200) {
+        const reason = await uploadRes.text();
+        throw new Error(reason);
+      }
+
+      addNotification("success", "Torrent edited successfully");
+
+      window.location.reload();
+    } catch (e) {
+      addNotification("error", `Could edit torrent: ${e.message}`);
       console.error(e);
     }
 
@@ -398,13 +440,22 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         </Text>
         <Box display="flex" alignItems="center" ml={3}>
           {(userRole === "admin" || userId === torrent.uploadedBy._id) && (
-            <Button
-              onClick={() => setShowDeleteModal(true)}
-              variant="secondary"
-              mr={3}
-            >
-              Delete
-            </Button>
+            <>
+              <Button
+                onClick={() => setShowEditModal(true)}
+                variant="secondary"
+                mr={3}
+              >
+                Edit
+              </Button>
+              <Button
+                onClick={() => setShowDeleteModal(true)}
+                variant="secondary"
+                mr={3}
+              >
+                Delete
+              </Button>
+            </>
           )}
           {userRole === "admin" && (
             <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
@@ -595,6 +646,32 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           </form>
         </Modal>
       )}
+      {showEditModal && (
+        <Modal close={() => setShowEditModal(false)}>
+          <form onSubmit={handleEdit}>
+            <TorrentFields
+              categories={SQ_TORRENT_CATEGORIES}
+              values={{
+                name: torrent.name,
+                category: torrent.type,
+                source: torrent.source,
+                description: torrent.description,
+                tags: torrent.tags.join(", "),
+              }}
+            />
+            <Box display="flex" justifyContent="flex-end">
+              <Button
+                onClick={() => setShowEditModal(false)}
+                variant="secondary"
+                mr={3}
+              >
+                Cancel
+              </Button>
+              <Button>Save changes</Button>
+            </Box>
+          </form>
+        </Modal>
+      )}
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
           <Text mb={5}>
@@ -608,7 +685,9 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
             >
               Cancel
             </Button>
-            <Button onClick={handleDelete}>Delete</Button>
+            <Button onClick={handleDelete} variant="danger">
+              Delete
+            </Button>
           </Box>
         </Modal>
       )}
