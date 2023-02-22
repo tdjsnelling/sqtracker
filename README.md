@@ -131,6 +131,12 @@ Request
 Report
 <img width="1707" alt="report" src="https://user-images.githubusercontent.com/6264509/218762109-b76bd5f1-b333-4d09-9c9a-e2fa87b3c2de.png">
 
+## Contrubting
+
+Pull requests are welcome! If you fork sqtracker and think you have made some improvements, please open a pull request so other users deploying sqtracker from this repository can also get the benefits.
+
+Please see the [./CONTRIBUTING.md](CONTRIBUTING) document for guidance on code style etc.
+
 ## License
 
 GNU GPLv3
