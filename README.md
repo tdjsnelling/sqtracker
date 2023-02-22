@@ -135,7 +135,7 @@ Report
 
 Pull requests are welcome! If you fork sqtracker and think you have made some improvements, please open a pull request so other users deploying sqtracker from this repository can also get the benefits.
 
-Please see the [./CONTRIBUTING.md](CONTRIBUTING) document for guidance on code style etc.
+Please see the [CONTRIBUTING](./CONTRIBUTING.md) document for guidance on code style etc.
 
 ## License
 
