@@ -168,12 +168,12 @@ export const getServerSideProps = withAuthServerSideProps(
       const latestTorrents = await latestTorrentsRes.json()
 
       const latestAnnouncementRes = await fetch(
-        `${SQ_API_URL}/announcements/page/0?count=1`,
+        `${SQ_API_URL}/announcements/latest`,
         {
           headers: fetchHeaders,
         }
       )
-      const [latestAnnouncement] = await latestAnnouncementRes.json()
+      const latestAnnouncement = await latestAnnouncementRes.json()
 
       const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
         headers: fetchHeaders,

@@ -8,6 +8,7 @@ import {
   getAnnouncements,
   getPinnedAnnouncements,
   pinAnnouncement,
+  getLatestAnnouncement,
 } from '../controllers/announcement'
 
 const router = express.Router()
@@ -15,6 +16,7 @@ const router = express.Router()
 export default () => {
   router.post('/new', createAnnouncement)
   router.get('/pinned', getPinnedAnnouncements)
+  router.get('/latest', getLatestAnnouncement)
   router.get('/:slug', fetchAnnouncement)
   router.get('/page/:page', getAnnouncements)
   router.delete('/:slug', deleteAnnouncement)

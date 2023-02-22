@@ -225,6 +225,45 @@ export const getPinnedAnnouncements = async (req, res, next) => {
   }
 }
 
+export const getLatestAnnouncement = async (req, res, next) => {
+  try {
+    const [announcement] = await Announcement.aggregate([
+      {
+        $sort: { created: -1 },
+      },
+      {
+        $limit: 1,
+      },
+      {
+        $lookup: {
+          from: 'users',
+          as: 'createdBy',
+          let: { userId: '$createdBy' },
+          pipeline: [
+            {
+              $match: { $expr: { $eq: ['$_id', '$$userId'] } },
+            },
+            {
+              $project: {
+                username: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: '$createdBy',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ])
+    res.json(announcement)
+  } catch (e) {
+    next(e)
+  }
+}
+
 export const deleteAnnouncement = async (req, res, next) => {
   try {
     if (req.userRole !== 'admin') {

@@ -91,7 +91,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
                         width="100%"
                         display="flex"
                         alignItems="center"
-                        textAlign={col.rightAlign ? ['left', 'right'] : 'left'}
+                        textAlign={col.rightAlign ? 'right' : 'left'}
                         _css={{
                           overflow: 'hidden',
                           '> *': {
