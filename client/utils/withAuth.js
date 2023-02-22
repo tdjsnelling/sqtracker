@@ -1,79 +1,79 @@
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import getConfig from 'next/config'
-import { useCookies } from 'react-cookie'
-import getReqCookies from './getReqCookies'
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import getConfig from "next/config";
+import { useCookies } from "react-cookie";
+import getReqCookies from "./getReqCookies";
 
 const Redirect = ({ path }) => {
-  const router = useRouter()
+  const router = useRouter();
   useEffect(() => {
-    router.push(path)
-  }, [])
-  return <></>
-}
+    router.push(path);
+  }, []);
+  return <></>;
+};
 
 export const withAuth = (Component, noRedirect = false) => {
   const Auth = (props) => {
-    const [cookies] = useCookies()
+    const [cookies] = useCookies();
 
     if (!cookies.token && !noRedirect) {
-      return <Redirect path="/login" />
+      return <Redirect path="/login" />;
     }
 
     return (
       <Component token={cookies.token} userId={cookies.userId} {...props} />
-    )
-  }
+    );
+  };
 
-  return Auth
-}
+  return Auth;
+};
 
 export const withAuthServerSideProps = (
   getServerSideProps,
   noRedirect = false
 ) => {
   return async (ctx) => {
-    const { token, userId } = getReqCookies(ctx.req)
+    const { token, userId } = getReqCookies(ctx.req);
 
     if (!token && !noRedirect)
       return {
         redirect: {
           permanent: false,
-          destination: '/login',
+          destination: "/login",
         },
-      }
+      };
 
-    if (!token && noRedirect) return { props: {} }
+    if (!token && noRedirect) return { props: {} };
 
     try {
       const {
         serverRuntimeConfig: { SQ_SERVER_SECRET },
-      } = getConfig()
+      } = getConfig();
 
       const fetchHeaders = {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
-        'X-Forwarded-For':
-          ctx.req.headers['x-forwarded-for'] ?? ctx.req.socket.remoteAddress,
-        'X-Sq-Server-Secret': SQ_SERVER_SECRET,
-      }
+        "X-Forwarded-For":
+          ctx.req.headers["x-forwarded-for"] ?? ctx.req.socket.remoteAddress,
+        "X-Sq-Server-Secret": SQ_SERVER_SECRET,
+      };
 
       const { props: ssProps } = await getServerSideProps({
         ...ctx,
         token,
         userId,
         fetchHeaders,
-      })
-      return { props: { ...ssProps, token } }
+      });
+      return { props: { ...ssProps, token } };
     } catch (e) {
-      if (e === 'banned')
+      if (e === "banned")
         return {
           redirect: {
             permanent: false,
-            destination: '/logout',
+            destination: "/logout",
           },
-        }
-      return { props: {} }
+        };
+      return { props: {} };
     }
-  }
-}
+  };
+};

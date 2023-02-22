@@ -1,17 +1,17 @@
-import React from 'react'
-import Head from 'next/head'
-import getConfig from 'next/config'
+import React from "react";
+import Head from "next/head";
+import getConfig from "next/config";
 
 const SEO = ({ title, noTitleTemplate }) => {
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_SITE_DESCRIPTION },
-  } = getConfig()
+  } = getConfig();
 
   const formattedTitle = title
     ? noTitleTemplate
       ? title
       : `${title} — ${SQ_SITE_NAME}`
-    : SQ_SITE_NAME
+    : SQ_SITE_NAME;
 
   return (
     <Head>
@@ -22,7 +22,7 @@ const SEO = ({ title, noTitleTemplate }) => {
       <meta property="og:site_name" content={SQ_SITE_NAME} />
       <meta property="og:type" content="website" />
     </Head>
-  )
-}
+  );
+};
 
-export default SEO
+export default SEO;

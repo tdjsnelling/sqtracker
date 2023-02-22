@@ -1,54 +1,54 @@
-import React, { useState, useEffect, useContext } from 'react'
-import getConfig from 'next/config'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import { ThemeContext } from 'styled-components'
-import { transparentize } from 'polished'
-import SEO from '../components/SEO'
-import Text from '../components/Text'
-import Box from '../components/Box'
+import React, { useState, useEffect, useContext } from "react";
+import getConfig from "next/config";
+import { useRouter } from "next/router";
+import Link from "next/link";
+import { ThemeContext } from "styled-components";
+import { transparentize } from "polished";
+import SEO from "../components/SEO";
+import Text from "../components/Text";
+import Box from "../components/Box";
 
 const VerifyEmail = () => {
-  const [tokenError, setTokenError] = useState()
+  const [tokenError, setTokenError] = useState();
 
-  const { colors } = useContext(ThemeContext)
+  const { colors } = useContext(ThemeContext);
 
-  const router = useRouter()
-  const { token } = router.query
+  const router = useRouter();
+  const { token } = router.query;
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+  } = getConfig();
 
   useEffect(() => {
     const verify = async () => {
       if (token) {
         try {
           const res = await fetch(`${SQ_API_URL}/verify-email`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               token,
             }),
-          })
+          });
 
           if (res.status !== 200) {
-            const reason = await res.text()
-            throw new Error(reason)
+            const reason = await res.text();
+            throw new Error(reason);
           }
 
-          setTokenError(undefined)
+          setTokenError(undefined);
         } catch (e) {
-          setTokenError(e.message)
+          setTokenError(e.message);
         }
       } else {
-        setTokenError('No verification token provided')
+        setTokenError("No verification token provided");
       }
-    }
-    verify()
-  }, [token])
+    };
+    verify();
+  }, [token]);
 
   return (
     <>
@@ -59,7 +59,7 @@ const VerifyEmail = () => {
       {!tokenError ? (
         <>
           <Text>
-            Email address verified successfully.{' '}
+            Email address verified successfully.{" "}
             <Link href="/login" passHref>
               <a>Log in</a>
             </Link>
@@ -78,7 +78,7 @@ const VerifyEmail = () => {
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
-export default VerifyEmail
+export default VerifyEmail;

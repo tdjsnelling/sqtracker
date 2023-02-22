@@ -1,39 +1,39 @@
-import React, { useState, useContext, useRef } from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import moment from 'moment'
-import jwt from 'jsonwebtoken'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { useCookies } from 'react-cookie'
-import SEO from '../../components/SEO'
-import Box from '../../components/Box'
-import Text from '../../components/Text'
-import Button from '../../components/Button'
-import MarkdownBody from '../../components/MarkdownBody'
-import { withAuthServerSideProps } from '../../utils/withAuth'
-import { NotificationContext } from '../../components/Notifications'
-import Input from '../../components/Input'
-import Comment from '../../components/Comment'
-import Modal from '../../components/Modal'
-import List from '../../components/List'
-import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
-import slugify from 'slugify'
-import { Check } from '@styled-icons/boxicons-regular/Check'
-import { X } from '@styled-icons/boxicons-regular/X'
-import LoadingContext from '../../utils/LoadingContext'
+import React, { useState, useContext, useRef } from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import moment from "moment";
+import jwt from "jsonwebtoken";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useCookies } from "react-cookie";
+import SEO from "../../components/SEO";
+import Box from "../../components/Box";
+import Text from "../../components/Text";
+import Button from "../../components/Button";
+import MarkdownBody from "../../components/MarkdownBody";
+import { withAuthServerSideProps } from "../../utils/withAuth";
+import { NotificationContext } from "../../components/Notifications";
+import Input from "../../components/Input";
+import Comment from "../../components/Comment";
+import Modal from "../../components/Modal";
+import List from "../../components/List";
+import { ListUl } from "@styled-icons/boxicons-regular/ListUl";
+import slugify from "slugify";
+import { Check } from "@styled-icons/boxicons-regular/Check";
+import { X } from "@styled-icons/boxicons-regular/X";
+import LoadingContext from "../../utils/LoadingContext";
 
 const Request = ({ request, token, user }) => {
-  const [comments, setComments] = useState(request.comments)
-  const [candidates, setCandidates] = useState(request.candidates.reverse())
-  const [fulfilledBy, setFulfilledBy] = useState(request.fulfilledBy)
-  const [showSuggestModal, setShowSuggestModal] = useState(false)
+  const [comments, setComments] = useState(request.comments);
+  const [candidates, setCandidates] = useState(request.candidates.reverse());
+  const [fulfilledBy, setFulfilledBy] = useState(request.fulfilledBy);
+  const [showSuggestModal, setShowSuggestModal] = useState(false);
 
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const commentInputRef = useRef()
+  const commentInputRef = useRef();
 
   const {
     publicRuntimeConfig: {
@@ -41,159 +41,159 @@ const Request = ({ request, token, user }) => {
       SQ_SITE_WIDE_FREELEECH,
       SQ_TORRENT_CATEGORIES,
     },
-  } = getConfig()
+  } = getConfig();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const [cookies] = useCookies()
+  const [cookies] = useCookies();
 
   const handleDelete = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const deleteRes = await fetch(`${SQ_API_URL}/requests/${request.index}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
+      });
 
       if (deleteRes.status !== 200) {
-        const reason = await deleteRes.text()
-        throw new Error(reason)
+        const reason = await deleteRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Request deleted successfully')
+      addNotification("success", "Request deleted successfully");
 
-      router.push('/requests')
+      router.push("/requests");
     } catch (e) {
-      addNotification('error', `Could not delete request: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not delete request: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleComment = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const commentRes = await fetch(
         `${SQ_API_URL}/requests/comment/${request._id}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            comment: form.get('comment'),
+            comment: form.get("comment"),
           }),
         }
-      )
+      );
 
       if (commentRes.status !== 200) {
-        const reason = await commentRes.text()
-        throw new Error(reason)
+        const reason = await commentRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Comment posted successfully')
+      addNotification("success", "Comment posted successfully");
 
       setComments((c) => {
         const newComment = {
-          comment: form.get('comment'),
+          comment: form.get("comment"),
           created: Date.now(),
           user: {
             username: cookies.username,
           },
-        }
-        return [newComment, ...c]
-      })
+        };
+        return [newComment, ...c];
+      });
 
-      commentInputRef.current.value = ''
+      commentInputRef.current.value = "";
     } catch (e) {
-      addNotification('error', `Could not post comment: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not post comment: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleSuggestion = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const suggestRes = await fetch(
         `${SQ_API_URL}/requests/suggest/${request._id}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            infoHash: form.get('infoHash'),
+            infoHash: form.get("infoHash"),
           }),
         }
-      )
+      );
 
       if (suggestRes.status !== 200) {
-        const reason = await suggestRes.text()
-        throw new Error(reason)
+        const reason = await suggestRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Suggestion added successfully')
+      addNotification("success", "Suggestion added successfully");
 
-      const { torrent } = await suggestRes.json()
-      setCandidates((existing) => [torrent, ...existing])
+      const { torrent } = await suggestRes.json();
+      setCandidates((existing) => [torrent, ...existing]);
 
-      setShowSuggestModal(false)
+      setShowSuggestModal(false);
     } catch (e) {
-      addNotification('error', `Could not add suggestion: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not add suggestion: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleAccept = async (infoHash) => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const acceptRes = await fetch(
         `${SQ_API_URL}/requests/accept/${request._id}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             infoHash,
           }),
         }
-      )
+      );
 
       if (acceptRes.status !== 200) {
-        const reason = await acceptRes.text()
-        throw new Error(reason)
+        const reason = await acceptRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Suggestion accepted successfully')
+      addNotification("success", "Suggestion accepted successfully");
 
-      const { torrent } = await acceptRes.json()
-      setFulfilledBy(torrent)
+      const { torrent } = await acceptRes.json();
+      setFulfilledBy(torrent);
     } catch (e) {
-      addNotification('error', `Could not accept suggestion: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not accept suggestion: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -215,13 +215,13 @@ const Request = ({ request, token, user }) => {
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          Posted {moment(request.created).format('HH:mm Do MMM YYYY')} by{' '}
+          Posted {moment(request.created).format("HH:mm Do MMM YYYY")} by{" "}
           {request.createdBy?.username ? (
             <Link href={`/user/${request.createdBy.username}`} passHref>
               <a>{request.createdBy.username}</a>
             </Link>
           ) : (
-            'deleted user'
+            "deleted user"
           )}
         </Text>
       </Box>
@@ -255,8 +255,8 @@ const Request = ({ request, token, user }) => {
             }))}
             columns={[
               {
-                header: 'Name',
-                accessor: 'name',
+                header: "Name",
+                accessor: "name",
                 cell: ({ value, row }) => (
                   <Text>
                     {value}
@@ -267,25 +267,25 @@ const Request = ({ request, token, user }) => {
                     )}
                   </Text>
                 ),
-                gridWidth: '2fr',
+                gridWidth: "2fr",
               },
               {
-                header: 'Category',
-                accessor: 'type',
+                header: "Category",
+                accessor: "type",
                 cell: ({ value }) => (
                   <Text icon={ListUl}>
                     {Object.keys(SQ_TORRENT_CATEGORIES).find(
                       (c) => slugify(c, { lower: true }) === value
-                    ) || 'None'}
+                    ) || "None"}
                   </Text>
                 ),
-                gridWidth: '1fr',
+                gridWidth: "1fr",
               },
               {
-                header: 'Accepted',
-                accessor: '_id',
+                header: "Accepted",
+                accessor: "_id",
                 cell: ({ value }) => (
-                  <Box color={value === fulfilledBy ? 'success' : 'grey'}>
+                  <Box color={value === fulfilledBy ? "success" : "grey"}>
                     {value === fulfilledBy ? (
                       <Check size={24} />
                     ) : (
@@ -293,15 +293,15 @@ const Request = ({ request, token, user }) => {
                     )}
                   </Box>
                 ),
-                gridWidth: '1fr',
+                gridWidth: "1fr",
               },
               {
-                header: 'Uploaded',
-                accessor: 'created',
+                header: "Uploaded",
+                accessor: "created",
                 cell: ({ value }) => (
-                  <Text>{moment(value).format('Do MMM YYYY')}</Text>
+                  <Text>{moment(value).format("Do MMM YYYY")}</Text>
                 ),
-                gridWidth: '175px',
+                gridWidth: "175px",
                 rightAlign: true,
               },
               ...(user === request.createdBy._id
@@ -310,8 +310,8 @@ const Request = ({ request, token, user }) => {
                       cell: ({ row }) => (
                         <Button
                           onClick={async (e) => {
-                            e.preventDefault()
-                            await handleAccept(row.infoHash)
+                            e.preventDefault();
+                            await handleAccept(row.infoHash);
                           }}
                           disabled={!!fulfilledBy}
                           small
@@ -319,7 +319,7 @@ const Request = ({ request, token, user }) => {
                           Accept
                         </Button>
                       ),
-                      gridWidth: '90px',
+                      gridWidth: "90px",
                       rightAlign: true,
                     },
                   ]
@@ -377,37 +377,37 @@ const Request = ({ request, token, user }) => {
         </Modal>
       )}
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, fetchHeaders, query: { index } }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
-    } = getConfig()
+    } = getConfig();
 
-    const { id } = jwt.verify(token, SQ_JWT_SECRET)
+    const { id } = jwt.verify(token, SQ_JWT_SECRET);
 
     try {
       const requestRes = await fetch(`${SQ_API_URL}/requests/${index}`, {
         headers: fetchHeaders,
-      })
+      });
       if (
         requestRes.status === 403 &&
-        (await requestRes.text()) === 'User is banned'
+        (await requestRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
-      const request = await requestRes.json()
-      return { props: { request, token, user: id } }
+      const request = await requestRes.json();
+      return { props: { request, token, user: id } };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   }
-)
+);
 
-export default Request
+export default Request;

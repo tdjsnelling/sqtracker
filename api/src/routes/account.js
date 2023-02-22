@@ -1,4 +1,4 @@
-import express from 'express'
+import express from "express";
 import {
   fetchInvites,
   generateInvite,
@@ -11,21 +11,21 @@ import {
   enableTotp,
   disableTotp,
   deleteAccount,
-} from '../controllers/user'
+} from "../controllers/user";
 
-const router = express.Router()
+const router = express.Router();
 
 export default (mail) => {
-  router.get('/invites', fetchInvites)
-  router.post('/generate-invite', generateInvite(mail))
-  router.post('/change-password', changePassword(mail))
-  router.get('/get-stats', getUserStats)
-  router.get('/get-role', getUserRole)
-  router.get('/get-verified', getUserVerifiedEmailStatus)
-  router.post('/buy', buyItems)
-  router.get('/totp/generate', generateTotpSecret)
-  router.post('/totp/enable', enableTotp)
-  router.post('/totp/disable', disableTotp)
-  router.post('/delete', deleteAccount)
-  return router
-}
+  router.get("/invites", fetchInvites);
+  router.post("/generate-invite", generateInvite(mail));
+  router.post("/change-password", changePassword(mail));
+  router.get("/get-stats", getUserStats);
+  router.get("/get-role", getUserRole);
+  router.get("/get-verified", getUserVerifiedEmailStatus);
+  router.post("/buy", buyItems);
+  router.get("/totp/generate", generateTotpSecret);
+  router.post("/totp/enable", enableTotp);
+  router.post("/totp/disable", disableTotp);
+  router.post("/delete", deleteAccount);
+  return router;
+};

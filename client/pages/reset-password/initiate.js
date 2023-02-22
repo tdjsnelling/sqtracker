@@ -1,55 +1,55 @@
-import React, { useContext } from 'react'
-import getConfig from 'next/config'
-import SEO from '../../components/SEO'
-import Text from '../../components/Text'
-import Input from '../../components/Input'
-import Button from '../../components/Button'
-import { NotificationContext } from '../../components/Notifications'
-import LoadingContext from '../../utils/LoadingContext'
+import React, { useContext } from "react";
+import getConfig from "next/config";
+import SEO from "../../components/SEO";
+import Text from "../../components/Text";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { NotificationContext } from "../../components/Notifications";
+import LoadingContext from "../../utils/LoadingContext";
 
 const InitiatePasswordReset = () => {
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+  } = getConfig();
 
   const handleInitiate = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const res = await fetch(`${SQ_API_URL}/reset-password/initiate`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: form.get('email'),
+          email: form.get("email"),
         }),
-      })
+      });
 
       if (res.status !== 200) {
-        const reason = await res.text()
-        throw new Error(reason)
+        const reason = await res.text();
+        throw new Error(reason);
       }
 
       addNotification(
-        'success',
-        'If an account with that email address exists, you will receive an email shortly'
-      )
+        "success",
+        "If an account with that email address exists, you will receive an email shortly"
+      );
     } catch (e) {
       addNotification(
-        'error',
+        "error",
         `Could not initiate password reset: ${e.message}`
-      )
-      console.error(e)
+      );
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -62,7 +62,7 @@ const InitiatePasswordReset = () => {
         <Button>Reset password</Button>
       </form>
     </>
-  )
-}
+  );
+};
 
-export default InitiatePasswordReset
+export default InitiatePasswordReset;

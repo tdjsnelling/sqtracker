@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Report = new mongoose.Schema({
   torrent: mongoose.Schema.ObjectId,
@@ -6,6 +6,6 @@ const Report = new mongoose.Schema({
   reason: String,
   solved: Boolean,
   created: Number,
-})
+});
 
-export default mongoose.model('report', Report)
+export default mongoose.model("report", Report);

@@ -1,13 +1,13 @@
-import Request from '../schema/request'
-import Comment from '../schema/comment'
-import Torrent from '../schema/torrent'
+import Request from "../schema/request";
+import Comment from "../schema/comment";
+import Torrent from "../schema/torrent";
 
 export const createRequest = async (req, res, next) => {
   if (req.body.title && req.body.body) {
     try {
-      const existing = await Request.countDocuments()
+      const existing = await Request.countDocuments();
 
-      const index = existing + 1
+      const index = existing + 1;
 
       const request = new Request({
         index,
@@ -16,23 +16,23 @@ export const createRequest = async (req, res, next) => {
         createdBy: req.userId,
         created: Date.now(),
         candidates: [],
-      })
+      });
 
-      await request.save()
-      res.send({ index })
+      await request.save();
+      res.send({ index });
     } catch (e) {
-      next(e)
+      next(e);
     }
   } else {
-    res.status(400).send('Request must include title and body')
+    res.status(400).send("Request must include title and body");
   }
-}
+};
 
 export const getRequests = async (req, res, next) => {
-  const pageSize = 25
+  const pageSize = 25;
   try {
-    let { page } = req.query
-    page = parseInt(page) || 0
+    let { page } = req.query;
+    page = parseInt(page) || 0;
 
     const requests = await Request.aggregate([
       {
@@ -46,12 +46,12 @@ export const getRequests = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: 'users',
-          as: 'createdBy',
-          let: { userId: '$createdBy' },
+          from: "users",
+          as: "createdBy",
+          let: { userId: "$createdBy" },
           pipeline: [
             {
-              $match: { $expr: { $eq: ['$_id', '$$userId'] } },
+              $match: { $expr: { $eq: ["$_id", "$$userId"] } },
             },
             {
               $project: {
@@ -68,16 +68,16 @@ export const getRequests = async (req, res, next) => {
       },
       {
         $unwind: {
-          path: '$createdBy',
+          path: "$createdBy",
           preserveNullAndEmptyArrays: true,
         },
       },
-    ])
-    res.json(requests)
+    ]);
+    res.json(requests);
   } catch (e) {
-    next(e)
+    next(e);
   }
-}
+};
 
 export const fetchRequest = async (req, res, next) => {
   try {
@@ -87,12 +87,12 @@ export const fetchRequest = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: 'users',
-          as: 'createdBy',
-          let: { userId: '$createdBy' },
+          from: "users",
+          as: "createdBy",
+          let: { userId: "$createdBy" },
           pipeline: [
             {
-              $match: { $expr: { $eq: ['$_id', '$$userId'] } },
+              $match: { $expr: { $eq: ["$_id", "$$userId"] } },
             },
             {
               $project: {
@@ -104,31 +104,31 @@ export const fetchRequest = async (req, res, next) => {
       },
       {
         $unwind: {
-          path: '$createdBy',
+          path: "$createdBy",
           preserveNullAndEmptyArrays: true,
         },
       },
       {
         $lookup: {
-          from: 'comments',
-          as: 'comments',
-          let: { parentId: '$_id' },
+          from: "comments",
+          as: "comments",
+          let: { parentId: "$_id" },
           pipeline: [
             {
               $match: {
-                type: 'request',
-                $expr: { $eq: ['$parentId', '$$parentId'] },
+                type: "request",
+                $expr: { $eq: ["$parentId", "$$parentId"] },
               },
             },
             {
               $lookup: {
-                from: 'users',
-                as: 'user',
-                let: { userId: '$userId' },
+                from: "users",
+                as: "user",
+                let: { userId: "$userId" },
                 pipeline: [
                   {
                     $match: {
-                      $expr: { $eq: ['$_id', '$$userId'] },
+                      $expr: { $eq: ["$_id", "$$userId"] },
                     },
                   },
                   {
@@ -141,7 +141,7 @@ export const fetchRequest = async (req, res, next) => {
             },
             {
               $unwind: {
-                path: '$user',
+                path: "$user",
                 preserveNullAndEmptyArrays: true,
               },
             },
@@ -151,11 +151,11 @@ export const fetchRequest = async (req, res, next) => {
       },
       {
         $lookup: {
-          from: 'torrents',
-          as: 'candidates',
-          let: { torrentIds: '$candidates' },
+          from: "torrents",
+          as: "candidates",
+          let: { torrentIds: "$candidates" },
           pipeline: [
-            { $match: { $expr: { $in: ['$_id', '$$torrentIds'] } } },
+            { $match: { $expr: { $in: ["$_id", "$$torrentIds"] } } },
             {
               $project: {
                 infoHash: 1,
@@ -166,90 +166,90 @@ export const fetchRequest = async (req, res, next) => {
             },
             {
               $unwind: {
-                path: '$candidates',
+                path: "$candidates",
                 preserveNullAndEmptyArrays: true,
               },
             },
           ],
         },
       },
-    ])
+    ]);
     if (!request) {
-      res.status(404).send('Request could not be found')
-      return
+      res.status(404).send("Request could not be found");
+      return;
     }
-    res.send(request)
+    res.send(request);
   } catch (e) {
-    console.error(e)
-    next(e)
+    console.error(e);
+    next(e);
   }
-}
+};
 
 export const deleteRequest = async (req, res, next) => {
   try {
     const request = await Request.findOne({
       index: parseInt(req.params.index),
-    }).lean()
+    }).lean();
 
     if (req.userId.toString() !== request.createdBy.toString()) {
-      res.status(401).send('You do not have permission to delete that request')
-      return
+      res.status(401).send("You do not have permission to delete that request");
+      return;
     }
 
-    await Request.deleteOne({ index: parseInt(req.params.index) })
-    res.sendStatus(200)
+    await Request.deleteOne({ index: parseInt(req.params.index) });
+    res.sendStatus(200);
   } catch (e) {
-    next(e)
+    next(e);
   }
-}
+};
 
 export const addComment = async (req, res, next) => {
   if (req.body.comment) {
     try {
       const request = await Request.findOne({
         _id: req.params.requestId,
-      }).lean()
+      }).lean();
 
       if (!request) {
-        res.status(404).send('Request does not exist')
-        return
+        res.status(404).send("Request does not exist");
+        return;
       }
 
       const comment = new Comment({
-        type: 'request',
+        type: "request",
         parentId: request._id,
         userId: req.userId,
         comment: req.body.comment,
         created: Date.now(),
-      })
-      await comment.save()
+      });
+      await comment.save();
 
-      res.sendStatus(200)
+      res.sendStatus(200);
     } catch (e) {
-      next(e)
+      next(e);
     }
   } else {
-    res.status(400).send('Request must include comment')
+    res.status(400).send("Request must include comment");
   }
-}
+};
 
 export const addCandidate = async (req, res, next) => {
   if (req.body.infoHash) {
     try {
       const request = await Request.findOne({
         _id: req.params.requestId,
-      }).lean()
+      }).lean();
 
       const torrent = await Torrent.findOne(
         {
           infoHash: req.body.infoHash,
         },
         { infoHash: 1, name: 1, type: 1, created: 1 }
-      ).lean()
+      ).lean();
 
       if (!torrent) {
-        res.status(404).send('Torrent does not exist')
-        return
+        res.status(404).send("Torrent does not exist");
+        return;
       }
 
       if (
@@ -257,41 +257,41 @@ export const addCandidate = async (req, res, next) => {
           .map((c) => c.toString())
           .includes(torrent._id.toString())
       ) {
-        res.status(409).send('Torrent has already been suggested')
-        return
+        res.status(409).send("Torrent has already been suggested");
+        return;
       }
 
       await Request.findOneAndUpdate(
         { _id: req.params.requestId },
         { $addToSet: { candidates: torrent._id } }
-      )
+      );
 
-      res.status(200).send({ torrent })
+      res.status(200).send({ torrent });
     } catch (e) {
-      next(e)
+      next(e);
     }
   } else {
-    res.status(400).send('Request must include infoHash')
+    res.status(400).send("Request must include infoHash");
   }
-}
+};
 
 export const acceptCandidate = async (req, res, next) => {
   if (req.body.infoHash) {
     try {
       const request = await Request.findOne({
         _id: req.params.requestId,
-      }).lean()
+      }).lean();
 
       if (req.userId.toString() !== request.createdBy.toString()) {
         res
           .status(401)
-          .send('You do not have permission to accept that suggestion')
-        return
+          .send("You do not have permission to accept that suggestion");
+        return;
       }
 
       const torrent = await Torrent.findOne({
         infoHash: req.body.infoHash,
-      }).lean()
+      }).lean();
 
       if (
         !request.candidates.some(
@@ -300,20 +300,20 @@ export const acceptCandidate = async (req, res, next) => {
       ) {
         res
           .status(403)
-          .send('Cannot accept a torrent that has not been suggested')
-        return
+          .send("Cannot accept a torrent that has not been suggested");
+        return;
       }
 
       await Request.findOneAndUpdate(
         { _id: req.params.requestId },
         { $set: { fulfilledBy: torrent._id } }
-      )
+      );
 
-      res.status(200).send({ torrent: torrent._id })
+      res.status(200).send({ torrent: torrent._id });
     } catch (e) {
-      next(e)
+      next(e);
     }
   } else {
-    res.status(400).send('Request must include infoHash')
+    res.status(400).send("Request must include infoHash");
   }
-}
+};

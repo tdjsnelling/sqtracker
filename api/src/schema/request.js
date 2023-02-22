@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Request = new mongoose.Schema({
   index: Number,
@@ -8,6 +8,6 @@ const Request = new mongoose.Schema({
   created: Number,
   candidates: Array,
   fulfilledBy: mongoose.Schema.ObjectId,
-})
+});
 
-export default mongoose.model('request', Request)
+export default mongoose.model("request", Request);

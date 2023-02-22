@@ -1,5 +1,5 @@
-import React from 'react'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
 import {
   space,
   background,
@@ -9,9 +9,9 @@ import {
   border,
   position,
   layout,
-} from 'styled-system'
-import styledCss from '@styled-system/css'
-import Box from './Box'
+} from "styled-system";
+import styledCss from "@styled-system/css";
+import Box from "./Box";
 
 const StyledText = styled.p(
   space,
@@ -26,14 +26,14 @@ const StyledText = styled.p(
     styledCss({
       ..._css,
     })
-)
+);
 
 const Text = ({
   children,
   fref,
   icon: Icon,
   iconSize = 20,
-  iconColor = 'grey',
+  iconColor = "grey",
   my,
   mt,
   mb,
@@ -65,7 +65,7 @@ const Text = ({
         position="relative"
         _css={{
           svg: {
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
           },
@@ -91,6 +91,6 @@ const Text = ({
     >
       {children}
     </StyledText>
-  )
+  );
 
-export default React.forwardRef((props, ref) => <Text fref={ref} {...props} />)
+export default React.forwardRef((props, ref) => <Text fref={ref} {...props} />);

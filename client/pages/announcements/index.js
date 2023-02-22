@@ -1,14 +1,14 @@
-import React from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import jwt from 'jsonwebtoken'
-import moment from 'moment'
-import SEO from '../../components/SEO'
-import Box from '../../components/Box'
-import Text from '../../components/Text'
-import { withAuthServerSideProps } from '../../utils/withAuth'
-import Button from '../../components/Button'
-import List from '../../components/List'
+import React from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import jwt from "jsonwebtoken";
+import moment from "moment";
+import SEO from "../../components/SEO";
+import Box from "../../components/Box";
+import Text from "../../components/Text";
+import { withAuthServerSideProps } from "../../utils/withAuth";
+import Button from "../../components/Button";
+import List from "../../components/List";
 
 const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
   return (
@@ -21,7 +21,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
         mb={5}
       >
         <Text as="h1">Announcements</Text>
-        {userRole === 'admin' && (
+        {userRole === "admin" && (
           <Link href="/announcements/new" passHref>
             <a>
               <Button>Create new</Button>
@@ -42,25 +42,25 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
               }))}
               columns={[
                 {
-                  header: 'Title',
-                  accessor: 'title',
+                  header: "Title",
+                  accessor: "title",
                   cell: ({ value }) => <Text>{value}</Text>,
-                  gridWidth: '1fr',
+                  gridWidth: "1fr",
                 },
                 {
-                  header: 'Posted by',
-                  accessor: 'createdBy.username',
-                  cell: ({ value }) => <Text>{value ?? 'deleted user'}</Text>,
-                  gridWidth: '1fr',
+                  header: "Posted by",
+                  accessor: "createdBy.username",
+                  cell: ({ value }) => <Text>{value ?? "deleted user"}</Text>,
+                  gridWidth: "1fr",
                 },
                 {
-                  header: 'Created',
-                  accessor: 'created',
+                  header: "Created",
+                  accessor: "created",
                   cell: ({ value }) => (
-                    <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+                    <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
                   ),
                   rightAlign: true,
-                  gridWidth: '175px',
+                  gridWidth: "175px",
                 },
               ]}
             />
@@ -77,42 +77,42 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
         }))}
         columns={[
           {
-            header: 'Title',
-            accessor: 'title',
+            header: "Title",
+            accessor: "title",
             cell: ({ value }) => <Text>{value}</Text>,
-            gridWidth: '1fr',
+            gridWidth: "1fr",
           },
           {
-            header: 'Posted by',
-            accessor: 'createdBy.username',
-            cell: ({ value }) => <Text>{value ?? 'deleted user'}</Text>,
-            gridWidth: '1fr',
+            header: "Posted by",
+            accessor: "createdBy.username",
+            cell: ({ value }) => <Text>{value ?? "deleted user"}</Text>,
+            gridWidth: "1fr",
           },
           {
-            header: 'Created',
-            accessor: 'created',
+            header: "Created",
+            accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+              <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
             ),
             rightAlign: true,
-            gridWidth: '175px',
+            gridWidth: "175px",
           },
         ]}
       />
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, fetchHeaders }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
-    } = getConfig()
+    } = getConfig();
 
-    const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role } = jwt.verify(token, SQ_JWT_SECRET);
 
     try {
       const announcementsRes = await fetch(
@@ -120,31 +120,31 @@ export const getServerSideProps = withAuthServerSideProps(
         {
           headers: fetchHeaders,
         }
-      )
+      );
       if (
         announcementsRes.status === 403 &&
-        (await announcementsRes.text()) === 'User is banned'
+        (await announcementsRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
-      const announcements = await announcementsRes.json()
+      const announcements = await announcementsRes.json();
 
       const pinnedAnnouncementsRes = await fetch(
         `${SQ_API_URL}/announcements/pinned`,
         {
           headers: fetchHeaders,
         }
-      )
-      const pinnedAnnouncements = await pinnedAnnouncementsRes.json()
+      );
+      const pinnedAnnouncements = await pinnedAnnouncementsRes.json();
 
       return {
-        props: { announcements, pinnedAnnouncements, userRole: role || 'user' },
-      }
+        props: { announcements, pinnedAnnouncements, userRole: role || "user" },
+      };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   }
-)
+);
 
-export default Announcements
+export default Announcements;

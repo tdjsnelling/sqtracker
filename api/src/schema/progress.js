@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Progress = new mongoose.Schema({
   infoHash: String,
@@ -12,6 +12,6 @@ const Progress = new mongoose.Schema({
     total: Number,
   },
   left: Number,
-})
+});
 
-export default mongoose.model('progress', Progress)
+export default mongoose.model("progress", Progress);

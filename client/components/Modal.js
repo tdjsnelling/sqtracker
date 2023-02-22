@@ -1,7 +1,7 @@
-import React from 'react'
-import { X } from '@styled-icons/boxicons-regular'
-import Box from './Box'
-import Button from './Button'
+import React from "react";
+import { X } from "@styled-icons/boxicons-regular";
+import Box from "./Box";
+import Button from "./Button";
 
 const Modal = ({ children, close }) => {
   return (
@@ -25,7 +25,7 @@ const Modal = ({ children, close }) => {
         maxWidth="600px"
         maxHeight="calc(100vh - 200px)"
         width="100%"
-        _css={{ transform: 'translateX(-50%)' }}
+        _css={{ transform: "translateX(-50%)" }}
       >
         <Box
           display="flex"
@@ -43,7 +43,7 @@ const Modal = ({ children, close }) => {
         <Box p={5}>{children}</Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

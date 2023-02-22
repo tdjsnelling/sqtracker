@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Torrent = new mongoose.Schema({
   infoHash: String,
@@ -18,6 +18,6 @@ const Torrent = new mongoose.Schema({
   downvotes: Array,
   freeleech: Boolean,
   tags: Array,
-})
+});
 
-export default mongoose.model('torrent', Torrent)
+export default mongoose.model("torrent", Torrent);

@@ -1,5 +1,5 @@
-import React from 'react'
-import Box from './Box'
+import React from "react";
+import Box from "./Box";
 
 const Infobox = ({ children, ...rest }) => (
   <Box
@@ -12,6 +12,6 @@ const Infobox = ({ children, ...rest }) => (
   >
     {children}
   </Box>
-)
+);
 
-export default Infobox
+export default Infobox;

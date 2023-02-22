@@ -1,12 +1,12 @@
-import React from 'react'
-import getConfig from 'next/config'
-import SEO from '../components/SEO'
-import Text from '../components/Text'
+import React from "react";
+import getConfig from "next/config";
+import SEO from "../components/SEO";
+import Text from "../components/Text";
 
 const Rss = () => {
   const {
     publicRuntimeConfig: { SQ_BASE_URL },
-  } = getConfig()
+  } = getConfig();
 
   return (
     <>
@@ -18,7 +18,7 @@ const Rss = () => {
         There is an RSS feed at <strong>{SQ_BASE_URL}/api/rss</strong>.
       </Text>
       <Text mb={4}>
-        To authenticate yourself, you must provide the cookies{' '}
+        To authenticate yourself, you must provide the cookies{" "}
         <strong>username</strong> and <strong>password</strong> to the RSS
         endpoint, containing your username and your password respectively.
       </Text>
@@ -27,12 +27,12 @@ const Rss = () => {
         latest torrents.
       </Text>
       <Text>
-        To only include matching results in the feed, you can add the{' '}
-        <strong>query</strong> query parameter, e.g.{' '}
+        To only include matching results in the feed, you can add the{" "}
+        <strong>query</strong> query parameter, e.g.{" "}
         <strong>/api/rss?query=loremipsum</strong>.
       </Text>
     </>
-  )
-}
+  );
+};
 
-export default Rss
+export default Rss;

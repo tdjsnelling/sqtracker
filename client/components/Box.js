@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled from "styled-components";
 import {
   space,
   layout,
@@ -10,8 +10,8 @@ import {
   border,
   shadow,
   position,
-} from 'styled-system'
-import styledCss from '@styled-system/css'
+} from "styled-system";
+import styledCss from "@styled-system/css";
 
 const Box = styled.div(
   space,
@@ -25,6 +25,6 @@ const Box = styled.div(
   position,
   shadow,
   ({ _css }) => styledCss({ ..._css })
-)
+);
 
-export default Box
+export default Box;

@@ -1,13 +1,13 @@
-import * as Sentry from '@sentry/nextjs'
-import config from '../config'
+import * as Sentry from "@sentry/nextjs";
+import config from "../config";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
     environment:
-      process.env.NODE_ENV === 'production' ? 'production' : 'development',
-  })
+      process.env.NODE_ENV === "production" ? "production" : "development",
+  });
 
   // Sentry.setContext('deployment', {
   //   name: config.envs.SQ_SITE_NAME,

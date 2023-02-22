@@ -1,77 +1,77 @@
-import React, { useContext } from 'react'
-import getConfig from 'next/config'
-import { useRouter } from 'next/router'
-import { useCookies } from 'react-cookie'
-import jwt from 'jsonwebtoken'
-import { ThemeContext } from 'styled-components'
-import { transparentize } from 'polished'
-import SEO from '../components/SEO'
-import Text from '../components/Text'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import Box from '../components/Box'
-import { NotificationContext } from '../components/Notifications'
-import LoadingContext from '../utils/LoadingContext'
+import React, { useContext } from "react";
+import getConfig from "next/config";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
+import jwt from "jsonwebtoken";
+import { ThemeContext } from "styled-components";
+import { transparentize } from "polished";
+import SEO from "../components/SEO";
+import Text from "../components/Text";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import Box from "../components/Box";
+import { NotificationContext } from "../components/Notifications";
+import LoadingContext from "../utils/LoadingContext";
 
-export const usernamePattern = '[A-Za-z0-9.]+'
+export const usernamePattern = "[A-Za-z0-9.]+";
 
 const Register = ({ token: inviteToken, tokenError }) => {
-  const [, setCookie] = useCookies()
+  const [, setCookie] = useCookies();
 
-  const { colors } = useContext(ThemeContext)
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { colors } = useContext(ThemeContext);
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     publicRuntimeConfig: { SQ_API_URL, SQ_ALLOW_REGISTER },
-  } = getConfig()
+  } = getConfig();
 
   const handleRegister = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const res = await fetch(`${SQ_API_URL}/register`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: form.get('email'),
-          username: form.get('username'),
-          password: form.get('password'),
+          email: form.get("email"),
+          username: form.get("username"),
+          password: form.get("password"),
           invite: inviteToken,
         }),
-      })
+      });
 
       if (res.status !== 200) {
-        const reason = await res.text()
-        throw new Error(reason)
+        const reason = await res.text();
+        throw new Error(reason);
       }
 
-      const { token, uid, username } = await res.json()
+      const { token, uid, username } = await res.json();
 
-      const expires = new Date()
-      expires.setTime(expires.getTime() + 60 * 60 * 24 * 14 * 1000) // 14 days
-      setCookie('token', token, { path: '/', expires })
-      setCookie('userId', uid, { path: '/', expires })
-      setCookie('username', username, { path: '/', expires })
+      const expires = new Date();
+      expires.setTime(expires.getTime() + 60 * 60 * 24 * 14 * 1000); // 14 days
+      setCookie("token", token, { path: "/", expires });
+      setCookie("userId", uid, { path: "/", expires });
+      setCookie("username", username, { path: "/", expires });
 
-      addNotification('success', `Welcome ${form.get('username')}!`)
+      addNotification("success", `Welcome ${form.get("username")}!`);
 
-      router.push('/')
+      router.push("/");
     } catch (e) {
-      addNotification('error', `Could not register: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not register: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
-  if (SQ_ALLOW_REGISTER !== 'open' && SQ_ALLOW_REGISTER !== 'invite') {
+  if (SQ_ALLOW_REGISTER !== "open" && SQ_ALLOW_REGISTER !== "invite") {
     return (
       <>
         <SEO title="Register" />
@@ -80,7 +80,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
         </Text>
         <p>Registration is closed.</p>
       </>
-    )
+    );
   }
 
   return (
@@ -121,24 +121,24 @@ const Register = ({ token: inviteToken, tokenError }) => {
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = async ({ query: { token } }) => {
   const {
     serverRuntimeConfig: { SQ_JWT_SECRET, SQ_ALLOW_REGISTER },
-  } = getConfig()
-  if (SQ_ALLOW_REGISTER === 'open') return { props: {} }
-  if (!token && SQ_ALLOW_REGISTER === 'invite')
-    return { props: { tokenError: 'Invite token not provided' } }
+  } = getConfig();
+  if (SQ_ALLOW_REGISTER === "open") return { props: {} };
+  if (!token && SQ_ALLOW_REGISTER === "invite")
+    return { props: { tokenError: "Invite token not provided" } };
   try {
-    const decoded = await jwt.verify(token, SQ_JWT_SECRET)
+    const decoded = await jwt.verify(token, SQ_JWT_SECRET);
     if (decoded.validUntil < Date.now())
-      return { props: { tokenError: 'Invite has expired' } }
-    return { props: { token } }
+      return { props: { tokenError: "Invite has expired" } };
+    return { props: { token } };
   } catch (e) {
-    return { props: { tokenError: e.message } }
+    return { props: { tokenError: e.message } };
   }
-}
+};
 
-export default Register
+export default Register;

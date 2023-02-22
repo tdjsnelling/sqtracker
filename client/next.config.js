@@ -1,6 +1,6 @@
-const { withSentryConfig } = require('@sentry/nextjs')
-const config = require('../config')
-const { version } = require('./package.json')
+const { withSentryConfig } = require("@sentry/nextjs");
+const config = require("../config");
+const { version } = require("./package.json");
 
 const nextConfig = {
   reactStrictMode: true,
@@ -19,13 +19,13 @@ const nextConfig = {
   sentry: {
     hideSourceMaps: true,
   },
-}
+};
 
 const sentryWebpackPluginOptions = {
   silent: true,
   errorHandler: (err, invokeErr, compilation) => {
-    compilation.warnings.push('Sentry CLI Plugin: ' + err.message)
+    compilation.warnings.push("Sentry CLI Plugin: " + err.message);
   },
-}
+};
 
-module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions)
+module.exports = withSentryConfig(nextConfig, sentryWebpackPluginOptions);

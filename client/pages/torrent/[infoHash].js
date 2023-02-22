@@ -1,39 +1,39 @@
-import React, { useState, useContext, useRef } from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import moment from 'moment'
-import prettyBytes from 'pretty-bytes'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import jwt from 'jsonwebtoken'
-import { useCookies } from 'react-cookie'
-import slugify from 'slugify'
-import { File } from '@styled-icons/boxicons-regular/File'
-import { Folder } from '@styled-icons/boxicons-regular/Folder'
-import { Like } from '@styled-icons/boxicons-regular/Like'
-import { Dislike } from '@styled-icons/boxicons-regular/Dislike'
-import { withAuthServerSideProps } from '../../utils/withAuth'
-import SEO from '../../components/SEO'
-import Box from '../../components/Box'
-import Text from '../../components/Text'
-import Infobox from '../../components/Infobox'
-import MarkdownBody from '../../components/MarkdownBody'
-import Button from '../../components/Button'
-import Input from '../../components/Input'
-import Comment from '../../components/Comment'
-import Modal from '../../components/Modal'
-import { NotificationContext } from '../../components/Notifications'
-import LoadingContext from '../../utils/LoadingContext'
+import React, { useState, useContext, useRef } from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import moment from "moment";
+import prettyBytes from "pretty-bytes";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import jwt from "jsonwebtoken";
+import { useCookies } from "react-cookie";
+import slugify from "slugify";
+import { File } from "@styled-icons/boxicons-regular/File";
+import { Folder } from "@styled-icons/boxicons-regular/Folder";
+import { Like } from "@styled-icons/boxicons-regular/Like";
+import { Dislike } from "@styled-icons/boxicons-regular/Dislike";
+import { withAuthServerSideProps } from "../../utils/withAuth";
+import SEO from "../../components/SEO";
+import Box from "../../components/Box";
+import Text from "../../components/Text";
+import Infobox from "../../components/Infobox";
+import MarkdownBody from "../../components/MarkdownBody";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
+import Comment from "../../components/Comment";
+import Modal from "../../components/Modal";
+import { NotificationContext } from "../../components/Notifications";
+import LoadingContext from "../../utils/LoadingContext";
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
-  let child = children.find((child) => child.name === head)
-  if (!child) children.push((child = { name: head, children: [] }))
-  if (tail.length > 0) insert(child.children, tail, size)
-  else child.size = size
-  return children
-}
+  let child = children.find((child) => child.name === head);
+  if (!child) children.push((child = { name: head, children: [] }));
+  if (tail.length > 0) insert(child.children, tail, size);
+  else child.size = size;
+  return children;
+};
 
 export const Info = ({ title, items }) => (
   <Infobox mb={5}>
@@ -41,7 +41,7 @@ export const Info = ({ title, items }) => (
       <Text
         fontWeight={600}
         fontSize={1}
-        _css={{ textTransform: 'uppercase' }}
+        _css={{ textTransform: "uppercase" }}
         mb={4}
       >
         {title}
@@ -53,14 +53,14 @@ export const Info = ({ title, items }) => (
           <Box
             key={`infobox-row-${i}`}
             display="grid"
-            gridTemplateColumns={['1fr', '1fr 2fr']}
+            gridTemplateColumns={["1fr", "1fr 2fr"]}
             gridGap={2}
             alignItems="center"
           >
             <Text
               fontWeight={600}
               fontSize={1}
-              _css={{ textTransform: 'uppercase' }}
+              _css={{ textTransform: "uppercase" }}
             >
               {key}
             </Text>
@@ -70,7 +70,7 @@ export const Info = ({ title, items }) => (
       )}
     </Box>
   </Infobox>
-)
+);
 
 const FileItem = ({ file, depth = 0 }) => (
   <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.75 }}>
@@ -82,17 +82,17 @@ const FileItem = ({ file, depth = 0 }) => (
       {file.name}
       {file.size !== undefined ? (
         <>
-          {' '}
+          {" "}
           <Text as="span" color="grey">
             ({prettyBytes(file.size)})
           </Text>
         </>
       ) : (
-        '/'
+        "/"
       )}
     </Text>
     {!!file.children.length && (
-      <Box as="ul" pl={0} css={{ listStyle: 'none' }}>
+      <Box as="ul" pl={0} css={{ listStyle: "none" }}>
         {file.children.map((child) => (
           <FileItem
             key={`file-${child.name}-${depth}`}
@@ -103,27 +103,27 @@ const FileItem = ({ file, depth = 0 }) => (
       </Box>
     )}
   </Box>
-)
+);
 
 const Torrent = ({ token, torrent, userId, userRole, uid }) => {
-  const [showReportModal, setShowReportModal] = useState(false)
-  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [userVote, setUserVote] = useState(
-    (torrent.userHasUpvoted && 'up') ||
-      (torrent.userHasDownvoted && 'down') ||
+    (torrent.userHasUpvoted && "up") ||
+      (torrent.userHasDownvoted && "down") ||
       null
-  )
+  );
   const [votes, setVotes] = useState({
     up: torrent.upvotes,
     down: torrent.downvotes,
-  })
-  const [comments, setComments] = useState(torrent.comments)
-  const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech)
+  });
+  const [comments, setComments] = useState(torrent.comments);
+  const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech);
 
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const commentInputRef = useRef()
+  const commentInputRef = useRef();
 
   const {
     publicRuntimeConfig: {
@@ -132,259 +132,259 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       SQ_TORRENT_CATEGORIES,
       SQ_SITE_WIDE_FREELEECH,
     },
-  } = getConfig()
+  } = getConfig();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const [cookies] = useCookies()
+  const [cookies] = useCookies();
 
   const handleDownload = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const downloadRes = await fetch(
         `${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`
-      )
+      );
 
       if (downloadRes.status !== 200) {
-        const reason = await downloadRes.text()
-        throw new Error(reason)
+        const reason = await downloadRes.text();
+        throw new Error(reason);
       }
 
-      const blob = await downloadRes.blob()
+      const blob = await downloadRes.blob();
 
-      const url = window.URL.createObjectURL(blob)
+      const url = window.URL.createObjectURL(blob);
 
-      const downloadLink = document.createElement('a')
-      document.body.appendChild(downloadLink)
-      downloadLink.style = 'display: none'
-      downloadLink.href = url
-      downloadLink.download = `${torrent.name} (${SQ_SITE_NAME}).torrent`
-      downloadLink.click()
+      const downloadLink = document.createElement("a");
+      document.body.appendChild(downloadLink);
+      downloadLink.style = "display: none";
+      downloadLink.href = url;
+      downloadLink.download = `${torrent.name} (${SQ_SITE_NAME}).torrent`;
+      downloadLink.click();
 
-      window.URL.revokeObjectURL(url)
+      window.URL.revokeObjectURL(url);
     } catch (e) {
-      addNotification('error', `Could not download torrent: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not download torrent: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleDelete = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const deleteRes = await fetch(
         `${SQ_API_URL}/torrent/delete/${torrent.infoHash}`,
         {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
 
       if (deleteRes.status !== 200) {
-        const reason = await deleteRes.text()
-        throw new Error(reason)
+        const reason = await deleteRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Torrent deleted successfully')
+      addNotification("success", "Torrent deleted successfully");
 
-      router.push('/')
+      router.push("/");
     } catch (e) {
-      addNotification('error', `Could not delete torrent: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not delete torrent: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleComment = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const commentRes = await fetch(
         `${SQ_API_URL}/torrent/comment/${torrent.infoHash}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            comment: form.get('comment'),
+            comment: form.get("comment"),
           }),
         }
-      )
+      );
 
       if (commentRes.status !== 200) {
-        const reason = await commentRes.text()
-        throw new Error(reason)
+        const reason = await commentRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Comment posted successfully')
+      addNotification("success", "Comment posted successfully");
 
       setComments((c) => {
         const newComment = {
-          comment: form.get('comment'),
+          comment: form.get("comment"),
           created: Date.now(),
           user: {
             username: cookies.username,
           },
-        }
-        return [newComment, ...c]
-      })
+        };
+        return [newComment, ...c];
+      });
 
-      commentInputRef.current.value = ''
+      commentInputRef.current.value = "";
     } catch (e) {
-      addNotification('error', `Could not post comment: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not post comment: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleVote = async (vote) => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       if (userVote) {
         if (userVote === vote) {
-          if (vote === 'up') setVotes((v) => ({ up: v.up - 1, down: v.down }))
-          else if (vote === 'down')
-            setVotes((v) => ({ up: v.up, down: v.down - 1 }))
-          setUserVote(null)
+          if (vote === "up") setVotes((v) => ({ up: v.up - 1, down: v.down }));
+          else if (vote === "down")
+            setVotes((v) => ({ up: v.up, down: v.down - 1 }));
+          setUserVote(null);
         } else {
-          if (vote === 'up') {
-            setVotes((v) => ({ up: v.up + 1, down: v.down - 1 }))
-          } else if (vote === 'down') {
-            setVotes((v) => ({ up: v.up - 1, down: v.down + 1 }))
+          if (vote === "up") {
+            setVotes((v) => ({ up: v.up + 1, down: v.down - 1 }));
+          } else if (vote === "down") {
+            setVotes((v) => ({ up: v.up - 1, down: v.down + 1 }));
           }
-          setUserVote(vote)
+          setUserVote(vote);
         }
       } else {
-        if (vote === 'up') setVotes((v) => ({ up: v.up + 1, down: v.down }))
-        else if (vote === 'down')
-          setVotes((v) => ({ up: v.up, down: v.down + 1 }))
-        setUserVote(vote)
+        if (vote === "up") setVotes((v) => ({ up: v.up + 1, down: v.down }));
+        else if (vote === "down")
+          setVotes((v) => ({ up: v.up, down: v.down + 1 }));
+        setUserVote(vote);
       }
 
       const voteRes = await fetch(
-        `${SQ_API_URL}/torrent/${userVote !== vote ? 'vote' : 'unvote'}/${
+        `${SQ_API_URL}/torrent/${userVote !== vote ? "vote" : "unvote"}/${
           torrent.infoHash
         }/${vote}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
 
       if (voteRes.status !== 200) {
-        const reason = await voteRes.text()
-        throw new Error(reason)
+        const reason = await voteRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Vote submitted successfully')
+      addNotification("success", "Vote submitted successfully");
     } catch (e) {
-      addNotification('error', `Could not submit vote: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not submit vote: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleReport = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const reportRes = await fetch(
         `${SQ_API_URL}/torrent/report/${torrent.infoHash}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            reason: form.get('reason'),
+            reason: form.get("reason"),
           }),
         }
-      )
+      );
 
       if (reportRes.status !== 200) {
-        const reason = await reportRes.text()
-        throw new Error(reason)
+        const reason = await reportRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Report submitted successfully')
+      addNotification("success", "Report submitted successfully");
 
-      setShowReportModal(false)
+      setShowReportModal(false);
     } catch (e) {
-      addNotification('error', `Could not submit report: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not submit report: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleToggleFreeleech = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const toggleRes = await fetch(
         `${SQ_API_URL}/torrent/toggle-freeleech/${torrent.infoHash}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
 
       if (toggleRes.status !== 200) {
-        const reason = await toggleRes.text()
-        throw new Error(reason)
+        const reason = await toggleRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Freeleech toggled successfully')
+      addNotification("success", "Freeleech toggled successfully");
 
-      setIsFreeleech((f) => !f)
+      setIsFreeleech((f) => !f);
     } catch (e) {
-      addNotification('error', `Could toggle freeleech: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could toggle freeleech: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const category = Object.keys(SQ_TORRENT_CATEGORIES).find(
     (c) => slugify(c, { lower: true }) === torrent.type
-  )
+  );
 
   const source = SQ_TORRENT_CATEGORIES[category].find(
     (s) => slugify(s, { lower: true }) === torrent.source
-  )
+  );
 
   const parsedFiles = torrent.files
-    .map(({ path, size }) => ({ path: path.split('/'), size }))
-    .reduce((children, { path, size }) => insert(children, path, size), [])
+    .map(({ path, size }) => ({ path: path.split("/"), size }))
+    .reduce((children, { path, size }) => insert(children, path, size), []);
 
   return (
     <>
       <SEO title={torrent.name} />
       <Box
         display="flex"
-        flexDirection={['column', 'row']}
-        alignItems={['flex-start', 'center']}
+        flexDirection={["column", "row"]}
+        alignItems={["flex-start", "center"]}
         justifyContent="space-between"
         mb={5}
       >
@@ -397,7 +397,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           )}
         </Text>
         <Box display="flex" alignItems="center" ml={3}>
-          {(userRole === 'admin' || userId === torrent.uploadedBy._id) && (
+          {(userRole === "admin" || userId === torrent.uploadedBy._id) && (
             <Button
               onClick={() => setShowDeleteModal(true)}
               variant="secondary"
@@ -406,9 +406,9 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               Delete
             </Button>
           )}
-          {userRole === 'admin' && (
+          {userRole === "admin" && (
             <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
-              {isFreeleech ? 'Unset' : 'Set'} freeleech
+              {isFreeleech ? "Unset" : "Set"} freeleech
             </Button>
           )}
           <Button onClick={handleDownload}>Download .torrent</Button>
@@ -416,8 +416,8 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
       </Box>
       <Info
         items={{
-          'Uploaded by': torrent.anonymous ? (
-            'Anonymous'
+          "Uploaded by": torrent.anonymous ? (
+            "Anonymous"
           ) : (
             <>
               {torrent.uploadedBy ? (
@@ -425,7 +425,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
                   <Text as="a">{torrent.uploadedBy.username}</Text>
                 </Link>
               ) : (
-                'deleted user'
+                "deleted user"
               )}
             </>
           ),
@@ -447,29 +447,29 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
-          Date: moment(torrent.created).format('HH:mm Do MMM YYYY'),
-          'Info hash': (
+          Date: moment(torrent.created).format("HH:mm Do MMM YYYY"),
+          "Info hash": (
             <Text
               as="span"
               fontFamily="mono"
-              _css={{ userSelect: 'all', wordBreak: 'break-all' }}
+              _css={{ userSelect: "all", wordBreak: "break-all" }}
             >
               {torrent.infoHash}
             </Text>
           ),
           Size: prettyBytes(torrent.size),
           Downloads: torrent.downloads,
-          Seeders: torrent.seeders !== undefined ? torrent.seeders : '?',
-          Leechers: torrent.leechers !== undefined ? torrent.leechers : '?',
+          Seeders: torrent.seeders !== undefined ? torrent.seeders : "?",
+          Leechers: torrent.leechers !== undefined ? torrent.leechers : "?",
           Freeleech:
-            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? 'Yes' : 'No',
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? "Yes" : "No",
         }}
       />
       <Box mb={5}>
         <Text
           fontWeight={600}
           fontSize={1}
-          _css={{ textTransform: 'uppercase' }}
+          _css={{ textTransform: "uppercase" }}
           mb={3}
         >
           Description
@@ -484,7 +484,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         <Text
           fontWeight={600}
           fontSize={1}
-          _css={{ textTransform: 'uppercase' }}
+          _css={{ textTransform: "uppercase" }}
           mb={3}
         >
           Tags
@@ -516,12 +516,12 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         <Text
           fontWeight={600}
           fontSize={1}
-          _css={{ textTransform: 'uppercase' }}
+          _css={{ textTransform: "uppercase" }}
           mb={3}
         >
           Files
         </Text>
-        <Box as="ul" pl={0} css={{ listStyle: 'none' }}>
+        <Box as="ul" pl={0} css={{ listStyle: "none" }}>
           {parsedFiles.map((file, i) => (
             <FileItem key={`file-${i}`} file={file} />
           ))}
@@ -534,19 +534,19 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         pb={5}
         mb={5}
       >
-        <Button onClick={() => handleVote('up')} variant="noBackground" mr={2}>
-          <Text icon={Like} iconColor={userVote === 'up' ? 'green' : undefined}>
+        <Button onClick={() => handleVote("up")} variant="noBackground" mr={2}>
+          <Text icon={Like} iconColor={userVote === "up" ? "green" : undefined}>
             {votes.up || 0}
           </Text>
         </Button>
         <Button
-          onClick={() => handleVote('down')}
+          onClick={() => handleVote("down")}
           variant="noBackground"
           mr={2}
         >
           <Text
             icon={Dislike}
-            iconColor={userVote === 'down' ? 'red' : undefined}
+            iconColor={userVote === "down" ? "red" : undefined}
           >
             {votes.down || 0}
           </Text>
@@ -613,41 +613,41 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         </Modal>
       )}
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, userId, fetchHeaders, query: { infoHash } }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
-    } = getConfig()
+    } = getConfig();
 
-    const { id, role } = jwt.verify(token, SQ_JWT_SECRET)
+    const { id, role } = jwt.verify(token, SQ_JWT_SECRET);
 
     try {
       const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
         headers: fetchHeaders,
-      })
+      });
 
       if (
         torrentRes.status === 403 &&
-        (await torrentRes.text()) === 'User is banned'
+        (await torrentRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
 
-      if (torrentRes.status === 404) return { notFound: true }
+      if (torrentRes.status === 404) return { notFound: true };
 
-      const torrent = await torrentRes.json()
-      return { props: { torrent, userId: id, userRole: role, uid: userId } }
+      const torrent = await torrentRes.json();
+      return { props: { torrent, userId: id, userRole: role, uid: userId } };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   }
-)
+);
 
-export default Torrent
+export default Torrent;

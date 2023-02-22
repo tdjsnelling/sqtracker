@@ -1,19 +1,19 @@
-import { useEffect } from 'react'
-import { useRouter } from 'next/router'
-import { useCookies } from 'react-cookie'
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
 
 const Logout = () => {
-  const [, , removeCookie] = useCookies()
+  const [, , removeCookie] = useCookies();
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
-    removeCookie('token', { path: '/' })
-    removeCookie('userId', { path: '/' })
-    router.push('/')
-  }, [])
+    removeCookie("token", { path: "/" });
+    removeCookie("userId", { path: "/" });
+    router.push("/");
+  }, []);
 
-  return null
-}
+  return null;
+};
 
-export default Logout
+export default Logout;

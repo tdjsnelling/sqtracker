@@ -1,155 +1,155 @@
-import React, { useState, useContext, useRef } from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import moment from 'moment'
-import jwt from 'jsonwebtoken'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import { useCookies } from 'react-cookie'
-import { Pin } from '@styled-icons/boxicons-regular'
-import SEO from '../../../components/SEO'
-import Box from '../../../components/Box'
-import Text from '../../../components/Text'
-import Button from '../../../components/Button'
-import MarkdownBody from '../../../components/MarkdownBody'
-import { withAuthServerSideProps } from '../../../utils/withAuth'
-import { NotificationContext } from '../../../components/Notifications'
-import Input from '../../../components/Input'
-import Comment from '../../../components/Comment'
-import LoadingContext from '../../../utils/LoadingContext'
+import React, { useState, useContext, useRef } from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import moment from "moment";
+import jwt from "jsonwebtoken";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { useCookies } from "react-cookie";
+import { Pin } from "@styled-icons/boxicons-regular";
+import SEO from "../../../components/SEO";
+import Box from "../../../components/Box";
+import Text from "../../../components/Text";
+import Button from "../../../components/Button";
+import MarkdownBody from "../../../components/MarkdownBody";
+import { withAuthServerSideProps } from "../../../utils/withAuth";
+import { NotificationContext } from "../../../components/Notifications";
+import Input from "../../../components/Input";
+import Comment from "../../../components/Comment";
+import LoadingContext from "../../../utils/LoadingContext";
 
 const Announcement = ({ announcement, token, userRole }) => {
-  const [pinned, setPinned] = useState(announcement.pinned)
-  const [comments, setComments] = useState(announcement.comments)
+  const [pinned, setPinned] = useState(announcement.pinned);
+  const [comments, setComments] = useState(announcement.comments);
 
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const commentInputRef = useRef()
+  const commentInputRef = useRef();
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+  } = getConfig();
 
-  const router = useRouter()
+  const router = useRouter();
 
-  const [cookies] = useCookies()
+  const [cookies] = useCookies();
 
   const handleDelete = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const deleteRes = await fetch(
         `${SQ_API_URL}/announcements/${announcement.slug}`,
         {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
 
       if (deleteRes.status !== 200) {
-        const reason = await deleteRes.text()
-        throw new Error(reason)
+        const reason = await deleteRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Announcement deleted successfully')
+      addNotification("success", "Announcement deleted successfully");
 
-      router.push('/announcements')
+      router.push("/announcements");
     } catch (e) {
-      addNotification('error', `Could not delete announcement: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not delete announcement: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handlePin = async () => {
-    setLoading(true)
+    setLoading(true);
 
     try {
       const pinRes = await fetch(
         `${SQ_API_URL}/announcements/pin/${announcement._id}/${
-          pinned ? 'unpin' : 'pin'
+          pinned ? "unpin" : "pin"
         }`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
+      );
 
       if (pinRes.status !== 200) {
-        const reason = await pinRes.text()
-        throw new Error(reason)
+        const reason = await pinRes.text();
+        throw new Error(reason);
       }
 
       addNotification(
-        'success',
-        `Announcement ${pinned ? 'unpinned' : 'pinned'} successfully`
-      )
+        "success",
+        `Announcement ${pinned ? "unpinned" : "pinned"} successfully`
+      );
 
-      setPinned((p) => !p)
+      setPinned((p) => !p);
     } catch (e) {
       addNotification(
-        'error',
-        `Could not ${pinned ? 'unpin' : 'pin'} announcement: ${e.message}`
-      )
-      console.error(e)
+        "error",
+        `Could not ${pinned ? "unpin" : "pin"} announcement: ${e.message}`
+      );
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleComment = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const commentRes = await fetch(
         `${SQ_API_URL}/announcements/comment/${announcement._id}`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            comment: form.get('comment'),
+            comment: form.get("comment"),
           }),
         }
-      )
+      );
 
       if (commentRes.status !== 200) {
-        const reason = await commentRes.text()
-        throw new Error(reason)
+        const reason = await commentRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Comment posted successfully')
+      addNotification("success", "Comment posted successfully");
 
       setComments((c) => {
         const newComment = {
-          comment: form.get('comment'),
+          comment: form.get("comment"),
           created: Date.now(),
           user: {
             username: cookies.username,
           },
-        }
-        return [newComment, ...c]
-      })
+        };
+        return [newComment, ...c];
+      });
 
-      commentInputRef.current.value = ''
+      commentInputRef.current.value = "";
     } catch (e) {
-      addNotification('error', `Could not post comment: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not post comment: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -168,10 +168,10 @@ const Announcement = ({ announcement, token, userRole }) => {
             </Box>
           )}
         </Box>
-        {userRole === 'admin' && (
+        {userRole === "admin" && (
           <Box display="flex" alignItems="center">
             <Button onClick={handlePin} variant="secondary" mr={3}>
-              {pinned ? 'Unpin' : 'Pin'}
+              {pinned ? "Unpin" : "Pin"}
             </Button>
             <Link href={`${router.asPath}/edit`} passHref>
               <a>
@@ -188,19 +188,19 @@ const Announcement = ({ announcement, token, userRole }) => {
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          Posted {moment(announcement.created).format('HH:mm Do MMM YYYY')} by{' '}
+          Posted {moment(announcement.created).format("HH:mm Do MMM YYYY")} by{" "}
           {announcement.createdBy?.username ? (
             <Link href={`/user/${announcement.createdBy.username}`} passHref>
               <a>{announcement.createdBy.username}</a>
             </Link>
           ) : (
-            'deleted user'
+            "deleted user"
           )}
         </Text>
         {announcement.updated && (
           <Text color="grey" mt={3}>
-            Last updated{' '}
-            {moment(announcement.updated).format('HH:mm Do MMM YYYY')}
+            Last updated{" "}
+            {moment(announcement.updated).format("HH:mm Do MMM YYYY")}
           </Text>
         )}
       </Box>
@@ -222,7 +222,7 @@ const Announcement = ({ announcement, token, userRole }) => {
             label="Post a comment"
             rows="5"
             placeholder={
-              !announcement.allowComments ? 'Comments disabled.' : undefined
+              !announcement.allowComments ? "Comments disabled." : undefined
             }
             disabled={!announcement.allowComments}
             mb={4}
@@ -247,19 +247,19 @@ const Announcement = ({ announcement, token, userRole }) => {
         )}
       </Box>
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, fetchHeaders, query: { slug } }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
-    } = getConfig()
+    } = getConfig();
 
-    const { role } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role } = jwt.verify(token, SQ_JWT_SECRET);
 
     try {
       const announcementRes = await fetch(
@@ -267,20 +267,20 @@ export const getServerSideProps = withAuthServerSideProps(
         {
           headers: fetchHeaders,
         }
-      )
+      );
       if (
         announcementRes.status === 403 &&
-        (await announcementRes.text()) === 'User is banned'
+        (await announcementRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
-      const announcement = await announcementRes.json()
-      return { props: { announcement, token, userRole: role } }
+      const announcement = await announcementRes.json();
+      return { props: { announcement, token, userRole: role } };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   }
-)
+);
 
-export default Announcement
+export default Announcement;

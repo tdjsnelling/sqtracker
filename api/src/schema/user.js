@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const User = new mongoose.Schema({
   username: String,
@@ -19,6 +19,6 @@ const User = new mongoose.Schema({
     qr: String,
     backup: [String],
   },
-})
+});
 
-export default mongoose.model('user', User)
+export default mongoose.model("user", User);

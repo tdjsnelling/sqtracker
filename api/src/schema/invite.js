@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Invite = new mongoose.Schema({
   invitingUser: mongoose.Schema.ObjectId,
@@ -8,6 +8,6 @@ const Invite = new mongoose.Schema({
   token: String,
   email: String,
   role: String,
-})
+});
 
-export default mongoose.model('invite', Invite)
+export default mongoose.model("invite", Invite);

@@ -1,4 +1,4 @@
-import express from 'express'
+import express from "express";
 import {
   acceptCandidate,
   addCandidate,
@@ -7,17 +7,17 @@ import {
   deleteRequest,
   fetchRequest,
   getRequests,
-} from '../controllers/request'
+} from "../controllers/request";
 
-const router = express.Router()
+const router = express.Router();
 
 export default () => {
-  router.post('/new', createRequest)
-  router.get('/page/:page', getRequests)
-  router.get('/:index', fetchRequest)
-  router.delete('/:index', deleteRequest)
-  router.post('/comment/:requestId', addCommentRequest)
-  router.post('/suggest/:requestId', addCandidate)
-  router.post('/accept/:requestId', acceptCandidate)
-  return router
-}
+  router.post("/new", createRequest);
+  router.get("/page/:page", getRequests);
+  router.get("/:index", fetchRequest);
+  router.delete("/:index", deleteRequest);
+  router.post("/comment/:requestId", addCommentRequest);
+  router.post("/suggest/:requestId", addCandidate);
+  router.post("/accept/:requestId", acceptCandidate);
+  return router;
+};

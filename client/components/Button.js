@@ -1,48 +1,48 @@
-import React from 'react'
-import styled from 'styled-components'
-import { layout, space, display, flexbox, variant } from 'styled-system'
-import css from '@styled-system/css'
-import { darken, lighten, getLuminance } from 'polished'
+import React from "react";
+import styled from "styled-components";
+import { layout, space, display, flexbox, variant } from "styled-system";
+import css from "@styled-system/css";
+import { darken, lighten, getLuminance } from "polished";
 
 const StyledButton = styled.button(
   ({ theme, small }) =>
     css({
-      appearance: 'none',
-      bg: 'primary',
-      color: getLuminance(theme.colors.primary) >= 0.5 ? '#202224' : '#f8f8f8',
-      border: '2px solid',
-      borderColor: 'primary',
+      appearance: "none",
+      bg: "primary",
+      color: getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8",
+      border: "2px solid",
+      borderColor: "primary",
       borderRadius: 1,
-      fontFamily: 'body',
+      fontFamily: "body",
       fontSize: 2,
       px: 4,
       py: !small ? 3 : 2,
-      cursor: 'pointer',
-      whiteSpace: 'nowrap',
-      '&:hover': {
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      "&:hover": {
         borderColor:
-          theme.name === 'light'
+          theme.name === "light"
             ? darken(0.1, theme.colors.primary)
             : lighten(0.1, theme.colors.primary),
       },
-      '&:focus, &:active': {
+      "&:focus, &:active": {
         bg:
-          theme.name === 'light'
+          theme.name === "light"
             ? darken(0.1, theme.colors.primary)
             : lighten(0.1, theme.colors.primary),
         borderColor:
-          theme.name === 'light'
+          theme.name === "light"
             ? darken(0.1, theme.colors.primary)
             : lighten(0.1, theme.colors.primary),
       },
-      '&[disabled]': {
-        cursor: 'not-allowed',
+      "&[disabled]": {
+        cursor: "not-allowed",
         opacity: 0.5,
-        '&:hover': {
-          borderColor: 'primary',
+        "&:hover": {
+          borderColor: "primary",
         },
-        '&:focus, &:active': {
-          bg: 'primary',
+        "&:focus, &:active": {
+          bg: "primary",
         },
       },
     }),
@@ -50,81 +50,81 @@ const StyledButton = styled.button(
     variant({
       variants: {
         secondary: {
-          bg: 'sidebar',
-          color: 'text',
-          borderColor: 'sidebar',
-          '&:hover': {
+          bg: "sidebar",
+          color: "text",
+          borderColor: "sidebar",
+          "&:hover": {
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
           },
-          '&:focus, &:active': {
+          "&:focus, &:active": {
             bg:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
           },
-          '&[disabled]': {
-            '&:hover': {
-              borderColor: 'sidebar',
+          "&[disabled]": {
+            "&:hover": {
+              borderColor: "sidebar",
             },
-            '&:focus, &:active': {
-              bg: 'sidebar',
+            "&:focus, &:active": {
+              bg: "sidebar",
             },
           },
         },
         noBackground: {
-          bg: 'transparent',
-          color: 'text',
-          borderColor: 'sidebar',
-          '&:hover': {
+          bg: "transparent",
+          color: "text",
+          borderColor: "sidebar",
+          "&:hover": {
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
           },
-          '&:focus, &:active': {
+          "&:focus, &:active": {
             bg:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.sidebar)
                 : lighten(0.1, theme.colors.sidebar),
           },
         },
         danger: {
-          bg: 'error',
-          color: '#f8f8f8',
-          borderColor: 'error',
-          '&:hover': {
+          bg: "error",
+          color: "#f8f8f8",
+          borderColor: "error",
+          "&:hover": {
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.error)
                 : lighten(0.1, theme.colors.error),
           },
-          '&:focus, &:active': {
+          "&:focus, &:active": {
             bg:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.error)
                 : lighten(0.1, theme.colors.error),
             borderColor:
-              theme.name === 'light'
+              theme.name === "light"
                 ? darken(0.1, theme.colors.error)
                 : lighten(0.1, theme.colors.error),
           },
-          '&[disabled]': {
-            '&:hover': {
-              borderColor: 'sidebar',
+          "&[disabled]": {
+            "&:hover": {
+              borderColor: "sidebar",
             },
-            '&:focus, &:active': {
-              bg: 'sidebar',
+            "&:focus, &:active": {
+              bg: "sidebar",
             },
           },
         },
@@ -134,7 +134,7 @@ const StyledButton = styled.button(
   space,
   display,
   flexbox
-)
+);
 
 const Button = ({ onClick, disabled, ...rest }) => (
   <StyledButton
@@ -142,6 +142,6 @@ const Button = ({ onClick, disabled, ...rest }) => (
     disabled={disabled}
     {...rest}
   />
-)
+);
 
-export default Button
+export default Button;

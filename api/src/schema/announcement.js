@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Announcement = new mongoose.Schema({
   title: String,
@@ -9,6 +9,6 @@ const Announcement = new mongoose.Schema({
   allowComments: Boolean,
   created: Number,
   updated: Number,
-})
+});
 
-export default mongoose.model('announcement', Announcement)
+export default mongoose.model("announcement", Announcement);

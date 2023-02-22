@@ -1,16 +1,16 @@
-import React from 'react'
-import Link from 'next/link'
-import { toPath } from 'lodash'
-import Box from '../components/Box'
-import Text from '../components/Text'
+import React from "react";
+import Link from "next/link";
+import { toPath } from "lodash";
+import Box from "../components/Box";
+import Text from "../components/Text";
 
 const getIn = (obj, key, p = 0) => {
-  const path = toPath(key)
+  const path = toPath(key);
   while (obj && p < path.length) {
-    obj = obj[path[p++]]
+    obj = obj[path[p++]];
   }
-  return obj
-}
+  return obj;
+};
 
 const WrapLink = ({ href, children }) =>
   href ? (
@@ -20,8 +20,8 @@ const WrapLink = ({ href, children }) =>
         display="block"
         color="text"
         _css={{
-          '&:visited': { color: 'text' },
-          '&:hover': { bg: 'sidebar', textDecoration: 'none' },
+          "&:visited": { color: "text" },
+          "&:hover": { bg: "sidebar", textDecoration: "none" },
         }}
       >
         {children}
@@ -29,7 +29,7 @@ const WrapLink = ({ href, children }) =>
     </Link>
   ) : (
     children
-  )
+  );
 
 const ListItem = ({ children }) => {
   return (
@@ -38,13 +38,13 @@ const ListItem = ({ children }) => {
       borderBottom="1px solid"
       borderColor="border"
       _css={{
-        '&:first-child': { borderTopWidth: '1px', borderTopStyle: 'solid' },
+        "&:first-child": { borderTopWidth: "1px", borderTopStyle: "solid" },
       }}
     >
       {children}
     </Box>
-  )
-}
+  );
+};
 
 const List = ({ data = [], columns = [], ...rest }) => {
   return (
@@ -52,7 +52,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
       <Box minWidth="700px">
         <Box
           display="grid"
-          gridTemplateColumns={columns.map((col) => col.gridWidth).join(' ')}
+          gridTemplateColumns={columns.map((col) => col.gridWidth).join(" ")}
           gridGap={[2, 4]}
           alignItems="center"
           px={4}
@@ -63,14 +63,14 @@ const List = ({ data = [], columns = [], ...rest }) => {
               key={`list-header-col-${i}`}
               fontWeight={600}
               fontSize={1}
-              textAlign={col.rightAlign ? 'right' : 'left'}
-              _css={{ textTransform: 'uppercase' }}
+              textAlign={col.rightAlign ? "right" : "left"}
+              _css={{ textTransform: "uppercase" }}
             >
               {col.header}
             </Text>
           ))}
         </Box>
-        <Box as="ul" pl={0} _css={{ listStyle: 'none' }} {...rest}>
+        <Box as="ul" pl={0} _css={{ listStyle: "none" }} {...rest}>
           {data.length ? (
             data.map((row, i) => (
               <ListItem key={`list-row-${i}`}>
@@ -79,7 +79,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
                     display="grid"
                     gridTemplateColumns={columns
                       .map((col) => col.gridWidth)
-                      .join(' ')}
+                      .join(" ")}
                     gridGap={[2, 4]}
                     alignItems="center"
                     minHeight="50px"
@@ -91,14 +91,14 @@ const List = ({ data = [], columns = [], ...rest }) => {
                         width="100%"
                         display="flex"
                         alignItems="center"
-                        textAlign={col.rightAlign ? 'right' : 'left'}
+                        textAlign={col.rightAlign ? "right" : "left"}
                         _css={{
-                          overflow: 'hidden',
-                          '> *': {
-                            width: '100%',
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
+                          overflow: "hidden",
+                          "> *": {
+                            width: "100%",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                           },
                         }}
                       >
@@ -122,7 +122,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default List
+export default List;

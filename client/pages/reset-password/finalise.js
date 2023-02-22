@@ -1,60 +1,60 @@
-import React, { useContext } from 'react'
-import getConfig from 'next/config'
-import { useRouter } from 'next/router'
-import jwt from 'jsonwebtoken'
-import SEO from '../../components/SEO'
-import Text from '../../components/Text'
-import Input from '../../components/Input'
-import Button from '../../components/Button'
-import { NotificationContext } from '../../components/Notifications'
-import LoadingContext from '../../utils/LoadingContext'
+import React, { useContext } from "react";
+import getConfig from "next/config";
+import { useRouter } from "next/router";
+import jwt from "jsonwebtoken";
+import SEO from "../../components/SEO";
+import Text from "../../components/Text";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { NotificationContext } from "../../components/Notifications";
+import LoadingContext from "../../utils/LoadingContext";
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+  } = getConfig();
 
   const handleInitiate = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const res = await fetch(`${SQ_API_URL}/reset-password/finalise`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          newPassword: form.get('newPassword'),
+          newPassword: form.get("newPassword"),
           email,
           token,
         }),
-      })
+      });
 
       if (res.status !== 200) {
-        const reason = await res.text()
-        throw new Error(reason)
+        const reason = await res.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Password was reset successfully')
+      addNotification("success", "Password was reset successfully");
 
-      router.push('/login')
+      router.push("/login");
     } catch (e) {
       addNotification(
-        'error',
+        "error",
         `Could not complete password reset: ${e.message}`
-      )
-      console.error(e)
+      );
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -78,23 +78,25 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
         <p>Token error: {tokenError}</p>
       )}
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = async ({ query: { token } }) => {
   const {
     serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
-  if (!token) return { props: { tokenError: 'Token not provided' } }
+  } = getConfig();
+  if (!token) return { props: { tokenError: "Token not provided" } };
   try {
-    const decoded = await jwt.verify(token, SQ_JWT_SECRET)
+    const decoded = await jwt.verify(token, SQ_JWT_SECRET);
     if (decoded.validUntil < Date.now()) {
-      return { props: { email: decoded.user, tokenError: 'Token has expired' } }
+      return {
+        props: { email: decoded.user, tokenError: "Token has expired" },
+      };
     }
-    return { props: { token, email: decoded.user } }
+    return { props: { token, email: decoded.user } };
   } catch (e) {
-    return { props: { tokenError: e.message } }
+    return { props: { tokenError: e.message } };
   }
-}
+};
 
-export default FinalisePasswordReset
+export default FinalisePasswordReset;

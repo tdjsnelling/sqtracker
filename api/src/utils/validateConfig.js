@@ -1,7 +1,7 @@
-import * as yup from 'yup'
+import * as yup from "yup";
 
-const httpRegex = /http(s)?:\/\/.*/
-const mongoRegex = /mongodb:\/\/.*/
+const httpRegex = /http(s)?:\/\/.*/;
+const mongoRegex = /mongodb:\/\/.*/;
 
 const configSchema = yup
   .object({
@@ -12,7 +12,7 @@ const configSchema = yup
         SQ_THEME_COLOUR: yup.string().matches(/#([a-f0-9]){6}/i),
         SQ_ALLOW_REGISTER: yup
           .string()
-          .oneOf(['open', 'invite', 'closed'])
+          .oneOf(["open", "invite", "closed"])
           .required(),
         SQ_ALLOW_ANONYMOUS_UPLOADS: yup.boolean().required(),
         SQ_MINIMUM_RATIO: yup.number().min(0).required(),
@@ -33,10 +33,10 @@ const configSchema = yup
                   value.every(
                     (source) => value.filter((c) => c === source).length === 1
                   )
-              )
-            return obj
-          }, {})
-          return yup.object(entries).required()
+              );
+            return obj;
+          }, {});
+          return yup.object(entries).required();
         }),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
@@ -63,7 +63,7 @@ const configSchema = yup
   })
   .strict()
   .noUnknown()
-  .required()
+  .required();
 
 const validateConfig = async (config) => {
   try {
@@ -71,13 +71,13 @@ const validateConfig = async (config) => {
       ...process.env,
       ...config.envs,
       ...config.secrets,
-    }
-    await configSchema.validate(config)
-    console.log('[sq] configuration is valid')
+    };
+    await configSchema.validate(config);
+    console.log("[sq] configuration is valid");
   } catch (e) {
-    console.error('[sq] ERROR: invalid configuration:', e.message)
-    process.exit(1)
+    console.error("[sq] ERROR: invalid configuration:", e.message);
+    process.exit(1);
   }
-}
+};
 
-export default validateConfig
+export default validateConfig;

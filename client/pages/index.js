@@ -1,18 +1,18 @@
-import React from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { withAuthServerSideProps } from '../utils/withAuth'
-import Box from '../components/Box'
-import Text from '../components/Text'
-import SEO from '../components/SEO'
-import Input from '../components/Input'
-import Button from '../components/Button'
-import TorrentList from '../components/TorrentList'
-import Infobox from '../components/Infobox'
-import { ErrorCircle } from '@styled-icons/boxicons-regular/ErrorCircle'
-import { News } from '@styled-icons/boxicons-regular/News'
-import moment from 'moment/moment'
+import React from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { withAuthServerSideProps } from "../utils/withAuth";
+import Box from "../components/Box";
+import Text from "../components/Text";
+import SEO from "../components/SEO";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import TorrentList from "../components/TorrentList";
+import Infobox from "../components/Infobox";
+import { ErrorCircle } from "@styled-icons/boxicons-regular/ErrorCircle";
+import { News } from "@styled-icons/boxicons-regular/News";
+import moment from "moment/moment";
 
 const PublicLanding = ({ name, allowRegister }) => (
   <Box
@@ -40,7 +40,7 @@ const PublicLanding = ({ name, allowRegister }) => (
       )}
     </Box>
   </Box>
-)
+);
 
 const Index = ({
   token,
@@ -54,9 +54,9 @@ const Index = ({
       SQ_ALLOW_REGISTER,
       SQ_TORRENT_CATEGORIES,
     },
-  } = getConfig()
+  } = getConfig();
 
-  const router = useRouter()
+  const router = useRouter();
 
   if (!token)
     return (
@@ -64,14 +64,14 @@ const Index = ({
         <SEO />
         <PublicLanding name={SQ_SITE_NAME} allowRegister={SQ_ALLOW_REGISTER} />
       </>
-    )
+    );
 
   const handleSearch = (e) => {
-    e.preventDefault()
-    const form = new FormData(e.target)
-    const query = form.get('query')
-    if (query) router.push(`/search/${encodeURIComponent(query)}`)
-  }
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const query = form.get("query");
+    if (query) router.push(`/search/${encodeURIComponent(query)}`);
+  };
 
   return (
     <>
@@ -92,9 +92,9 @@ const Index = ({
           <Box
             as="a"
             _css={{
-              '&:hover': {
-                textDecoration: 'none',
-                h2: { textDecoration: 'underline' },
+              "&:hover": {
+                textDecoration: "none",
+                h2: { textDecoration: "underline" },
               },
             }}
           >
@@ -105,7 +105,7 @@ const Index = ({
                 color="grey"
                 fontWeight={600}
                 fontSize={1}
-                _css={{ textTransform: 'uppercase' }}
+                _css={{ textTransform: "uppercase" }}
                 mb={3}
               >
                 Latest announcement
@@ -114,9 +114,9 @@ const Index = ({
                 {latestAnnouncement.title}
               </Text>
               <Text color="grey">
-                Posted{' '}
-                {moment(latestAnnouncement.created).format('HH:mm Do MMM YYYY')}{' '}
-                by{' '}
+                Posted{" "}
+                {moment(latestAnnouncement.created).format("HH:mm Do MMM YYYY")}{" "}
+                by{" "}
                 {latestAnnouncement.createdBy?.username ? (
                   <Link
                     href={`/user/${latestAnnouncement.createdBy.username}`}
@@ -125,7 +125,7 @@ const Index = ({
                     <a>{latestAnnouncement.createdBy.username}</a>
                   </Link>
                 ) : (
-                  'deleted user'
+                  "deleted user"
                 )}
               </Text>
             </Infobox>
@@ -144,51 +144,51 @@ const Index = ({
         categories={SQ_TORRENT_CATEGORIES}
       />
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, fetchHeaders }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
-    } = getConfig()
+    } = getConfig();
 
     try {
       const latestTorrentsRes = await fetch(`${SQ_API_URL}/torrent/latest`, {
         headers: fetchHeaders,
-      })
+      });
       if (
         latestTorrentsRes.status === 403 &&
-        (await latestTorrentsRes.text()) === 'User is banned'
+        (await latestTorrentsRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
-      const latestTorrents = await latestTorrentsRes.json()
+      const latestTorrents = await latestTorrentsRes.json();
 
       const latestAnnouncementRes = await fetch(
         `${SQ_API_URL}/announcements/latest`,
         {
           headers: fetchHeaders,
         }
-      )
-      const latestAnnouncement = await latestAnnouncementRes.json()
+      );
+      const latestAnnouncement = await latestAnnouncementRes.json();
 
       const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
         headers: fetchHeaders,
-      })
-      const emailVerified = await verifiedRes.json()
+      });
+      const emailVerified = await verifiedRes.json();
 
       return {
         props: { latestTorrents, latestAnnouncement, emailVerified, token },
-      }
+      };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   },
   true
-)
+);
 
-export default Index
+export default Index;

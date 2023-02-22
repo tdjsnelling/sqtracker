@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
 const Comment = new mongoose.Schema({
   type: String, // torrent|announcement
@@ -6,6 +6,6 @@ const Comment = new mongoose.Schema({
   userId: mongoose.Schema.ObjectId,
   comment: String,
   created: Number,
-})
+});
 
-export default mongoose.model('comment', Comment)
+export default mongoose.model("comment", Comment);

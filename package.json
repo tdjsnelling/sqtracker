@@ -10,7 +10,8 @@
   "scripts": {
     "api:dev": "yarn workspace @sqtracker/api dev",
     "client:dev": "yarn workspace @sqtracker/client dev",
-    "dev": "npm-run-all --parallel api:dev client:dev"
+    "dev": "npm-run-all --parallel api:dev client:dev",
+    "lint": "prettier --write --ignore-path=.eslintignore '**/*.js'"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5"

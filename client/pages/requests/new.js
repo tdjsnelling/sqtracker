@@ -1,59 +1,59 @@
-import React, { useContext } from 'react'
-import getConfig from 'next/config'
-import { useRouter } from 'next/router'
-import jwt from 'jsonwebtoken'
-import SEO from '../../components/SEO'
-import Text from '../../components/Text'
-import Input from '../../components/Input'
-import Button from '../../components/Button'
-import { withAuthServerSideProps } from '../../utils/withAuth'
-import { NotificationContext } from '../../components/Notifications'
-import LoadingContext from '../../utils/LoadingContext'
+import React, { useContext } from "react";
+import getConfig from "next/config";
+import { useRouter } from "next/router";
+import jwt from "jsonwebtoken";
+import SEO from "../../components/SEO";
+import Text from "../../components/Text";
+import Input from "../../components/Input";
+import Button from "../../components/Button";
+import { withAuthServerSideProps } from "../../utils/withAuth";
+import { NotificationContext } from "../../components/Notifications";
+import LoadingContext from "../../utils/LoadingContext";
 
 const NewRequest = ({ token }) => {
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
-  } = getConfig()
+  } = getConfig();
 
   const handleCreate = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const createRequestRes = await fetch(`${SQ_API_URL}/requests/new`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: form.get('title'),
-          body: form.get('body'),
+          title: form.get("title"),
+          body: form.get("body"),
         }),
-      })
+      });
 
       if (createRequestRes.status !== 200) {
-        const reason = await createRequestRes.text()
-        throw new Error(reason)
+        const reason = await createRequestRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Request created successfully')
+      addNotification("success", "Request created successfully");
 
-      const { index } = await createRequestRes.json()
-      router.push(`/requests/${index}`)
+      const { index } = await createRequestRes.json();
+      router.push(`/requests/${index}`);
     } catch (e) {
-      addNotification('error', `Could not create request: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not create request: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   return (
     <>
@@ -82,19 +82,19 @@ const NewRequest = ({ token }) => {
         </Button>
       </form>
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(async ({ token }) => {
-  if (!token) return { props: {} }
+  if (!token) return { props: {} };
 
   const {
     serverRuntimeConfig: { SQ_JWT_SECRET },
-  } = getConfig()
+  } = getConfig();
 
-  const { role } = jwt.verify(token, SQ_JWT_SECRET)
+  const { role } = jwt.verify(token, SQ_JWT_SECRET);
 
-  return { props: { token, userRole: role } }
-})
+  return { props: { token, userRole: role } };
+});
 
-export default NewRequest
+export default NewRequest;

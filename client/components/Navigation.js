@@ -1,48 +1,48 @@
-import React, { useContext, useState, useEffect } from 'react'
-import getConfig from 'next/config'
-import Link from 'next/link'
-import { useRouter } from 'next/router'
-import { useCookies } from 'react-cookie'
-import styled, { ThemeContext } from 'styled-components'
-import css from '@styled-system/css'
-import { X } from '@styled-icons/boxicons-regular/X'
-import { Home } from '@styled-icons/boxicons-regular/Home'
-import { ListUl } from '@styled-icons/boxicons-regular/ListUl'
-import { Search } from '@styled-icons/boxicons-regular/Search'
-import { Upload } from '@styled-icons/boxicons-regular/Upload'
-import { News } from '@styled-icons/boxicons-regular/News'
-import { MessageAdd } from '@styled-icons/boxicons-regular/MessageAdd'
-import { Rss } from '@styled-icons/boxicons-regular/Rss'
-import { User } from '@styled-icons/boxicons-regular/User'
-import { Error } from '@styled-icons/boxicons-regular/Error'
-import { TrendingUp } from '@styled-icons/boxicons-regular/TrendingUp'
-import { LogOutCircle } from '@styled-icons/boxicons-regular/LogOutCircle'
-import { LogInCircle } from '@styled-icons/boxicons-regular/LogInCircle'
-import { UserPlus } from '@styled-icons/boxicons-regular/UserPlus'
-import Box from './Box'
-import Text from './Text'
-import Button from './Button'
+import React, { useContext, useState, useEffect } from "react";
+import getConfig from "next/config";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { useCookies } from "react-cookie";
+import styled, { ThemeContext } from "styled-components";
+import css from "@styled-system/css";
+import { X } from "@styled-icons/boxicons-regular/X";
+import { Home } from "@styled-icons/boxicons-regular/Home";
+import { ListUl } from "@styled-icons/boxicons-regular/ListUl";
+import { Search } from "@styled-icons/boxicons-regular/Search";
+import { Upload } from "@styled-icons/boxicons-regular/Upload";
+import { News } from "@styled-icons/boxicons-regular/News";
+import { MessageAdd } from "@styled-icons/boxicons-regular/MessageAdd";
+import { Rss } from "@styled-icons/boxicons-regular/Rss";
+import { User } from "@styled-icons/boxicons-regular/User";
+import { Error } from "@styled-icons/boxicons-regular/Error";
+import { TrendingUp } from "@styled-icons/boxicons-regular/TrendingUp";
+import { LogOutCircle } from "@styled-icons/boxicons-regular/LogOutCircle";
+import { LogInCircle } from "@styled-icons/boxicons-regular/LogInCircle";
+import { UserPlus } from "@styled-icons/boxicons-regular/UserPlus";
+import Box from "./Box";
+import Text from "./Text";
+import Button from "./Button";
 
 const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
-  const router = useRouter()
-  const { asPath } = router
+  const router = useRouter();
+  const { asPath } = router;
 
   const active =
-    href === '/'
-      ? asPath === '/'
+    href === "/"
+      ? asPath === "/"
       : asPath.startsWith(href) ||
-        highlights.some((link) => asPath.startsWith(link))
+        highlights.some((link) => asPath.startsWith(link));
 
   return css({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    color: active ? 'primary' : `${theme.colors.text} !important`,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    color: active ? "primary" : `${theme.colors.text} !important`,
     background: active
       ? `linear-gradient(to right, rgba(0, 0, 0, 0), ${theme.colors.border})`
-      : 'transparent',
-    borderRight: '4px solid',
-    borderColor: active ? 'primary' : 'transparent',
+      : "transparent",
+    borderRight: "4px solid",
+    borderColor: active ? "primary" : "transparent",
     fontWeight: 500,
     lineHeight: 1,
     px: 4,
@@ -51,19 +51,19 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
     svg: {
       ml: 3,
     },
-  })
-})
+  });
+});
 
 const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
-  const [cookies] = useCookies()
-  const [role, setRole] = useState('user')
-  const [isServer, setIsServer] = useState(true)
+  const [cookies] = useCookies();
+  const [role, setRole] = useState("user");
+  const [isServer, setIsServer] = useState(true);
 
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
-  const { asPath } = useRouter()
+  const { asPath } = useRouter();
 
-  const { username, token } = cookies
+  const { username, token } = cookies;
 
   const {
     publicRuntimeConfig: {
@@ -73,7 +73,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       SQ_VERSION,
       SQ_TORRENT_CATEGORIES,
     },
-  } = getConfig()
+  } = getConfig();
 
   useEffect(() => {
     const getUserRole = async () => {
@@ -81,19 +81,19 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      })
-      const role = await roleRes.text()
-      setRole(role)
-    }
-    if (token) getUserRole()
-    setIsServer(false)
-  }, [token])
+      });
+      const role = await roleRes.text();
+      setRole(role);
+    };
+    if (token) getUserRole();
+    setIsServer(false);
+  }, [token]);
 
   useEffect(() => {
-    if (isMobile && menuIsOpen) setMenuIsOpen(false)
-  }, [asPath])
+    if (isMobile && menuIsOpen) setMenuIsOpen(false);
+  }, [asPath]);
 
-  if (isMobile && !menuIsOpen) return null
+  if (isMobile && !menuIsOpen) return null;
 
   return (
     <Box
@@ -113,7 +113,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         as="header"
         display="flex"
         alignItems="center"
-        justifyContent={['space-between', 'flex-end']}
+        justifyContent={["space-between", "flex-end"]}
         width="100%"
         height="60px"
         borderBottom="1px solid"
@@ -123,7 +123,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         <Button
           onClick={() => setMenuIsOpen(false)}
           variant="noBackground"
-          display={['block', 'none']}
+          display={["block", "none"]}
           px={1}
           py={1}
         >
@@ -135,7 +135,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             fontSize={[2, 3]}
             fontWeight={600}
             color="text"
-            _css={{ textDecoration: 'none', '&:visited': { color: 'text' } }}
+            _css={{ textDecoration: "none", "&:visited": { color: "text" } }}
           >
             {SQ_SITE_NAME}
           </Text>
@@ -190,21 +190,21 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 </NavLink>
               </Link>
               <Link href={`/user/${username}`} passHref>
-                <NavLink highlights={['/account']}>
+                <NavLink highlights={["/account"]}>
                   <Text>{username}</Text>
                   <User size={24} />
                 </NavLink>
               </Link>
-              {role === 'admin' && (
+              {role === "admin" && (
                 <>
                   <Link href="/reports" passHref>
-                    <NavLink highlights={['/reports']}>
+                    <NavLink highlights={["/reports"]}>
                       <Text>Reports</Text>
                       <Error size={24} />
                     </NavLink>
                   </Link>
                   <Link href="/stats" passHref>
-                    <NavLink highlights={['/stats']}>
+                    <NavLink highlights={["/stats"]}>
                       <Text>Stats</Text>
                       <TrendingUp size={24} />
                     </NavLink>
@@ -226,8 +226,8 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <LogInCircle size={24} />
                 </NavLink>
               </Link>
-              {(SQ_ALLOW_REGISTER === 'open' ||
-                SQ_ALLOW_REGISTER === 'invite') && (
+              {(SQ_ALLOW_REGISTER === "open" ||
+                SQ_ALLOW_REGISTER === "invite") && (
                 <Link href="/register" passHref>
                   <NavLink>
                     <Text>Register</Text>
@@ -250,21 +250,21 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         p={3}
       >
         <Text color="grey" fontSize={0}>
-          Powered by{' '}
+          Powered by{" "}
           <a
             href="https://github.com/tdjsnelling/sqtracker"
             target="_blank"
             rel="noreferrer"
           >
             ■ sqtracker
-          </a>{' '}
+          </a>{" "}
         </Text>
         <Text color="grey" fontSize={0}>
           v{SQ_VERSION}
         </Text>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Navigation
+export default Navigation;

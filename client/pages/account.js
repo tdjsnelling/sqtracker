@@ -1,37 +1,37 @@
-import React, { useState, useContext } from 'react'
-import getConfig from 'next/config'
-import { useRouter } from 'next/router'
-import moment from 'moment'
-import copy from 'copy-to-clipboard'
-import jwt from 'jsonwebtoken'
-import pluralize from 'pluralize'
-import { ThemeContext } from 'styled-components'
-import { transparentize } from 'polished'
-import { Copy } from '@styled-icons/boxicons-regular/Copy'
-import { Check } from '@styled-icons/boxicons-regular/Check'
-import { X } from '@styled-icons/boxicons-regular/X'
-import { withAuthServerSideProps } from '../utils/withAuth'
-import SEO from '../components/SEO'
-import Box from '../components/Box'
-import Text from '../components/Text'
-import Infobox from '../components/Infobox'
-import Input from '../components/Input'
-import Select from '../components/Select'
-import Button from '../components/Button'
-import List from '../components/List'
-import { NotificationContext } from '../components/Notifications'
-import Modal from '../components/Modal'
-import LoadingContext from '../utils/LoadingContext'
+import React, { useState, useContext } from "react";
+import getConfig from "next/config";
+import { useRouter } from "next/router";
+import moment from "moment";
+import copy from "copy-to-clipboard";
+import jwt from "jsonwebtoken";
+import pluralize from "pluralize";
+import { ThemeContext } from "styled-components";
+import { transparentize } from "polished";
+import { Copy } from "@styled-icons/boxicons-regular/Copy";
+import { Check } from "@styled-icons/boxicons-regular/Check";
+import { X } from "@styled-icons/boxicons-regular/X";
+import { withAuthServerSideProps } from "../utils/withAuth";
+import SEO from "../components/SEO";
+import Box from "../components/Box";
+import Text from "../components/Text";
+import Infobox from "../components/Infobox";
+import Input from "../components/Input";
+import Select from "../components/Select";
+import Button from "../components/Button";
+import List from "../components/List";
+import { NotificationContext } from "../components/Notifications";
+import Modal from "../components/Modal";
+import LoadingContext from "../utils/LoadingContext";
 
 const BuyItem = ({ text, cost, wallet, handleBuy }) => {
-  const [amount, setAmount] = useState(1)
-  const unavailable = cost === 0
-  const cannotAfford = amount * cost > wallet
+  const [amount, setAmount] = useState(1);
+  const unavailable = cost === 0;
+  const cannotAfford = amount * cost > wallet;
   return (
     <Box
       display="flex"
-      flexDirection={['column', 'row']}
-      alignItems={['flex-start', 'center']}
+      flexDirection={["column", "row"]}
+      alignItems={["flex-start", "center"]}
       justifyContent="space-between"
       border="1px solid"
       borderColor="border"
@@ -39,14 +39,14 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
       p={3}
       pl={4}
     >
-      <Text mb={[3, 0]} _css={{ whiteSpace: 'nowrap' }}>
+      <Text mb={[3, 0]} _css={{ whiteSpace: "nowrap" }}>
         {text}
       </Text>
       <Box as="form" onSubmit={handleBuy} width="100%">
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <Text color="grey" mr={4}>
             {unavailable
-              ? 'Not available to buy'
+              ? "Not available to buy"
               : `Cost: ${amount * cost} points`}
           </Text>
           <Input
@@ -64,25 +64,25 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
         </Box>
       </Box>
     </Box>
-  )
-}
+  );
+};
 
 const Account = ({ token, invites = [], user, userRole }) => {
   const [remainingInvites, setRemainingInvites] = useState(
     user.remainingInvites ?? 0
-  )
-  const [invitesList, setInvitesList] = useState(invites)
-  const [showInviteModal, setShowInviteModal] = useState(false)
-  const [bonusPoints, setBonusPoints] = useState(user.bonusPoints ?? 0)
-  const [totpEnabled, setTotpEnabled] = useState(user.totp.enabled)
-  const [totpQrData, setTotpQrData] = useState()
-  const [totpBackupCodes, setTotpBackupCodes] = useState()
-  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false)
+  );
+  const [invitesList, setInvitesList] = useState(invites);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState(user.bonusPoints ?? 0);
+  const [totpEnabled, setTotpEnabled] = useState(user.totp.enabled);
+  const [totpQrData, setTotpQrData] = useState();
+  const [totpBackupCodes, setTotpBackupCodes] = useState();
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
-  const { addNotification } = useContext(NotificationContext)
-  const { setLoading } = useContext(LoadingContext)
+  const { addNotification } = useContext(NotificationContext);
+  const { setLoading } = useContext(LoadingContext);
 
-  const theme = useContext(ThemeContext)
+  const theme = useContext(ThemeContext);
 
   const {
     publicRuntimeConfig: {
@@ -92,232 +92,232 @@ const Account = ({ token, invites = [], user, userRole }) => {
       SQ_BP_COST_PER_GB,
       SQ_ALLOW_REGISTER,
     },
-  } = getConfig()
+  } = getConfig();
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleGenerateInvite = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const inviteRes = await fetch(`${SQ_API_URL}/account/generate-invite`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          role: form.get('role') || 'user',
-          email: form.get('email'),
+          role: form.get("role") || "user",
+          email: form.get("email"),
         }),
-      })
+      });
 
       if (inviteRes.status !== 200) {
-        const reason = await inviteRes.text()
-        throw new Error(reason)
+        const reason = await inviteRes.text();
+        throw new Error(reason);
       }
 
-      const invite = await inviteRes.json()
+      const invite = await inviteRes.json();
       setInvitesList((cur) => {
-        const currentInvitesList = [...cur]
-        currentInvitesList.unshift(invite)
-        return currentInvitesList
-      })
+        const currentInvitesList = [...cur];
+        currentInvitesList.unshift(invite);
+        return currentInvitesList;
+      });
 
-      addNotification('success', 'Invite sent successfully')
+      addNotification("success", "Invite sent successfully");
 
-      setRemainingInvites((r) => r - 1)
+      setRemainingInvites((r) => r - 1);
 
-      setShowInviteModal(false)
+      setShowInviteModal(false);
     } catch (e) {
-      addNotification('error', `Could not send invite: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not send invite: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleChangePassword = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
       const changePasswordRes = await fetch(
         `${SQ_API_URL}/account/change-password`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            password: form.get('password'),
-            newPassword: form.get('newPassword'),
+            password: form.get("password"),
+            newPassword: form.get("newPassword"),
           }),
         }
-      )
+      );
 
       if (changePasswordRes.status !== 200) {
-        const reason = await changePasswordRes.text()
-        throw new Error(reason)
+        const reason = await changePasswordRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Password changed successfully')
+      addNotification("success", "Password changed successfully");
 
-      const fields = e.target.querySelectorAll('input')
+      const fields = e.target.querySelectorAll("input");
       for (const field of fields) {
-        field.value = ''
-        field.blur()
+        field.value = "";
+        field.blur();
       }
     } catch (e) {
-      addNotification('error', `Could not change password: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not change password: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleBuy = async (e, type) => {
-    e.preventDefault()
-    setLoading(true)
-    const form = new FormData(e.target)
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
 
     try {
-      const amount = parseInt(form.get('amount'))
+      const amount = parseInt(form.get("amount"));
 
       const buyRes = await fetch(`${SQ_API_URL}/account/buy`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           type,
           amount,
         }),
-      })
+      });
 
       if (buyRes.status !== 200) {
-        const reason = await buyRes.text()
-        throw new Error(reason)
+        const reason = await buyRes.text();
+        throw new Error(reason);
       }
 
-      addNotification('success', 'Items purchased successfully')
+      addNotification("success", "Items purchased successfully");
 
-      const pointsRemaining = await buyRes.text()
-      setBonusPoints(parseInt(pointsRemaining))
+      const pointsRemaining = await buyRes.text();
+      setBonusPoints(parseInt(pointsRemaining));
 
-      if (type === 'invite') setRemainingInvites((r) => r + amount)
+      if (type === "invite") setRemainingInvites((r) => r + amount);
 
-      const fields = e.target.querySelectorAll('input')
+      const fields = e.target.querySelectorAll("input");
       for (const field of fields) {
-        field.value = 1
-        field.blur()
+        field.value = 1;
+        field.blur();
       }
     } catch (e) {
-      addNotification('error', `Could not buy items: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not buy items: ${e.message}`);
+      console.error(e);
     }
 
-    setLoading(false)
-  }
+    setLoading(false);
+  };
 
   const handleToggleTotp = async (e) => {
-    e.preventDefault()
-    const form = new FormData(e.target)
+    e.preventDefault();
+    const form = new FormData(e.target);
 
     try {
       if (!totpEnabled) {
-        const totpToken = form.get('token')
+        const totpToken = form.get("token");
 
         if (totpToken) {
           const enableRes = await fetch(`${SQ_API_URL}/account/totp/enable`, {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ token: totpToken }),
-          })
+          });
           if (enableRes.status === 200) {
-            const backupCodes = await enableRes.text()
-            setTotpBackupCodes(backupCodes)
-            setTotpQrData(undefined)
-            setTotpEnabled(true)
-            addNotification('success', '2FA enabled')
+            const backupCodes = await enableRes.text();
+            setTotpBackupCodes(backupCodes);
+            setTotpQrData(undefined);
+            setTotpEnabled(true);
+            addNotification("success", "2FA enabled");
           } else {
-            const message = await enableRes.text()
-            addNotification('error', message)
+            const message = await enableRes.text();
+            addNotification("error", message);
           }
         } else {
           const generateRes = await fetch(
             `${SQ_API_URL}/account/totp/generate`,
             {
               headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
                 Authorization: `Bearer ${token}`,
               },
             }
-          )
-          const totpData = await generateRes.json()
-          setTotpQrData(totpData)
+          );
+          const totpData = await generateRes.json();
+          setTotpQrData(totpData);
         }
       } else {
-        const totpToken = form.get('token')
+        const totpToken = form.get("token");
 
         const disableRes = await fetch(`${SQ_API_URL}/account/totp/disable`, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ token: totpToken }),
-        })
+        });
 
         if (disableRes.status === 200) {
-          setTotpEnabled(false)
-          addNotification('success', '2FA disabled')
+          setTotpEnabled(false);
+          addNotification("success", "2FA disabled");
         } else {
-          const message = await disableRes.text()
-          addNotification('error', message)
+          const message = await disableRes.text();
+          addNotification("error", message);
         }
       }
     } catch (e) {
-      addNotification('error', `Could not toggle 2FA: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not toggle 2FA: ${e.message}`);
+      console.error(e);
     }
-  }
+  };
 
   const handleDeleteAccount = async (e) => {
-    e.preventDefault()
-    const form = new FormData(e.target)
+    e.preventDefault();
+    const form = new FormData(e.target);
 
     try {
       const deleteAccountRes = await fetch(`${SQ_API_URL}/account/delete`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          password: form.get('password'),
+          password: form.get("password"),
         }),
-      })
+      });
 
       if (deleteAccountRes.status !== 200) {
-        const reason = await deleteAccountRes.text()
-        throw new Error(reason)
+        const reason = await deleteAccountRes.text();
+        throw new Error(reason);
       }
 
-      await router.push('/logout')
+      await router.push("/logout");
     } catch (e) {
-      addNotification('error', `Could not delete account: ${e.message}`)
-      console.error(e)
+      addNotification("error", `Could not delete account: ${e.message}`);
+      console.error(e);
     }
-  }
+  };
 
   return (
     <>
@@ -325,7 +325,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
       <Text as="h1" mb={5}>
         My account
       </Text>
-      {userRole === 'admin' && (
+      {userRole === "admin" && (
         <Infobox mb={5}>
           <Text>This is an admin account.</Text>
         </Infobox>
@@ -335,28 +335,28 @@ const Account = ({ token, invites = [], user, userRole }) => {
       </Text>
       <Text mb={4}>
         You currently have <strong>{bonusPoints}</strong> bonus points. You will
-        earn {SQ_BP_EARNED_PER_GB} {pluralize('point', SQ_BP_EARNED_PER_GB)} for
+        earn {SQ_BP_EARNED_PER_GB} {pluralize("point", SQ_BP_EARNED_PER_GB)} for
         every GB you upload.
       </Text>
-      <Box _css={{ '> * + *': { mt: 3 } }} mb={5}>
-        {SQ_ALLOW_REGISTER === 'invite' && (
+      <Box _css={{ "> * + *": { mt: 3 } }} mb={5}>
+        {SQ_ALLOW_REGISTER === "invite" && (
           <BuyItem
             text="Purchase invites"
             cost={SQ_BP_COST_PER_INVITE}
             wallet={bonusPoints}
-            handleBuy={(e) => handleBuy(e, 'invite')}
+            handleBuy={(e) => handleBuy(e, "invite")}
           />
         )}
         <BuyItem
           text="Purchase upload (1 GB)"
           cost={SQ_BP_COST_PER_GB}
           wallet={bonusPoints}
-          handleBuy={(e) => handleBuy(e, 'upload')}
+          handleBuy={(e) => handleBuy(e, "upload")}
         />
       </Box>
-      {SQ_ALLOW_REGISTER === 'invite' && (
+      {SQ_ALLOW_REGISTER === "invite" && (
         <>
-          {' '}
+          {" "}
           <Box
             display="flex"
             alignItems="center"
@@ -387,55 +387,55 @@ const Account = ({ token, invites = [], user, userRole }) => {
             data={invitesList}
             columns={[
               {
-                header: 'Email',
-                accessor: 'email',
+                header: "Email",
+                accessor: "email",
                 cell: ({ value }) => <Text>{value}</Text>,
-                gridWidth: '1.75fr',
+                gridWidth: "1.75fr",
               },
               {
-                header: 'Claimed',
-                accessor: 'claimed',
+                header: "Claimed",
+                accessor: "claimed",
                 cell: ({ value }) => (
-                  <Box color={value ? 'success' : 'grey'}>
-                    {value ? <Check size={24} /> : <X size={24} />}{' '}
+                  <Box color={value ? "success" : "grey"}>
+                    {value ? <Check size={24} /> : <X size={24} />}{" "}
                   </Box>
                 ),
-                gridWidth: '0.5fr',
+                gridWidth: "0.5fr",
               },
               {
-                header: 'Valid until',
-                accessor: 'validUntil',
+                header: "Valid until",
+                accessor: "validUntil",
                 cell: ({ value }) => (
-                  <Text color={value < Date.now() ? 'error' : 'text'}>
-                    {moment(value).format('HH:mm Do MMM YYYY')}
+                  <Text color={value < Date.now() ? "error" : "text"}>
+                    {moment(value).format("HH:mm Do MMM YYYY")}
                   </Text>
                 ),
-                gridWidth: '175px',
+                gridWidth: "175px",
               },
               {
-                header: 'Created',
-                accessor: 'created',
+                header: "Created",
+                accessor: "created",
                 cell: ({ value }) => (
-                  <Text>{moment(value).format('HH:mm Do MMM YYYY')}</Text>
+                  <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
                 ),
-                gridWidth: '175px',
+                gridWidth: "175px",
               },
-              ...(userRole === 'admin'
+              ...(userRole === "admin"
                 ? [
                     {
-                      header: 'Role',
-                      accessor: 'role',
+                      header: "Role",
+                      accessor: "role",
                       cell: ({ value }) => (
-                        <Text _css={{ textTransform: 'capitalize' }}>
+                        <Text _css={{ textTransform: "capitalize" }}>
                           {value}
                         </Text>
                       ),
-                      gridWidth: '0.6fr',
+                      gridWidth: "0.6fr",
                     },
                   ]
                 : []),
               {
-                header: 'Copy link',
+                header: "Copy link",
                 cell: ({ row }) => {
                   return (
                     <Button
@@ -443,11 +443,11 @@ const Account = ({ token, invites = [], user, userRole }) => {
                       onClick={() => {
                         copy(
                           `${location.protocol}//${location.host}/register?token=${row.token}`
-                        )
+                        );
                         addNotification(
-                          'success',
-                          'Invite link copied to clipboard'
-                        )
+                          "success",
+                          "Invite link copied to clipboard"
+                        );
                       }}
                       disabled={row.claimed || row.validUntil < Date.now()}
                       px={1}
@@ -455,10 +455,10 @@ const Account = ({ token, invites = [], user, userRole }) => {
                     >
                       <Copy size={24} />
                     </Button>
-                  )
+                  );
                 },
                 rightAlign: true,
-                gridWidth: '80px',
+                gridWidth: "80px",
               },
             ]}
             mb={5}
@@ -532,7 +532,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                     them now, they will not be visible again.
                   </Text>
                   <Box as="ul">
-                    {totpBackupCodes.split(',').map((code) => (
+                    {totpBackupCodes.split(",").map((code) => (
                       <Text
                         as="li"
                         key={`totp-backup-${code}`}
@@ -556,7 +556,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                       mb={4}
                     />
                   )}
-                  <Button>{totpEnabled ? 'Disable' : 'Enable'} 2FA</Button>
+                  <Button>{totpEnabled ? "Disable" : "Enable"} 2FA</Button>
                 </>
               )}
             </>
@@ -586,7 +586,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
           <Button>Change password</Button>
         </form>
       </Box>
-      {user.username !== 'admin' && (
+      {user.username !== "admin" && (
         <Box
           bg={transparentize(0.7, theme.colors.error)}
           borderRadius={1}
@@ -612,7 +612,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
           </Text>
           <form onSubmit={handleGenerateInvite}>
             <Input name="email" type="email" label="Email" mb={4} required />
-            {userRole === 'admin' && (
+            {userRole === "admin" && (
               <Select name="role" mb={4} required>
                 <option value="user">Role: user</option>
                 <option value="admin">Role: admin</option>
@@ -662,41 +662,41 @@ const Account = ({ token, invites = [], user, userRole }) => {
         </Modal>
       )}
     </>
-  )
-}
+  );
+};
 
 export const getServerSideProps = withAuthServerSideProps(
   async ({ token, fetchHeaders }) => {
-    if (!token) return { props: {} }
+    if (!token) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
-    } = getConfig()
+    } = getConfig();
 
-    const { role, username } = jwt.verify(token, SQ_JWT_SECRET)
+    const { role, username } = jwt.verify(token, SQ_JWT_SECRET);
 
     try {
       const userRes = await fetch(`${SQ_API_URL}/user/${username}`, {
         headers: fetchHeaders,
-      })
+      });
       if (
         userRes.status === 403 &&
-        (await userRes.text()) === 'User is banned'
+        (await userRes.text()) === "User is banned"
       ) {
-        throw 'banned'
+        throw "banned";
       }
-      const user = await userRes.json()
+      const user = await userRes.json();
       const invitesRes = await fetch(`${SQ_API_URL}/account/invites`, {
         headers: fetchHeaders,
-      })
-      const invites = await invitesRes.json()
-      return { props: { invites, user, userRole: role } }
+      });
+      const invites = await invitesRes.json();
+      return { props: { invites, user, userRole: role } };
     } catch (e) {
-      if (e === 'banned') throw 'banned'
-      return { props: {} }
+      if (e === "banned") throw "banned";
+      return { props: {} };
     }
   }
-)
+);
 
-export default Account
+export default Account;
