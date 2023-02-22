@@ -77,7 +77,7 @@ const FileItem = ({ file, depth = 0 }) => (
     <Text
       fontSize={1}
       icon={file.children.length ? Folder : File}
-      iconSize="18px"
+      iconSize={18}
     >
       {file.name}
       {file.size !== undefined ? (

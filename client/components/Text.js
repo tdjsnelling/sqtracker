@@ -48,6 +48,7 @@ const Text = ({
     <Box
       display="inline-flex"
       alignItems="center"
+      verticalAlign="bottom"
       my={my}
       mt={mt}
       mb={mb}
@@ -57,10 +58,18 @@ const Text = ({
       {...iconTextWrapperProps}
     >
       <Box
-        display="flex"
-        alignItems="center"
         color={iconColor}
+        width={`${iconSize}px`}
+        height={`${iconSize}px`}
         mr={2}
+        position="relative"
+        _css={{
+          svg: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          },
+        }}
         {...iconWrapperProps}
       >
         <Icon size={iconSize} />
