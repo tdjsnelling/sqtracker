@@ -5,6 +5,8 @@ import slugify from "slugify";
 import Torrent from "../schema/torrent";
 import User from "../schema/user";
 import Comment from "../schema/comment";
+import Group from "../schema/group";
+import { addToGroup, createGroup } from "./group";
 
 export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   if (!torrents.length) return [];
@@ -99,6 +101,25 @@ export const uploadTorrent = async (req, res, next) => {
         ];
       }
 
+      let groupId;
+
+      if (req.body.groupWith) {
+        const groupWithTorrent = await Torrent.findOne({
+          infoHash: req.body.groupWith,
+        }).lean();
+
+        if (!groupWithTorrent) {
+          res.status(400).send("Cannot group with torrent that does not exist");
+          return;
+        }
+
+        groupId = groupWithTorrent.group;
+
+        if (!groupId) {
+          groupId = await createGroup([groupWithTorrent]);
+        }
+      }
+
       const newTorrent = new Torrent({
         name: req.body.name,
         description: req.body.description,
@@ -122,9 +143,12 @@ export const uploadTorrent = async (req, res, next) => {
         tags: (req.body.tags ?? "")
           .split(",")
           .map((t) => slugify(t.trim(), { lower: true })),
+        group: groupId,
       });
 
       await newTorrent.save();
+
+      if (groupId) await addToGroup(groupId, infoHash);
 
       res.status(200).send(infoHash);
     } catch (e) {
@@ -342,6 +366,13 @@ export const deleteTorrent = async (req, res, next) => {
     ) {
       res.status(403).send("You do not have permission to delete this torrent");
       return;
+    }
+
+    if (torrent.group) {
+      await Group.findOneAndUpdate(
+        { _id: torrent.group },
+        { $pull: { torrents: torrent._id } }
+      );
     }
 
     await Torrent.deleteOne({ infoHash: req.params.infoHash });
