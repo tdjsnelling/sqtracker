@@ -111,7 +111,6 @@ export const TorrentFields = ({ categories, values }) => {
         defaultValue={values?.tags}
         mb={4}
       />
-      <Input name="groupWith" label="Group with" mb={4} />
     </>
   );
 };
@@ -133,6 +132,7 @@ const Upload = ({ token, userId }) => {
   const { setLoading } = useContext(LoadingContext);
 
   const router = useRouter();
+  const { groupWith } = router.query;
 
   const onDrop = useCallback((acceptedFiles) => {
     try {
@@ -189,7 +189,7 @@ const Upload = ({ token, userId }) => {
           anonymous: !!form.get("anonymous"),
           torrent: torrentFile.b64,
           tags: form.get("tags"),
-          groupWith: form.get("groupWith"),
+          groupWith,
         }),
       });
 
@@ -254,6 +254,15 @@ const Upload = ({ token, userId }) => {
           )}
         </Box>
         <TorrentFields categories={SQ_TORRENT_CATEGORIES} />
+        {groupWith && (
+          <Input
+            name="groupWith"
+            label="Group with"
+            value={groupWith}
+            disabled
+            mb={4}
+          />
+        )}
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
           <Checkbox name="anonymous" label="Anonymous upload" />
         )}

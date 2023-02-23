@@ -23,6 +23,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import Comment from "../../components/Comment";
 import Modal from "../../components/Modal";
+import TorrentList from "../../components/TorrentList";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import { TorrentFields } from "../upload";
@@ -605,6 +606,30 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         <Button onClick={() => setShowReportModal(true)} variant="noBackground">
           Report
         </Button>
+      </Box>
+      <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
+        <Box
+          display="flex"
+          alignItems="flex-start"
+          justifyContent="space-between"
+          width="100%"
+          mb={4}
+        >
+          <Text as="h2">Grouped torrents</Text>
+          <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
+            <a>
+              <Button>Add a torrent</Button>
+            </a>
+          </Link>
+        </Box>
+        {torrent.groupTorrents.length ? (
+          <TorrentList
+            torrents={torrent.groupTorrents}
+            categories={SQ_TORRENT_CATEGORIES}
+          />
+        ) : (
+          <Text color="grey">There are no other torrents in this group.</Text>
+        )}
       </Box>
       <Text as="h2" mb={4}>
         Comments

@@ -269,6 +269,7 @@ export const fetchTorrent = (tracker) => async (req, res, next) => {
           userHasDownvoted: { $in: [req.userId, "$downvotes"] },
           freeleech: 1,
           tags: 1,
+          group: 1,
         },
       },
       {
@@ -343,7 +344,29 @@ export const fetchTorrent = (tracker) => async (req, res, next) => {
       [torrent]
     );
 
-    res.json(embellishedTorrent);
+    let groupTorrents = [];
+    if (embellishedTorrent.group) {
+      const group = await Group.findOne({
+        _id: embellishedTorrent.group,
+      }).lean();
+
+      if (group) {
+        const otherIds = group.torrents.filter(
+          (id) => id.toString() !== embellishedTorrent._id.toString()
+        );
+        groupTorrents = await Torrent.find(
+          { _id: { $in: otherIds } },
+          { name: 1, infoHash: 1, freeleech: 1, type: 1, created: 1 },
+          { sort: { created: -1 } }
+        ).lean();
+        groupTorrents = await embellishTorrentsWithTrackerScrape(
+          tracker,
+          groupTorrents
+        );
+      }
+    }
+
+    res.json({ ...embellishedTorrent, groupTorrents });
   } catch (e) {
     next(e);
   }
