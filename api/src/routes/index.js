@@ -5,6 +5,7 @@ import announcementRoutes from "./announcement";
 import reportRoutes from "./report";
 import adminRoutes from "./admin";
 import requestRoutes from "./request";
+import groupRoutes from "./group";
 
 export {
   accountRoutes,
@@ -14,4 +15,5 @@ export {
   reportRoutes,
   adminRoutes,
   requestRoutes,
+  groupRoutes,
 };

@@ -6,7 +6,7 @@ import Torrent from "../schema/torrent";
 import User from "../schema/user";
 import Comment from "../schema/comment";
 import Group from "../schema/group";
-import { addToGroup, createGroup } from "./group";
+import { createGroup, addToGroup, removeFromGroup } from "./group";
 
 export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   if (!torrents.length) return [];
@@ -394,10 +394,7 @@ export const deleteTorrent = async (req, res, next) => {
     }
 
     if (torrent.group) {
-      await Group.findOneAndUpdate(
-        { _id: torrent.group },
-        { $pull: { torrents: torrent._id } }
-      );
+      await removeFromGroup(torrent.group, torrent.infoHash);
     }
 
     await Torrent.deleteOne({ infoHash: req.params.infoHash });

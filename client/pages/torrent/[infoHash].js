@@ -107,7 +107,7 @@ const FileItem = ({ file, depth = 0 }) => (
   </Box>
 );
 
-const Torrent = ({ token, torrent, userId, userRole, uid }) => {
+const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -122,6 +122,7 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   });
   const [comments, setComments] = useState(torrent.comments);
   const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech);
+  const [hasGroup, setHasGroup] = useState(!!torrent.group);
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
@@ -368,7 +369,40 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
 
       setIsFreeleech((f) => !f);
     } catch (e) {
-      addNotification("error", `Could toggle freeleech: ${e.message}`);
+      addNotification("error", `Could not toggle freeleech: ${e.message}`);
+      console.error(e);
+    }
+
+    setLoading(false);
+  };
+
+  const handleRemoveFromGroup = async () => {
+    setLoading(true);
+
+    try {
+      const removeRes = await fetch(
+        `${SQ_API_URL}/group/remove/${torrent.infoHash}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (removeRes.status !== 200) {
+        const reason = await removeRes.text();
+        throw new Error(reason);
+      }
+
+      addNotification("success", "Torrent removed from group successfully");
+
+      setHasGroup(false);
+    } catch (e) {
+      addNotification(
+        "error",
+        `Could not remove torrent from group: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -589,12 +623,25 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
         >
           <Text as="h2">Grouped torrents</Text>
           <Box display="flex" justifyContent="flex-end">
+            {!!torrent.groupTorrents.length &&
+              (userRole === "admin" || userId === torrent.uploadedBy._id) &&
+              hasGroup && (
+                <Button
+                  onClick={handleRemoveFromGroup}
+                  variant="secondary"
+                  ml={3}
+                >
+                  Remove this torrent
+                </Button>
+              )}
             <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
-              <Button as="a">Add a torrent</Button>
+              <Button as="a" ml={3}>
+                Add a torrent
+              </Button>
             </Link>
           </Box>
         </Box>
-        {torrent.groupTorrents.length ? (
+        {torrent.groupTorrents.length && hasGroup ? (
           <TorrentList
             torrents={torrent.groupTorrents}
             categories={SQ_TORRENT_CATEGORIES}
