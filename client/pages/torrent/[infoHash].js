@@ -130,7 +130,6 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
 
   const {
     publicRuntimeConfig: {
-      SQ_SITE_NAME,
       SQ_API_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_SITE_WIDE_FREELEECH,
@@ -140,39 +139,6 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
   const router = useRouter();
 
   const [cookies] = useCookies();
-
-  const handleDownload = async () => {
-    setLoading(true);
-
-    try {
-      const downloadRes = await fetch(
-        `${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`
-      );
-
-      if (downloadRes.status !== 200) {
-        const reason = await downloadRes.text();
-        throw new Error(reason);
-      }
-
-      const blob = await downloadRes.blob();
-
-      const url = window.URL.createObjectURL(blob);
-
-      const downloadLink = document.createElement("a");
-      document.body.appendChild(downloadLink);
-      downloadLink.style = "display: none";
-      downloadLink.href = url;
-      downloadLink.download = `${torrent.name} (${SQ_SITE_NAME}).torrent`;
-      downloadLink.click();
-
-      window.URL.revokeObjectURL(url);
-    } catch (e) {
-      addNotification("error", `Could not download torrent: ${e.message}`);
-      console.error(e);
-    }
-
-    setLoading(false);
-  };
 
   const handleEdit = async (e) => {
     e.preventDefault();
@@ -463,7 +429,13 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
               {isFreeleech ? "Unset" : "Set"} freeleech
             </Button>
           )}
-          <Button onClick={handleDownload}>Download .torrent</Button>
+          <Button
+            as="a"
+            href={`${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`}
+            target="_blank"
+          >
+            Download .torrent
+          </Button>
         </Box>
       </Box>
       <Info
@@ -616,11 +588,11 @@ const Torrent = ({ token, torrent, userId, userRole, uid }) => {
           mb={4}
         >
           <Text as="h2">Grouped torrents</Text>
-          <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
-            <a>
-              <Button>Add a torrent</Button>
-            </a>
-          </Link>
+          <Box display="flex" justifyContent="flex-end">
+            <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
+              <Button as="a">Add a torrent</Button>
+            </Link>
+          </Box>
         </Box>
         {torrent.groupTorrents.length ? (
           <TorrentList

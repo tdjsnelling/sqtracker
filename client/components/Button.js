@@ -9,7 +9,9 @@ const StyledButton = styled.button(
     css({
       appearance: "none",
       bg: "primary",
-      color: getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8",
+      color: `${
+        getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8"
+      } !important`,
       border: "2px solid",
       borderColor: "primary",
       borderRadius: 1,
@@ -19,11 +21,14 @@ const StyledButton = styled.button(
       py: !small ? 3 : 2,
       cursor: "pointer",
       whiteSpace: "nowrap",
+      height: "40px",
+      lineHeight: 1.25,
       "&:hover": {
         borderColor:
           theme.name === "light"
             ? darken(0.1, theme.colors.primary)
             : lighten(0.1, theme.colors.primary),
+        textDecoration: "none",
       },
       "&:focus, &:active": {
         bg:

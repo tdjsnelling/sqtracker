@@ -233,7 +233,9 @@ export const downloadTorrent = async (req, res, next) => {
     res.setHeader("Content-Type", "application/x-bittorrent");
     res.setHeader(
       "Content-Disposition",
-      `attachment;filename=${parsed.info.name.toString()}.torrent`
+      `attachment;filename=${parsed.info.name.toString()} - ${
+        process.env.SQ_SITE_NAME
+      }.torrent`
     );
     res.write(bencode.encode(parsed));
     res.end();
