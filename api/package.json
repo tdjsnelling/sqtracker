@@ -5,7 +5,8 @@
   "license": "GPL-3.0-only",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
-    "start": "babel-node src/index.js"
+    "start": "babel-node src/index.js",
+    "migration:torrent-add-fuzzy-name": "babel-node src/migrations/torrent-add-fuzzy-name.js"
   },
   "dependencies": {
     "@babel/core": "^7.14.6",

@@ -1,6 +1,7 @@
 import bencode from "bencode";
 import crypto from "crypto";
 import mongoose from "mongoose";
+import { createNGrams } from "mongoose-fuzzy-searching/helpers";
 import slugify from "slugify";
 import Torrent from "../schema/torrent";
 import User from "../schema/user";
@@ -160,12 +161,7 @@ export const uploadTorrent = async (req, res, next) => {
 };
 
 export const editTorrent = async (req, res, next) => {
-  if (
-    req.body.name &&
-    req.body.type &&
-    req.body.source &&
-    req.body.description
-  ) {
+  if (req.body.name && req.body.type && req.body.description) {
     try {
       const { infoHash } = req.params;
 
@@ -188,11 +184,31 @@ export const editTorrent = async (req, res, next) => {
         return;
       }
 
+      if (process.env.SQ_TORRENT_CATEGORIES.length) {
+        const sources =
+          process.env.SQ_TORRENT_CATEGORIES[
+            Object.keys(process.env.SQ_TORRENT_CATEGORIES).find(
+              (cat) => slugify(cat, { lower: true }) === req.body.type
+            )
+          ];
+        if (
+          !sources
+            .map((source) => slugify(source, { lower: true }))
+            .includes(req.body.source)
+        ) {
+          res.status(400).send("Torrent must have a source");
+          return;
+        }
+      }
+
+      createNGrams(torrent, ["name"]);
+
       await Torrent.findOneAndUpdate(
         { infoHash },
         {
           $set: {
             name: req.body.name,
+            name_fuzzy: torrent.name_fuzzy,
             type: req.body.type,
             source: req.body.source,
             description: req.body.description,
