@@ -12,13 +12,14 @@ const getIn = (obj, key, p = 0) => {
   return obj;
 };
 
-const WrapLink = ({ href, children }) =>
+const WrapLink = ({ href, target, children }) =>
   href ? (
     <Link href={href} passHref>
       <Text
         as="a"
         display="block"
         color="text"
+        target={target}
         _css={{
           "&:visited": { color: "text" },
           "&:hover": { bg: "sidebar", textDecoration: "none" },
@@ -74,7 +75,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
           {data.length ? (
             data.map((row, i) => (
               <ListItem key={`list-row-${i}`}>
-                <WrapLink href={row.href}>
+                <WrapLink href={row.href} target={row.hrefTarget}>
                   <Box
                     display="grid"
                     gridTemplateColumns={columns

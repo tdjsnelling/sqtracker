@@ -7,6 +7,7 @@ import { useDropzone } from "react-dropzone";
 import slugify from "slugify";
 import { Link as LinkIcon } from "@styled-icons/boxicons-regular/Link";
 import { Check } from "@styled-icons/boxicons-regular/Check";
+import { InfoCircle } from "@styled-icons/boxicons-regular/InfoCircle";
 import { withAuth } from "../utils/withAuth";
 import SEO from "../components/SEO";
 import Box from "../components/Box";
@@ -16,6 +17,7 @@ import Select from "../components/Select";
 import Checkbox from "../components/Checkbox";
 import Button from "../components/Button";
 import Infobox from "../components/Infobox";
+import List from "../components/List";
 import { NotificationContext } from "../components/Notifications";
 import LoadingContext from "../utils/LoadingContext";
 
@@ -35,7 +37,12 @@ const FileUpload = styled(Box)(() =>
   })
 );
 
-export const TorrentFields = ({ categories, values }) => {
+export const TorrentFields = ({
+  categories,
+  values,
+  handleGroupSearch,
+  groupSuggestions,
+}) => {
   const [category, setCategory] = useState(
     values?.type ?? slugify(Object.keys(categories)[0], { lower: true })
   );
@@ -59,9 +66,15 @@ export const TorrentFields = ({ categories, values }) => {
         name="name"
         label="Name"
         defaultValue={values?.name}
+        onBlur={
+          typeof handleGroupSearch === "function"
+            ? handleGroupSearch
+            : undefined
+        }
         mb={4}
         required
       />
+      {groupSuggestions}
       {!!Object.keys(categories).length && (
         <Select
           name="category"
@@ -118,6 +131,7 @@ export const TorrentFields = ({ categories, values }) => {
 const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState();
   const [dropError, setDropError] = useState("");
+  const [groupSuggestions, setGroupSuggestions] = useState([]);
 
   const {
     publicRuntimeConfig: {
@@ -132,7 +146,8 @@ const Upload = ({ token, userId }) => {
   const { setLoading } = useContext(LoadingContext);
 
   const router = useRouter();
-  const { groupWith } = router.query;
+
+  const [groupWith, setGroupWith] = useState(router.query.groupWith);
 
   const onDrop = useCallback((acceptedFiles) => {
     try {
@@ -210,6 +225,32 @@ const Upload = ({ token, userId }) => {
     setLoading(false);
   };
 
+  const handleGroupSearch = async (e) => {
+    const { value } = e.target;
+
+    try {
+      const suggestionsRes = await fetch(
+        `${SQ_API_URL}/group/search?query=${encodeURIComponent(value)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (suggestionsRes.status !== 200) {
+        const reason = await suggestionsRes.text();
+        throw new Error(reason);
+      }
+
+      const { results } = await suggestionsRes.json();
+      setGroupSuggestions(results);
+    } catch (e) {
+      addNotification("error", `Could not get group suggestions: ${e.message}`);
+      console.error(e);
+    }
+  };
+
   return (
     <>
       <SEO title="Upload" />
@@ -253,15 +294,79 @@ const Upload = ({ token, userId }) => {
             </Text>
           )}
         </Box>
-        <TorrentFields categories={SQ_TORRENT_CATEGORIES} />
+        <TorrentFields
+          categories={SQ_TORRENT_CATEGORIES}
+          handleGroupSearch={handleGroupSearch}
+          groupSuggestions={
+            groupSuggestions.length ? (
+              <Infobox mb={5}>
+                <Text icon={InfoCircle} iconColor="primary" mb={4}>
+                  It looks like these existing torrents have similar names.
+                  Would you like to group your upload with any of them? Groups
+                  should only contain very similar content, e.g. the same movie
+                  in different formats.
+                </Text>
+                <List
+                  data={groupSuggestions.map((torrent) => ({
+                    ...torrent,
+                    href: `/torrent/${torrent.infoHash}`,
+                    hrefTarget: "_blank",
+                  }))}
+                  columns={[
+                    {
+                      header: "Similar torrents",
+                      accessor: "name",
+                      cell: ({ value, row }) => (
+                        <Text>
+                          {value}
+                          <Text as="span" color="grey" fontFamily="mono" ml={3}>
+                            {row.infoHash}
+                          </Text>
+                        </Text>
+                      ),
+                      gridWidth: "1fr",
+                    },
+                    {
+                      header: "Group?",
+                      cell: ({ row }) => (
+                        <Button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setGroupWith(row.infoHash);
+                          }}
+                          type="button"
+                          small
+                        >
+                          Group with this torrent
+                        </Button>
+                      ),
+                      gridWidth: "210px",
+                      rightAlign: true,
+                    },
+                  ]}
+                />
+              </Infobox>
+            ) : undefined
+          }
+        />
         {groupWith && (
-          <Input
-            name="groupWith"
-            label="Group with"
-            value={groupWith}
-            disabled
-            mb={4}
-          />
+          <Box display="flex" alignItems="flex-end" mb={4}>
+            <Input
+              name="groupWith"
+              label="Group with"
+              value={groupWith}
+              width="100%"
+              disabled
+            />
+            <Button
+              onClick={() => setGroupWith(undefined)}
+              variant="secondary"
+              type="button"
+              ml="3"
+            >
+              Remove
+            </Button>
+          </Box>
         )}
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
           <Checkbox name="anonymous" label="Anonymous upload" />

@@ -29,7 +29,13 @@ const shared = () =>
     },
   });
 
-const StyledInput = styled.input(shared, layout, space, typography);
+const StyledInput = styled.input(
+  shared,
+  `height: 40px;`,
+  layout,
+  space,
+  typography
+);
 
 const StyledTextarea = styled.textarea(shared, layout, space, typography);
 
@@ -50,13 +56,18 @@ export const WrapLabel = ({ label, children, as = "label", ...rest }) =>
     children
   );
 
-const Input = ({ label, rows, my, mt, mb, forwardedRef, ...rest }) => {
+const Input = ({ label, rows, my, mt, mb, width, forwardedRef, ...rest }) => {
   return (
-    <WrapLabel label={label} my={my} mt={mt} mb={mb}>
+    <WrapLabel label={label} my={my} mt={mt} mb={mb} width={width}>
       {rows ? (
-        <StyledTextarea ref={forwardedRef} rows={rows} {...rest} />
+        <StyledTextarea
+          ref={forwardedRef}
+          rows={rows}
+          width={width}
+          {...rest}
+        />
       ) : (
-        <StyledInput ref={forwardedRef} {...rest} />
+        <StyledInput ref={forwardedRef} width={width} {...rest} />
       )}
     </WrapLabel>
   );

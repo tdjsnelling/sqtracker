@@ -104,3 +104,26 @@ export const removeTorrentFromGroup = async (req, res, next) => {
     next(e);
   }
 };
+
+export const findFuzzyGroupMatches = async (req, res, next) => {
+  try {
+    let { query } = req.query;
+    query = query ? decodeURIComponent(query) : undefined;
+
+    if (!query || query.length < 2) {
+      res.status(400).send("Query must be at least 2 characters");
+      return;
+    }
+
+    const results = (
+      await Torrent.fuzzySearch(query)
+        .select({ name: 1, infoHash: 1 })
+        .limit(5)
+        .exec()
+    ).filter((r) => r.confidenceScore > 5);
+
+    res.json({ results });
+  } catch (e) {
+    next(e);
+  }
+};

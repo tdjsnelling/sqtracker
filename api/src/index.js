@@ -68,6 +68,7 @@ validateConfig(config).then(() => {
         useNewUrlParser: true,
         useFindAndModify: false,
         useUnifiedTopology: true,
+        useCreateIndex: true,
       })
       .catch((e) => {
         console.error(`[sq] error on initial db connection: ${e.message}`);

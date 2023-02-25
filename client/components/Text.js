@@ -47,7 +47,7 @@ const Text = ({
   Icon ? (
     <Box
       display="inline-flex"
-      alignItems="center"
+      alignItems="flex-start"
       verticalAlign="bottom"
       my={my}
       mt={mt}
@@ -61,6 +61,7 @@ const Text = ({
         color={iconColor}
         width={`${iconSize}px`}
         height={`${iconSize}px`}
+        flexShrink={0}
         mr={2}
         position="relative"
         _css={{

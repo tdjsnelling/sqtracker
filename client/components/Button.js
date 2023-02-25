@@ -21,7 +21,7 @@ const StyledButton = styled.button(
       py: !small ? 3 : 2,
       cursor: "pointer",
       whiteSpace: "nowrap",
-      height: "40px",
+      height: small ? "32px" : "40px",
       lineHeight: 1.25,
       "&:hover": {
         borderColor:

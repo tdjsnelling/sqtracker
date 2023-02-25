@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import fuzzySearch from "mongoose-fuzzy-searching";
 
 const Torrent = new mongoose.Schema({
   infoHash: String,
@@ -19,6 +20,9 @@ const Torrent = new mongoose.Schema({
   freeleech: Boolean,
   tags: Array,
   group: mongoose.Schema.ObjectId,
+  confidenceScore: Number,
 });
+
+Torrent.plugin(fuzzySearch, { fields: ["name"] });
 
 export default mongoose.model("torrent", Torrent);
