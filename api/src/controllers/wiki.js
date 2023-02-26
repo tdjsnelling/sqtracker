@@ -1,4 +1,5 @@
 import Wiki from "../schema/wiki";
+import { re } from "@babel/core/lib/vendor/import-meta-resolve";
 
 const slugRegex = /^\/([a-z0-9-_\/])*/i;
 
@@ -105,5 +106,68 @@ export const deleteWiki = async (req, res, next) => {
     res.sendStatus(200);
   } catch (e) {
     next(e);
+  }
+};
+
+export const updateWiki = async (req, res, next) => {
+  if (req.body.slug && req.body.title && req.body.body) {
+    try {
+      if (req.userRole !== "admin") {
+        res
+          .status(401)
+          .send("You do not have permission to create a wiki page");
+        return;
+      }
+
+      const existing = await Wiki.findOne({ _id: req.params.wikiId }).lean();
+
+      if (!existing) {
+        res.status(404).send("That wiki page does not exist");
+        return;
+      }
+
+      if (existing.slug === "/" && req.body.slug !== "/") {
+        res.status(400).send("Root page cannot be moved to a different path");
+        return;
+      }
+
+      const validSlug = slugRegex.test(req.body.slug);
+
+      if (!validSlug) {
+        res.status(400).send("That is not a valid path");
+        return;
+      }
+
+      if (req.body.slug !== existing.slug) {
+        const existingSlug = await Wiki.findOne({ slug: req.body.slug }).lean();
+
+        if (existingSlug) {
+          res
+            .status(409)
+            .send(
+              "Wiki page with this slug already exists. Please choose something unique."
+            );
+          return;
+        }
+      }
+
+      await Wiki.findOneAndUpdate(
+        { _id: req.params.wikiId },
+        {
+          $set: {
+            slug: req.body.slug,
+            title: req.body.title,
+            body: req.body.body,
+            updated: Date.now(),
+          },
+        }
+      );
+
+      res.sendStatus(200);
+    } catch (e) {
+      next(e);
+    }
+  } else {
+    res.status(400).send("Request must include slug, title and body");
   }
 };

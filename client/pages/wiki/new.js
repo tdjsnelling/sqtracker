@@ -10,6 +10,36 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 
+export const WikiFields = ({ values }) => {
+  return (
+    <>
+      <Input
+        name="slug"
+        label="Path"
+        defaultValue={values?.slug}
+        mb={4}
+        required
+      />
+      <Input
+        name="title"
+        label="Title"
+        defaultValue={values?.title}
+        mb={4}
+        required
+      />
+      <Input
+        name="body"
+        label="Body"
+        placeholder="Markdown supported"
+        defaultValue={values?.body}
+        rows={20}
+        mb={4}
+        required
+      />
+    </>
+  );
+};
+
 const NewWiki = ({ token, userRole }) => {
   if (userRole !== "admin") {
     return <Text>You do not have permission to do that.</Text>;
@@ -67,16 +97,7 @@ const NewWiki = ({ token, userRole }) => {
         New wiki page
       </Text>
       <form onSubmit={handleCreate}>
-        <Input name="slug" label="Path" mb={4} required />
-        <Input name="title" label="Title" mb={4} required />
-        <Input
-          name="body"
-          label="Body"
-          placeholder="Markdown supported"
-          rows={20}
-          mb={4}
-          required
-        />
+        <WikiFields />
         <Button display="block" ml="auto">
           Create wiki page
         </Button>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -15,8 +15,10 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import Modal from "../../components/Modal";
+import { WikiFields } from "./new";
 
 const Wiki = ({ page, token, userRole, slug }) => {
+  const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { addNotification } = useContext(NotificationContext);
@@ -27,6 +29,10 @@ const Wiki = ({ page, token, userRole, slug }) => {
   const {
     publicRuntimeConfig: { SQ_SITE_NAME, SQ_API_URL },
   } = getConfig();
+
+  useEffect(() => {
+    setEditing(false);
+  }, [router.asPath]);
 
   const handleDelete = async () => {
     setLoading(true);
@@ -57,6 +63,45 @@ const Wiki = ({ page, token, userRole, slug }) => {
     setLoading(false);
   };
 
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    const form = new FormData(e.target);
+
+    try {
+      const updateWikiRes = await fetch(
+        `${SQ_API_URL}/wiki/update/${page._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            slug: form.get("slug"),
+            title: form.get("title"),
+            body: form.get("body"),
+          }),
+        }
+      );
+
+      if (updateWikiRes.status !== 200) {
+        const reason = await updateWikiRes.text();
+        throw new Error(reason);
+      }
+
+      addNotification("success", "Wiki page updated successfully");
+
+      if (form.get("slug") === page.slug) window.location.reload();
+      else window.location.href = "/wiki" + form.get("slug");
+    } catch (e) {
+      addNotification("error", `Could not update wiki page: ${e.message}`);
+      console.error(e);
+    }
+
+    setLoading(false);
+  };
+
   return (
     <>
       <SEO title={page?.title ? `${page.title} | Wiki` : "Wiki"} />
@@ -67,7 +112,7 @@ const Wiki = ({ page, token, userRole, slug }) => {
         mb={3}
       >
         <Text as="h1">{page?.title ?? `${SQ_SITE_NAME} wiki`}</Text>
-        {userRole === "admin" && (
+        {userRole === "admin" && !editing && (
           <Box display="flex" alignItems="center">
             <Link href="/wiki/new" passHref>
               <Button as="a" variant="secondary">
@@ -76,7 +121,11 @@ const Wiki = ({ page, token, userRole, slug }) => {
             </Link>
             {!!page && (
               <>
-                <Button variant="secondary" ml={3}>
+                <Button
+                  onClick={() => setEditing(true)}
+                  variant="secondary"
+                  ml={3}
+                >
                   Edit
                 </Button>
                 {!!slug && (
@@ -109,11 +158,28 @@ const Wiki = ({ page, token, userRole, slug }) => {
               )}
             </Text>
           </Box>
-          <MarkdownBody>
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {page.body}
-            </ReactMarkdown>
-          </MarkdownBody>
+          {!editing ? (
+            <MarkdownBody>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {page.body}
+              </ReactMarkdown>
+            </MarkdownBody>
+          ) : (
+            <form onSubmit={handleEdit}>
+              <WikiFields values={page} />
+              <Box display="flex" justifyContent="flex-end">
+                <Button
+                  onClick={() => setEditing(false)}
+                  type="button"
+                  variant="secondary"
+                  mr={3}
+                >
+                  Cancel
+                </Button>
+                <Button>Save changes</Button>
+              </Box>
+            </form>
+          )}
         </>
       ) : (
         <Text color="grey">There is nothing here yet.</Text>
