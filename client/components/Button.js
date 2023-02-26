@@ -141,12 +141,15 @@ const StyledButton = styled.button(
   flexbox
 );
 
-const Button = ({ onClick, disabled, ...rest }) => (
+const Button = ({ onClick, disabled, fref, ...rest }) => (
   <StyledButton
     onClick={disabled ? undefined : onClick}
     disabled={disabled}
+    ref={fref}
     {...rest}
   />
 );
 
-export default Button;
+export default React.forwardRef((props, ref) => (
+  <Button fref={ref} {...props} />
+));
