@@ -78,7 +78,7 @@ const Wiki = ({ page, token, userRole, slug }) => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            slug: form.get("slug"),
+            slug: page.slug === "/" ? "/" : form.get("slug"),
             title: form.get("title"),
             body: form.get("body"),
           }),
@@ -93,7 +93,9 @@ const Wiki = ({ page, token, userRole, slug }) => {
       addNotification("success", "Wiki page updated successfully");
 
       if (form.get("slug") === page.slug) window.location.reload();
-      else window.location.href = "/wiki" + form.get("slug");
+      else
+        window.location.href =
+          "/wiki" + (page.slug === "/" ? "" : form.get("slug"));
     } catch (e) {
       addNotification("error", `Could not update wiki page: ${e.message}`);
       console.error(e);

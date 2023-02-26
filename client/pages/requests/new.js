@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import MarkdownInput from "../../components/MarkdownInput";
 
 const NewRequest = ({ token }) => {
   const { addNotification } = useContext(NotificationContext);
@@ -69,7 +70,7 @@ const NewRequest = ({ token }) => {
           mb={4}
           required
         />
-        <Input
+        <MarkdownInput
           name="body"
           label="Description"
           placeholder="Markdown supported"

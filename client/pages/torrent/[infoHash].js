@@ -27,6 +27,7 @@ import TorrentList from "../../components/TorrentList";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import { TorrentFields } from "../upload";
+import MarkdownInput from "../../components/MarkdownInput";
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
@@ -678,7 +679,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
       {showReportModal && (
         <Modal close={() => setShowReportModal(false)}>
           <form onSubmit={handleReport}>
-            <Input
+            <MarkdownInput
               name="reason"
               label="Reason for report"
               placeholder="Markdown supported"

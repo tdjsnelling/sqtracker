@@ -6,19 +6,13 @@ import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
-import Box from "../../components/Box";
-import Infobox from "../../components/Infobox";
+import MarkdownInput from "../../components/MarkdownInput";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
-import MarkdownBody from "../../components/MarkdownBody";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import Link from "next/link";
 
 export const WikiFields = ({ values }) => {
   const [slugValue, setSlugValue] = useState(values?.slug);
-  const [bodyValue, setBodyValue] = useState(values?.body);
 
   const {
     publicRuntimeConfig: { SQ_BASE_URL },
@@ -45,48 +39,15 @@ export const WikiFields = ({ values }) => {
         mb={4}
         required
       />
-      <Input
+      <MarkdownInput
         name="body"
         label="Body"
         placeholder="Markdown supported"
-        value={bodyValue}
-        onChange={(e) => setBodyValue(e.target.value)}
+        defaultValue={values?.body}
         rows={20}
         mb={4}
         required
       />
-      <Box as="details" mb={4}>
-        <Box as="summary">
-          <Text
-            as="span"
-            fontWeight={600}
-            fontSize={1}
-            _css={{ textTransform: "uppercase" }}
-          >
-            Preview
-          </Text>
-        </Box>
-        <Infobox mt={3}>
-          <MarkdownBody>
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={{
-                a({ href, ...props }) {
-                  return href.startsWith("http") ? (
-                    <a href={href} target="_blank" {...props} />
-                  ) : (
-                    <Link href={href} passHref>
-                      <a {...props} />
-                    </Link>
-                  );
-                },
-              }}
-            >
-              {bodyValue}
-            </ReactMarkdown>
-          </MarkdownBody>
-        </Infobox>
-      </Box>
     </>
   );
 };
