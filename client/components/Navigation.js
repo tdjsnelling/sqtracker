@@ -10,8 +10,9 @@ import { Home } from "@styled-icons/boxicons-regular/Home";
 import { ListUl } from "@styled-icons/boxicons-regular/ListUl";
 import { Search } from "@styled-icons/boxicons-regular/Search";
 import { Upload } from "@styled-icons/boxicons-regular/Upload";
-import { News } from "@styled-icons/boxicons-regular/News";
 import { MessageAdd } from "@styled-icons/boxicons-regular/MessageAdd";
+import { News } from "@styled-icons/boxicons-regular/News";
+import { BookOpen } from "@styled-icons/boxicons-regular/BookOpen";
 import { Rss } from "@styled-icons/boxicons-regular/Rss";
 import { User } from "@styled-icons/boxicons-regular/User";
 import { Error } from "@styled-icons/boxicons-regular/Error";
@@ -171,16 +172,22 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <Upload size={24} />
                 </NavLink>
               </Link>
+              <Link href="/requests" passHref>
+                <NavLink>
+                  <Text>Requests</Text>
+                  <MessageAdd size={24} />
+                </NavLink>
+              </Link>
               <Link href="/announcements" passHref>
                 <NavLink>
                   <Text>Announcements</Text>
                   <News size={24} />
                 </NavLink>
               </Link>
-              <Link href="/requests" passHref>
+              <Link href="/wiki" passHref>
                 <NavLink>
-                  <Text>Requests</Text>
-                  <MessageAdd size={24} />
+                  <Text>Wiki</Text>
+                  <BookOpen size={24} />
                 </NavLink>
               </Link>
               <Link href="/rss" passHref>
