@@ -23,7 +23,7 @@ import {
   adminRoutes,
   requestRoutes,
   groupRoutes,
-  wikiRoutes
+  wikiRoutes,
 } from "./routes";
 import {
   register,

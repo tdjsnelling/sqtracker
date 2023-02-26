@@ -6,7 +6,7 @@ import reportRoutes from "./report";
 import adminRoutes from "./admin";
 import requestRoutes from "./request";
 import groupRoutes from "./group";
-import wikiRoutes from './wiki'
+import wikiRoutes from "./wiki";
 
 export {
   accountRoutes,
@@ -17,5 +17,5 @@ export {
   adminRoutes,
   requestRoutes,
   groupRoutes,
-  wikiRoutes
+  wikiRoutes,
 };
