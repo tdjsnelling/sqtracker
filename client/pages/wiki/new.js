@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import jwt from "jsonwebtoken";
@@ -11,15 +11,26 @@ import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 
 export const WikiFields = ({ values }) => {
+  const [slugValue, setSlugValue] = useState(values?.slug);
+
+  const {
+    publicRuntimeConfig: { SQ_BASE_URL },
+  } = getConfig();
+
   return (
     <>
       <Input
         name="slug"
         label="Path"
-        defaultValue={values?.slug}
-        mb={4}
+        value={slugValue}
+        onChange={(e) => setSlugValue(e.target.value)}
+        disabled={values?.slug === "/"}
+        mb={2}
         required
       />
+      <Text color="grey" fontSize={0} mb={4}>
+        Page will be visible at {SQ_BASE_URL}/wiki{slugValue}
+      </Text>
       <Input
         name="title"
         label="Title"
