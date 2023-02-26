@@ -160,7 +160,20 @@ const Wiki = ({ page, token, userRole, slug }) => {
           </Box>
           {!editing ? (
             <MarkdownBody>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  a({ href, ...props }) {
+                    return href.startsWith("http") ? (
+                      <a href={href} target="_blank" {...props} />
+                    ) : (
+                      <Link href={href} passHref>
+                        <a {...props} />
+                      </Link>
+                    );
+                  },
+                }}
+              >
                 {page.body}
               </ReactMarkdown>
             </MarkdownBody>
