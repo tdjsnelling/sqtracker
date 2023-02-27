@@ -23,6 +23,7 @@ import {
   adminRoutes,
   requestRoutes,
   groupRoutes,
+  wikiRoutes,
 } from "./routes";
 import {
   register,
@@ -171,6 +172,7 @@ validateConfig(config).then(() => {
   app.use("/admin", adminRoutes(tracker));
   app.use("/requests", requestRoutes());
   app.use("/group", groupRoutes());
+  app.use("/wiki", wikiRoutes());
 
   app.use((err, req, res, next) => {
     console.error(`[sq] error in ${req.url}:`, err);

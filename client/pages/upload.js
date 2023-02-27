@@ -20,6 +20,7 @@ import Infobox from "../components/Infobox";
 import List from "../components/List";
 import { NotificationContext } from "../components/Notifications";
 import LoadingContext from "../utils/LoadingContext";
+import MarkdownInput from "../components/MarkdownInput";
 
 const FileUpload = styled(Box)(() =>
   css({
@@ -108,7 +109,7 @@ export const TorrentFields = ({
           ))}
         </Select>
       )}
-      <Input
+      <MarkdownInput
         name="description"
         label="Description"
         rows="10"
