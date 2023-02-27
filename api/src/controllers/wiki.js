@@ -1,5 +1,4 @@
 import Wiki from "../schema/wiki";
-import { re } from "@babel/core/lib/vendor/import-meta-resolve";
 
 const slugRegex = /^\/([a-z0-9-_\/])*/i;
 
