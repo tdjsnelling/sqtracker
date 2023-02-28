@@ -450,6 +450,7 @@ export const deleteTorrent = async (req, res, next) => {
 export const getTorrentsPage = async ({
   skip = 0,
   limit = 25,
+  ids,
   query,
   category,
   source,
@@ -473,6 +474,13 @@ export const getTorrentsPage = async ({
         tags: 1,
       },
     },
+    ...(Array.isArray(ids)
+      ? [
+          {
+            $match: { $expr: { $in: ["$_id", ids] } },
+          },
+        ]
+      : []),
     ...(query
       ? [
           {
@@ -581,6 +589,13 @@ export const getTorrentsPage = async ({
   ]);
 
   const [count] = await Torrent.aggregate([
+    ...(Array.isArray(ids)
+      ? [
+          {
+            $match: { expr: { $in: ["$_id", ids] } },
+          },
+        ]
+      : []),
     ...(query
       ? [
           {
@@ -636,7 +651,7 @@ export const getTorrentsPage = async ({
 
   return {
     torrents: await embellishTorrentsWithTrackerScrape(tracker, torrents),
-    ...count,
+    total: count?.total ?? torrents.length,
   };
 };
 

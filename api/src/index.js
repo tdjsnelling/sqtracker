@@ -164,7 +164,7 @@ validateConfig(config).then(() => {
   // everything from here on requires user auth
   app.use(auth);
 
-  app.use("/account", accountRoutes(mail));
+  app.use("/account", accountRoutes(tracker, mail));
   app.use("/user", userRoutes(tracker));
   app.use("/torrent", torrentRoutes(tracker));
   app.use("/announcements", announcementRoutes());

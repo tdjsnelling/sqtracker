@@ -9,6 +9,7 @@ import Progress from "../schema/progress";
 import { getTorrentsPage } from "./torrent";
 import { getUserRatio } from "../utils/ratio";
 import { BYTES_GB } from "../tracker/announce";
+import Torrent from "../schema/torrent";
 
 export const sendVerificationEmail = async (mail, address, token) => {
   await mail.sendMail({
@@ -1042,5 +1043,19 @@ export const deleteAccount = async (req, res, next) => {
     }
   } else {
     res.status(400).send("Request must include password");
+  }
+};
+
+export const getUserBookmarks = (tracker) => async (req, res, next) => {
+  try {
+    const user = await User.findOne({ _id: req.userId }).lean();
+    const bookmarks = await getTorrentsPage({
+      ids: user.bookmarks,
+      userId: req.userId,
+      tracker,
+    });
+    res.json(bookmarks);
+  } catch (e) {
+    next(e);
   }
 };

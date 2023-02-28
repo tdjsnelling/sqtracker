@@ -11,11 +11,12 @@ import {
   enableTotp,
   disableTotp,
   deleteAccount,
+  getUserBookmarks,
 } from "../controllers/user";
 
 const router = express.Router();
 
-export default (mail) => {
+export default (tracker, mail) => {
   router.get("/invites", fetchInvites);
   router.post("/generate-invite", generateInvite(mail));
   router.post("/change-password", changePassword(mail));
@@ -27,5 +28,6 @@ export default (mail) => {
   router.post("/totp/enable", enableTotp);
   router.post("/totp/disable", disableTotp);
   router.post("/delete", deleteAccount);
+  router.get("/bookmarks", getUserBookmarks(tracker));
   return router;
 };

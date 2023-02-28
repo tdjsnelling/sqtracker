@@ -14,6 +14,7 @@ import { MessageAdd } from "@styled-icons/boxicons-regular/MessageAdd";
 import { News } from "@styled-icons/boxicons-regular/News";
 import { BookOpen } from "@styled-icons/boxicons-regular/BookOpen";
 import { Rss } from "@styled-icons/boxicons-regular/Rss";
+import { Bookmark } from "@styled-icons/boxicons-regular/Bookmark";
 import { User } from "@styled-icons/boxicons-regular/User";
 import { Error } from "@styled-icons/boxicons-regular/Error";
 import { TrendingUp } from "@styled-icons/boxicons-regular/TrendingUp";
@@ -194,6 +195,12 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <NavLink>
                   <Text>RSS</Text>
                   <Rss size={24} />
+                </NavLink>
+              </Link>
+              <Link href="/bookmarks" passHref>
+                <NavLink>
+                  <Text>Bookmarks</Text>
+                  <Bookmark size={24} />
                 </NavLink>
               </Link>
               <Link href={`/user/${username}`} passHref>
