@@ -13,6 +13,8 @@ import { File } from "@styled-icons/boxicons-regular/File";
 import { Folder } from "@styled-icons/boxicons-regular/Folder";
 import { Like } from "@styled-icons/boxicons-regular/Like";
 import { Dislike } from "@styled-icons/boxicons-regular/Dislike";
+import { Bookmark as BookmarkEmpty } from "@styled-icons/boxicons-regular/Bookmark";
+import { Bookmark } from "@styled-icons/boxicons-solid/Bookmark";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import SEO from "../../components/SEO";
 import Box from "../../components/Box";
@@ -124,6 +126,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
   const [comments, setComments] = useState(torrent.comments);
   const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech);
   const [hasGroup, setHasGroup] = useState(!!torrent.group);
+  const [bookmarked, setBookmarked] = useState(torrent.fetchedBy.bookmarked);
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
@@ -410,6 +413,39 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
     setLoading(false);
   };
 
+  const handleBookmark = async () => {
+    setLoading(true);
+
+    try {
+      const bookmarkRes = await fetch(
+        `${SQ_API_URL}/torrent/bookmark/${torrent.infoHash}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (bookmarkRes.status !== 200) {
+        const reason = await bookmarkRes.text();
+        throw new Error(reason);
+      }
+
+      addNotification(
+        "success",
+        `Torrent ${bookmarked ? "removed from" : "added to"} bookmarks`
+      );
+
+      setBookmarked((b) => !b);
+    } catch (e) {
+      addNotification("error", `Could not bookmark torrent: ${e.message}`);
+      console.error(e);
+    }
+
+    setLoading(false);
+  };
+
   const category = Object.keys(SQ_TORRENT_CATEGORIES).find(
     (c) => slugify(c, { lower: true }) === torrent.type
   );
@@ -441,6 +477,9 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
           )}
         </Text>
         <Box display="flex" alignItems="center" ml={3}>
+          <Button onClick={handleBookmark} variant="secondary" px="10px" mr={3}>
+            {bookmarked ? <Bookmark size={18} /> : <BookmarkEmpty size={18} />}
+          </Button>
           {(userRole === "admin" || userId === torrent.uploadedBy._id) && (
             <>
               <Button

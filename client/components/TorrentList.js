@@ -11,6 +11,7 @@ import { ChevronsLeft } from "@styled-icons/boxicons-solid/ChevronsLeft";
 import { ChevronLeft } from "@styled-icons/boxicons-solid/ChevronLeft";
 import { ChevronsRight } from "@styled-icons/boxicons-solid/ChevronsRight";
 import { ChevronRight } from "@styled-icons/boxicons-solid/ChevronRight";
+import { Bookmark } from "@styled-icons/boxicons-solid/Bookmark";
 import List from "./List";
 import Text from "./Text";
 import Box from "./Box";
@@ -52,6 +53,9 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             cell: ({ value, row }) => (
               <Text title={value}>
                 {value}
+                {row.fetchedBy?.bookmarked && (
+                  <Box as={Bookmark} size={16} color="primary" ml={2} />
+                )}
                 {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
                   <Text as="span" fontSize={0} color="primary" ml={3}>
                     FL!

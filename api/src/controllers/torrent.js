@@ -309,6 +309,32 @@ export const fetchTorrent = (tracker) => async (req, res, next) => {
       { $unwind: { path: "$uploadedBy", preserveNullAndEmptyArrays: true } },
       {
         $lookup: {
+          from: "users",
+          as: "fetchedBy",
+          let: { torrentId: "$_id" },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$_id", req.userId] } } },
+            {
+              $project: {
+                bookmarks: 1,
+              },
+            },
+            {
+              $addFields: {
+                bookmarked: { $in: ["$$torrentId", "$bookmarks"] },
+              },
+            },
+            {
+              $project: {
+                bookmarked: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
           from: "comments",
           as: "comments",
           let: { parentId: "$_id" },
@@ -428,6 +454,7 @@ export const getTorrentsPage = async ({
   category,
   source,
   tag,
+  uploadedBy,
   userId,
   tracker,
 }) => {
@@ -485,11 +512,11 @@ export const getTorrentsPage = async ({
           },
         ]
       : []),
-    ...(userId
+    ...(uploadedBy
       ? [
           {
             $match: {
-              uploadedBy: userId,
+              uploadedBy,
             },
           },
         ]
@@ -525,6 +552,32 @@ export const getTorrentsPage = async ({
         preserveNullAndEmptyArrays: true,
       },
     },
+    {
+      $lookup: {
+        from: "users",
+        as: "fetchedBy",
+        let: { torrentId: "$_id" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$_id", userId] } } },
+          {
+            $project: {
+              bookmarks: 1,
+            },
+          },
+          {
+            $addFields: {
+              bookmarked: { $in: ["$$torrentId", "$bookmarks"] },
+            },
+          },
+          {
+            $project: {
+              bookmarked: 1,
+            },
+          },
+        ],
+      },
+    },
+    { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
   ]);
 
   const [count] = await Torrent.aggregate([
@@ -592,7 +645,11 @@ export const listLatest = (tracker) => async (req, res, next) => {
   count = parseInt(count) || 25;
   count = Math.min(count, 100);
   try {
-    const { torrents } = await getTorrentsPage({ limit: count, tracker });
+    const { torrents } = await getTorrentsPage({
+      limit: count,
+      userId: req.userId,
+      tracker,
+    });
     res.json(torrents);
   } catch (e) {
     next(e);
@@ -608,6 +665,7 @@ export const searchTorrents = (tracker) => async (req, res, next) => {
       category,
       source,
       tag,
+      userId: req.userId,
       tracker,
     });
     res.json(torrents);
@@ -728,6 +786,32 @@ export const toggleFreeleech = async (req, res, next) => {
     await Torrent.findOneAndUpdate(
       { infoHash },
       { $set: { freeleech: !torrent.freeleech } }
+    );
+    res.sendStatus(200);
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const toggleBookmark = async (req, res, next) => {
+  const { infoHash } = req.params;
+  try {
+    const torrent = await Torrent.findOne({ infoHash }).lean();
+
+    if (!torrent) {
+      res.status(404).send("Torrent could not be found");
+      return;
+    }
+
+    const user = await User.findOne({ _id: req.userId }).lean();
+
+    const isBookmarked = (await user.bookmarks?.length)
+      ? user.bookmarks.map((b) => b.toString()).includes(torrent._id.toString())
+      : false;
+
+    await User.findOneAndUpdate(
+      { _id: req.userId },
+      { [isBookmarked ? "$pull" : "$addToSet"]: { bookmarks: torrent._id } }
     );
     res.sendStatus(200);
   } catch (e) {

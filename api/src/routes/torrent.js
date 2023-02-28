@@ -10,6 +10,7 @@ import {
   toggleFreeleech,
   uploadTorrent,
   editTorrent,
+  toggleBookmark,
 } from "../controllers/torrent";
 import { createReport } from "../controllers/moderation";
 
@@ -25,6 +26,7 @@ export default (tracker) => {
   router.post("/unvote/:infoHash/:vote", removeVote);
   router.post("/report/:infoHash", createReport);
   router.post("/toggle-freeleech/:infoHash", toggleFreeleech);
+  router.post("/bookmark/:infoHash", toggleBookmark);
   router.get("/latest", listLatest(tracker));
   router.get("/search", searchTorrents(tracker));
   return router;

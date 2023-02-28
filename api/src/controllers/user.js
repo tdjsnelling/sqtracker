@@ -683,7 +683,11 @@ export const fetchUser = (tracker) => async (req, res, next) => {
     const { ratio } = await getUserRatio(user._id);
     user.ratio = ratio;
 
-    const { torrents } = await getTorrentsPage({ userId: user._id, tracker });
+    const { torrents } = await getTorrentsPage({
+      uploadedBy: user._id,
+      userId: req.userId,
+      tracker,
+    });
     user.torrents = torrents;
 
     res.json(user);

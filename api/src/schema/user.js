@@ -19,6 +19,7 @@ const User = new mongoose.Schema({
     qr: String,
     backup: [String],
   },
+  bookmarks: [mongoose.Schema.ObjectId],
 });
 
 export default mongoose.model("user", User);
