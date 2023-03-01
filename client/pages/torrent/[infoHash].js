@@ -126,7 +126,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
   const [comments, setComments] = useState(torrent.comments);
   const [isFreeleech, setIsFreeleech] = useState(torrent.freeleech);
   const [hasGroup, setHasGroup] = useState(!!torrent.group);
-  const [bookmarked, setBookmarked] = useState(torrent.fetchedBy.bookmarked);
+  const [bookmarked, setBookmarked] = useState(torrent.fetchedBy?.bookmarked);
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
@@ -477,9 +477,20 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
           )}
         </Text>
         <Box display="flex" alignItems="center" ml={3}>
-          <Button onClick={handleBookmark} variant="secondary" px="10px" mr={3}>
-            {bookmarked ? <Bookmark size={18} /> : <BookmarkEmpty size={18} />}
-          </Button>
+          {!!userId && (
+            <Button
+              onClick={handleBookmark}
+              variant="secondary"
+              px="10px"
+              mr={3}
+            >
+              {bookmarked ? (
+                <Bookmark size={18} />
+              ) : (
+                <BookmarkEmpty size={18} />
+              )}
+            </Button>
+          )}
           {(userRole === "admin" || userId === torrent.uploadedBy._id) && (
             <>
               <Button
@@ -503,13 +514,19 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
               {isFreeleech ? "Unset" : "Set"} freeleech
             </Button>
           )}
-          <Button
-            as="a"
-            href={`${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`}
-            target="_blank"
-          >
-            Download .torrent
-          </Button>
+          {!!userId ? (
+            <Button
+              as="a"
+              href={`${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`}
+              target="_blank"
+            >
+              Download .torrent
+            </Button>
+          ) : (
+            <Link href="/login" passHref>
+              <Button as="a">Log in to download</Button>
+            </Link>
+          )}
         </Box>
       </Box>
       <Info
@@ -629,29 +646,43 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
         display="flex"
         borderBottom="1px solid"
         borderColor="border"
-        pb={5}
+        pb={userId ? 5 : 0}
         mb={5}
       >
-        <Button onClick={() => handleVote("up")} variant="noBackground" mr={2}>
-          <Text icon={Like} iconColor={userVote === "up" ? "green" : undefined}>
-            {votes.up || 0}
-          </Text>
-        </Button>
-        <Button
-          onClick={() => handleVote("down")}
-          variant="noBackground"
-          mr={2}
-        >
-          <Text
-            icon={Dislike}
-            iconColor={userVote === "down" ? "red" : undefined}
-          >
-            {votes.down || 0}
-          </Text>
-        </Button>
-        <Button onClick={() => setShowReportModal(true)} variant="noBackground">
-          Report
-        </Button>
+        {!!userId && (
+          <>
+            <Button
+              onClick={() => handleVote("up")}
+              variant="noBackground"
+              mr={2}
+            >
+              <Text
+                icon={Like}
+                iconColor={userVote === "up" ? "green" : undefined}
+              >
+                {votes.up || 0}
+              </Text>
+            </Button>
+            <Button
+              onClick={() => handleVote("down")}
+              variant="noBackground"
+              mr={2}
+            >
+              <Text
+                icon={Dislike}
+                iconColor={userVote === "down" ? "red" : undefined}
+              >
+                {votes.down || 0}
+              </Text>
+            </Button>
+            <Button
+              onClick={() => setShowReportModal(true)}
+              variant="noBackground"
+            >
+              Report
+            </Button>
+          </>
+        )}
       </Box>
       <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
         <Box
@@ -674,11 +705,13 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
                   Remove this torrent
                 </Button>
               )}
-            <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
-              <Button as="a" ml={3}>
-                Add a torrent
-              </Button>
-            </Link>
+            {!!userId && (
+              <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
+                <Button as="a" ml={3}>
+                  Add a torrent
+                </Button>
+              </Link>
+            )}
           </Box>
         </Box>
         {torrent.groupTorrents.length && hasGroup ? (
@@ -693,15 +726,16 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
       <Text as="h2" mb={4}>
         Comments
       </Text>
-      <form onSubmit={handleComment}>
+      <form onSubmit={userId ? handleComment : undefined}>
         <Input
           ref={commentInputRef}
           name="comment"
           label="Post a comment"
           rows="5"
+          disabled={!userId}
           mb={4}
         />
-        <Button display="block" ml="auto">
+        <Button disabled={!userId} display="block" ml="auto">
           Post
         </Button>
       </form>
@@ -780,15 +814,23 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, userId, fetchHeaders, query: { infoHash } }) => {
-    if (!token) return { props: {} };
+  async ({
+    token,
+    userId,
+    fetchHeaders,
+    isPublicAccess,
+    query: { infoHash },
+  }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
       serverRuntimeConfig: { SQ_JWT_SECRET },
     } = getConfig();
 
-    const { id, role } = jwt.verify(token, SQ_JWT_SECRET);
+    const { id, role } = token
+      ? jwt.verify(token, SQ_JWT_SECRET)
+      : { id: null, role: null };
 
     try {
       const torrentRes = await fetch(`${SQ_API_URL}/torrent/info/${infoHash}`, {
@@ -810,7 +852,8 @@ export const getServerSideProps = withAuthServerSideProps(
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Torrent;
