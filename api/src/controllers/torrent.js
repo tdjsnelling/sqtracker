@@ -145,6 +145,7 @@ export const uploadTorrent = async (req, res, next) => {
           .split(",")
           .map((t) => slugify(t.trim(), { lower: true })),
         group: groupId,
+        mediaInfo: req.body.mediaInfo,
       });
 
       await newTorrent.save();
@@ -216,6 +217,7 @@ export const editTorrent = async (req, res, next) => {
               .split(",")
               .map((t) => slugify(t.trim(), { lower: true })),
           },
+          mediaInfo: req.body.mediaInfo,
         }
       );
 
@@ -288,6 +290,7 @@ export const fetchTorrent = (tracker) => async (req, res, next) => {
           freeleech: 1,
           tags: 1,
           group: 1,
+          mediaInfo: 1,
         },
       },
       {

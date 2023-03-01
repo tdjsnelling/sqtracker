@@ -9,7 +9,9 @@ const StyledButton = styled.button(
     css({
       appearance: "none",
       bg: "primary",
-      color: getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8",
+      color: `${
+        getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8"
+      } !important`,
       border: "2px solid",
       borderColor: "primary",
       borderRadius: 1,
@@ -54,7 +56,7 @@ const StyledButton = styled.button(
       variants: {
         secondary: {
           bg: "sidebar",
-          color: "text",
+          color: `${theme.colors.text} !important`,
           borderColor: "sidebar",
           "&:hover": {
             borderColor:

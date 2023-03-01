@@ -119,6 +119,14 @@ export const TorrentFields = ({
         required
       />
       <Input
+        name="mediaInfo"
+        label="MediaInfo"
+        rows="10"
+        defaultValue={values?.mediaInfo}
+        fontFamily="mono"
+        mb={4}
+      />
+      <Input
         name="tags"
         label="Tags"
         placeholder="Separated by commas"
@@ -206,6 +214,7 @@ const Upload = ({ token, userId }) => {
           torrent: torrentFile.b64,
           tags: form.get("tags"),
           groupWith,
+          mediaInfo: form.get("mediaInfo"),
         }),
       });
 

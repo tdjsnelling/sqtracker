@@ -21,6 +21,7 @@ const Torrent = new mongoose.Schema({
   tags: Array,
   group: mongoose.Schema.ObjectId,
   confidenceScore: Number,
+  mediaInfo: String,
 });
 
 Torrent.plugin(fuzzySearch, { fields: ["name"] });

@@ -165,6 +165,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
             type: form.get("category"),
             source: form.get("source"),
             tags: form.get("tags"),
+            mediaInfo: form.get("mediaInfo"),
           }),
         }
       );
@@ -563,7 +564,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
             torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? "Yes" : "No",
         }}
       />
-      <Box mb={5}>
+      <Infobox mb={5}>
         <Text
           fontWeight={600}
           fontSize={1}
@@ -577,8 +578,23 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
             {torrent.description}
           </ReactMarkdown>
         </MarkdownBody>
-      </Box>
-      <Box mb={5}>
+      </Infobox>
+      {torrent.mediaInfo && (
+        <Infobox mb={5}>
+          <Text
+            fontWeight={600}
+            fontSize={1}
+            _css={{ textTransform: "uppercase" }}
+            mb={3}
+          >
+            MediaInfo
+          </Text>
+          <Box as="pre" fontFamily="mono" fontSize={1} overflowX="auto">
+            {torrent.mediaInfo}
+          </Box>
+        </Infobox>
+      )}
+      <Infobox mb={5}>
         <Text
           fontWeight={600}
           fontSize={1}
@@ -592,7 +608,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
             {torrent.tags.map((tag) => (
               <Box
                 key={`tag-${tag}`}
-                bg="sidebar"
+                bg="background"
                 border="1px solid"
                 borderColor="border"
                 borderRadius={1}
@@ -609,7 +625,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
         ) : (
           <Text color="grey">This torrent has no tags.</Text>
         )}
-      </Box>
+      </Infobox>
       <Infobox mb={5}>
         <Text
           fontWeight={600}
@@ -741,6 +757,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
                 source: torrent.source,
                 description: torrent.description,
                 tags: torrent.tags.join(", "),
+                mediaInfo: torrent.mediaInfo,
               }}
             />
             <Box display="flex" justifyContent="flex-end">
