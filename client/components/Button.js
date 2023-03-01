@@ -9,9 +9,7 @@ const StyledButton = styled.button(
     css({
       appearance: "none",
       bg: "primary",
-      color: `${
-        getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8"
-      } !important`,
+      color: getLuminance(theme.colors.primary) >= 0.5 ? "#202224" : "#f8f8f8",
       border: "2px solid",
       borderColor: "primary",
       borderRadius: 1,

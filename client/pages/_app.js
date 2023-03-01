@@ -91,6 +91,8 @@ const GlobalStyle = createGlobalStyle(
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scrollbar-color: ${colors.border} ${colors.background};
+    scrollbar-width: thin;
   }
   body {
     background: ${colors.background};
@@ -121,6 +123,17 @@ const GlobalStyle = createGlobalStyle(
   }
   ul, ol {
     padding-left: 1em;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+  }
+  *::-webkit-scrollbar-track {
+    background: ${colors.background};
+  }
+  *::-webkit-scrollbar-thumb {
+    background: ${colors.border};
+    border: 2px solid ${colors.background};
+    border-radius: 10px;
   }
 `
 );
