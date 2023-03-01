@@ -18,10 +18,12 @@ import { NotificationContext } from "../../../components/Notifications";
 import Input from "../../../components/Input";
 import Comment from "../../../components/Comment";
 import LoadingContext from "../../../utils/LoadingContext";
+import Modal from "../../../components/Modal";
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned);
   const [comments, setComments] = useState(announcement.comments);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
@@ -180,7 +182,10 @@ const Announcement = ({ announcement, token, userRole }) => {
                 </Button>
               </a>
             </Link>
-            <Button onClick={handleDelete} variant="secondary">
+            <Button
+              onClick={() => setShowDeleteModal(true)}
+              variant="secondary"
+            >
               Delete
             </Button>
           </Box>
@@ -246,6 +251,26 @@ const Announcement = ({ announcement, token, userRole }) => {
           </Box>
         )}
       </Box>
+      {showDeleteModal && (
+        <Modal close={() => setShowDeleteModal(false)}>
+          <Text mb={5}>
+            Are you sure you want to delete this announcement? This cannot be
+            undone.
+          </Text>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              onClick={() => setShowDeleteModal(false)}
+              variant="secondary"
+              mr={3}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleDelete} variant="danger">
+              Delete
+            </Button>
+          </Box>
+        </Modal>
+      )}
     </>
   );
 };
