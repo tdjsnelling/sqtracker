@@ -33,14 +33,16 @@ const Modal = ({ children, close }) => {
           justifyContent="flex-end"
           borderBottom="1px solid"
           borderColor="border"
+          height="60px"
           px={5}
-          py={4}
         >
-          <Button onClick={close} variant="noBackground" px={1} py={1}>
+          <Button onClick={close} variant="noBackground" px={3} py={1}>
             <X size={20} />
           </Button>
         </Box>
-        <Box p={5}>{children}</Box>
+        <Box maxHeight="calc(100vh - 200px - 60px)" overflow="auto" p={5}>
+          {children}
+        </Box>
       </Box>
     </Box>
   );
