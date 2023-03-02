@@ -5,6 +5,7 @@ import {
   deleteTorrent,
   fetchTorrent,
   listLatest,
+  listAll,
   removeVote,
   searchTorrents,
   toggleFreeleech,
@@ -28,6 +29,7 @@ export default (tracker) => {
   router.post("/toggle-freeleech/:infoHash", toggleFreeleech);
   router.post("/bookmark/:infoHash", toggleBookmark);
   router.get("/latest", listLatest(tracker));
+  router.get("/all", listAll);
   router.get("/search", searchTorrents(tracker));
   return router;
 };
