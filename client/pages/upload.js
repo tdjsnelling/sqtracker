@@ -339,18 +339,30 @@ const Upload = ({ token, userId }) => {
                     {
                       header: "Group?",
                       cell: ({ row }) => (
-                        <Button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setGroupWith(row.infoHash);
-                          }}
-                          type="button"
-                          small
+                        <Box
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="flex-end"
                         >
-                          Group with this torrent
-                        </Button>
+                          {groupWith === row.infoHash && (
+                            <Box color="success" mr={3}>
+                              <Check size={24} />
+                            </Box>
+                          )}
+                          <Button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setGroupWith(row.infoHash);
+                            }}
+                            type="button"
+                            disabled={groupWith === row.infoHash}
+                            small
+                          >
+                            Group with this torrent
+                          </Button>
+                        </Box>
                       ),
-                      gridWidth: "210px",
+                      gridWidth: "240px",
                       rightAlign: true,
                     },
                   ]}

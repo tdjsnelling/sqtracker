@@ -202,14 +202,15 @@ export const editTorrent = async (req, res, next) => {
         }
       }
 
-      createNGrams(torrent, ["name"]);
+      const clone = { ...torrent, name: req.body.name };
+      createNGrams(clone, ["name"]);
 
       await Torrent.findOneAndUpdate(
         { infoHash },
         {
           $set: {
             name: req.body.name,
-            name_fuzzy: torrent.name_fuzzy,
+            name_fuzzy: clone.name_fuzzy,
             type: req.body.type,
             source: req.body.source,
             description: req.body.description,
