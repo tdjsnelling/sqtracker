@@ -35,12 +35,7 @@ const Search = ({ results, error }) => {
         {query ? `Search results for “${query}”` : "Search"}
       </Text>
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
-        <Input
-          placeholder="Search torrents (text or RegExp)"
-          name="query"
-          mr={3}
-          required
-        />
+        <Input name="query" mr={3} required />
         <Button>Search</Button>
       </Box>
       {error ? (

@@ -1,7 +1,7 @@
 import bencode from "bencode";
 import crypto from "crypto";
 import mongoose from "mongoose";
-import { createNGrams } from "mongoose-fuzzy-searching/helpers";
+import { createNGrams, nGrams } from "mongoose-fuzzy-searching/helpers";
 import slugify from "slugify";
 import Torrent from "../schema/torrent";
 import User from "../schema/user";
@@ -463,7 +463,23 @@ export const getTorrentsPage = async ({
   userId,
   tracker,
 }) => {
+  const queryNGrams = nGrams(query, false, 2, false).join(" ");
+
   const torrents = await Torrent.aggregate([
+    ...(query
+      ? [
+          {
+            $match: {
+              $text: {
+                $search: queryNGrams,
+              },
+            },
+          },
+          {
+            $addFields: { confidenceScore: { $meta: "textScore" } },
+          },
+        ]
+      : []),
     {
       $project: {
         infoHash: 1,
@@ -476,24 +492,13 @@ export const getTorrentsPage = async ({
         created: 1,
         freeleech: 1,
         tags: 1,
+        confidenceScore: 1,
       },
     },
     ...(Array.isArray(ids)
       ? [
           {
             $match: { $expr: { $in: ["$_id", ids] } },
-          },
-        ]
-      : []),
-    ...(query
-      ? [
-          {
-            $match: {
-              $or: [
-                { name: { $regex: query, $options: "i" } },
-                { description: { $regex: query, $options: "i" } },
-              ],
-            },
           },
         ]
       : []),
@@ -534,7 +539,9 @@ export const getTorrentsPage = async ({
         ]
       : []),
     {
-      $sort: { created: -1 },
+      $sort: query
+        ? { confidenceScore: { $meta: "textScore" } }
+        : { created: -1 },
     },
     {
       $skip: skip,
@@ -592,23 +599,24 @@ export const getTorrentsPage = async ({
     { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
   ]);
 
+  console.log(torrents);
+
   const [count] = await Torrent.aggregate([
-    ...(Array.isArray(ids)
-      ? [
-          {
-            $match: { expr: { $in: ["$_id", ids] } },
-          },
-        ]
-      : []),
     ...(query
       ? [
           {
             $match: {
-              $or: [
-                { name: { $regex: query, $options: "i" } },
-                { description: { $regex: query, $options: "i" } },
-              ],
+              $text: {
+                $search: queryNGrams,
+              },
             },
+          },
+        ]
+      : []),
+    ...(Array.isArray(ids)
+      ? [
+          {
+            $match: { expr: { $in: ["$_id", ids] } },
           },
         ]
       : []),
