@@ -25,6 +25,11 @@ const auth = async (req, res, next) => {
     } catch (err) {
       res.status(500).send(err);
     }
+  } else if (
+    req.headers["x-sq-public-access"] === "true" &&
+    req.headers["x-sq-server-secret"] === process.env.SQ_SERVER_SECRET
+  ) {
+    next();
   } else {
     res.sendStatus(401);
   }

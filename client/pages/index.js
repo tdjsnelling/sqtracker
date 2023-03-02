@@ -188,6 +188,7 @@ export const getServerSideProps = withAuthServerSideProps(
       return { props: {} };
     }
   },
+  false,
   true
 );
 

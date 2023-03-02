@@ -674,6 +674,15 @@ export const listLatest = (tracker) => async (req, res, next) => {
   }
 };
 
+export const listAll = async (req, res, next) => {
+  try {
+    const torrents = await Torrent.find({}, { infoHash: 1 }).lean();
+    res.json(torrents);
+  } catch (e) {
+    next(e);
+  }
+};
+
 export const searchTorrents = (tracker) => async (req, res, next) => {
   const { query, category, source, tag, page } = req.query;
   try {

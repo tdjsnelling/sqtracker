@@ -38,6 +38,7 @@ const configSchema = yup
           }, {});
           return yup.object(entries).required();
         }),
+        SQ_ALLOW_UNREGISTERED_VIEW: yup.boolean().required(),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),

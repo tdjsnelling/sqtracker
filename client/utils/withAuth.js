@@ -30,12 +30,20 @@ export const withAuth = (Component, noRedirect = false) => {
 
 export const withAuthServerSideProps = (
   getServerSideProps,
+  publicAccess = false,
   noRedirect = false
 ) => {
   return async (ctx) => {
-    const { token, userId } = getReqCookies(ctx.req);
+    let { token, userId } = getReqCookies(ctx.req);
 
-    if (!token && !noRedirect)
+    const {
+      serverRuntimeConfig: { SQ_SERVER_SECRET },
+      publicRuntimeConfig: { SQ_ALLOW_UNREGISTERED_VIEW },
+    } = getConfig();
+
+    const isPublicAccess = publicAccess && SQ_ALLOW_UNREGISTERED_VIEW && !token;
+
+    if (!token && !noRedirect && !isPublicAccess)
       return {
         redirect: {
           permanent: false,
@@ -43,26 +51,32 @@ export const withAuthServerSideProps = (
         },
       };
 
-    if (!token && noRedirect) return { props: {} };
+    if (!token && noRedirect && !isPublicAccess) return { props: {} };
+
+    if (isPublicAccess) {
+      token = null;
+      userId = null;
+    }
 
     try {
-      const {
-        serverRuntimeConfig: { SQ_SERVER_SECRET },
-      } = getConfig();
-
       const fetchHeaders = {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
         "X-Forwarded-For":
           ctx.req.headers["x-forwarded-for"] ?? ctx.req.socket.remoteAddress,
         "X-Sq-Server-Secret": SQ_SERVER_SECRET,
+        "X-Sq-Public-Access": isPublicAccess,
       };
+
+      if (token) {
+        fetchHeaders["Authorization"] = `Bearer ${token}`;
+      }
 
       const { props: ssProps } = await getServerSideProps({
         ...ctx,
         token,
         userId,
         fetchHeaders,
+        isPublicAccess,
       });
       return { props: { ...ssProps, token } };
     } catch (e) {

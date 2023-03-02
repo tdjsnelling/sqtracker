@@ -21,6 +21,7 @@ module.exports = {
     SQ_BP_COST_PER_INVITE: 3,
     SQ_BP_COST_PER_GB: 3,
     SQ_SITE_WIDE_FREELEECH: false,
+    SQ_ALLOW_UNREGISTERED_VIEW: false,
     SQ_BASE_URL: "https://sqtracker.dev",
     SQ_API_URL: "https://sqtracker.dev/api",
     SQ_MONGO_URL: "mongodb://sq_mongodb",
