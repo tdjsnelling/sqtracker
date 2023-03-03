@@ -4,11 +4,11 @@ Contributions to sqtracker are welcome. Trackers are often forked and modified, 
 
 ## Code style
 
-Please follow existing conventions in code style. If you PR any messy, redundant or hard to understand code I will request changes on your PR.
+Please follow existing conventions in code style. If you PR any messy, redundant or hard to understand code then expect changes to be requested on your PR.
 
 ### Linting
 
-All contributions **must** be linted with the existing `yarn lint` command. Better yet, use an editor or IDE that runs the linting for you, such as WebStorm. This will keep code style mostly consistent. Any un-linted PRs will have changes requested before I even review them.
+All contributions **must** be linted with the existing `yarn lint` command. Better yet, use an editor or IDE that runs the linting for you, such as WebStorm. This will keep code style mostly consistent.
 
 ### Comments
 

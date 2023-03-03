@@ -7,29 +7,35 @@ It implements all of the features required to run a private (or public) tracker 
 ## Features
 
 * Accounts
-  * Registration modes (open/closed/invite only)
+  * Registration modes (open / closed / invite only)
   * Sending of invites
   * Account management (2FA, password resets etc.)
   * Bonus points system
+  * Option to browse torrents without logging in (for search engine discovery)
 * Torrent management
-  * Uploading torrents with rich metadata (titles, descriptions, categories, tags etc.)
+  * Uploading torrents with rich metadata (title, description, source, mediainfo, category, tags etc.)
   * Searching torrents or browsing by category or tags
   * Freeleech options (specific torrents, sitewide)
-* Upload/download tracking
-  * Track how much content each user has uploaded/downloaded
+  * Torrent grouping (e.g. different formats of same movie)
+  * Bookmarks
+* Upload / download tracking
+  * Track how much content each user has uploaded / downloaded
   * Track ratios
-  * Limit up/downloading per user based on ratio
+  * Limit up / downloading per user based on ratio
   * Award invites based on ratio
 * User interaction
   * Commenting on torrents
-  * Up/down voting torrents
+  * Up / down voting torrents
   * Requests system
 * Moderation
-  * Staff/admin privileges
+  * Staff / admin privileges
   * Reporting torrents to be reviewed by staff
   * Detailed stats available to admins
-  * Announcements/news posts (for posting of tracker rules, important updates etc.)
-  * Ban/unban users
+  * Wiki system
+  * Announcements / news posts
+  * Ban / unban users
+* Tracker appearance
+  * Configurable theme / CSS
 
 ## Deploying
 
@@ -37,19 +43,19 @@ It implements all of the features required to run a private (or public) tracker 
 
 An sqtracker deployment is made up of 4 separate components. These are:
 
-#### A MongoDB database
-
-[MongoDB](https://www.mongodb.com/) is a popular and powerful document-oriented database. Version 5.2 or higher is required.
-
-#### The sqtracker API service
+#### 1. The sqtracker API service
 
 The sqtracker API service handles all actions taken by users (authentication, uploads, searching etc.), implements the BitTorrent tracker specification to handle announces and scrapes, and provides the RSS feed. 
 
-#### The sqtracker client service
+#### 2. The sqtracker client service
 
 The sqtracker client service provides the modern, responsive web interface that users interact with.
 
-#### A HTTP proxy server
+#### 3. A MongoDB database
+
+[MongoDB](https://www.mongodb.com/) is a popular and powerful document-oriented database. Version 5.2 or higher is required.
+
+#### 4. A HTTP proxy server
 
 The HTTP proxy allows the client, API, and BitTorrent tracker to all be accessible via a single endpoint.
 
@@ -57,48 +63,23 @@ The HTTP proxy allows the client, API, and BitTorrent tracker to all be accessib
 
 The sqtracker platform is designed to be deployed via Docker. Once a configuration file is created, deploying is as simple as running `docker compose up -d` at the root of the project.
 
+If you change the name of any services in `docker-compose.yml`, you will also need to update the relevant host names in your `config.js` and `traefik.yml` files.
+
+sqtracker is reasonably light-weight, but you should still invest in a VPS with decent resources if you want to run a fast and performant tracker.
+
+### Deploying with a PaaS platform
+
 Alternatively, you can deploy each service individually on a PaaS cloud platform such as [Northflank](https://northflank.com).
 
-If you change the name of any services in `docker-compose.yml`, you will also need to update the relevant host names in your `config.js` and `traefik.yml` files.
+You will need to deploy each of the 4 components listed above. The Docker images for the client and API services are published in this repository.
 
 ## Configuration
 
 All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
 
-A full list of configuration options is below. All are required.
+An example configuration can be found in `config.example.js`. This file contains examples and explanations for each config value.
 
 If your configuration is not valid, sqtracker will fail to start.
-
-| Key                        | Type    | Example                                  | Description                                                                                                                                                                                                                                                                                  |
-|----------------------------|---------|------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SQ_SITE_NAME               | envs    | sqtracker demo                           | The name of your tracker site                                                                                                                                                                                                                                                                |
-| SQ_SITE_DESCRIPTION        | envs    | My very own private tracker              | A short description of your tracker site                                                                                                                                                                                                                                                     |
-| SQ_THEME_COLOUR            | envs    | #f45d48                                  | A hex colour code used as the main theme colour of your site                                                                                                                                                                                                                                 |
-| SQ_ALLOW_REGISTER          | envs    | `invite`                                 | Registration mode. Either `open`, `invite` or `closed`                                                                                                                                                                                                                                       |
-| SQ_ALLOW_ANONYMOUS_UPLOADS | envs    | `false`                                  | Whether or not users can upload torrents anonymously. Either `true` or `false`                                                                                                                                                                                                               |
-| SQ_MINIMUM_RATIO           | envs    | 0.75                                     | Minimum allowed ratio. Below this users will not be able to download                                                                                                                                                                                                                         |
-| SQ_BP_EARNED_PER_GB        | envs    | 1                                        | Number of bonus points awarded to a user for each GB they upload                                                                                                                                                                                                                             |
-| SQ_BP_COST_PER_INVITE      | envs    | 3                                        | Number of bonus it costs a user to buy 1 invite (set to 0 to disable buying invites)                                                                                                                                                                                                         |
-| SQ_BP_COST_PER_GB          | envs    | 3                                        | Number of bonus it costs a user to buy 1 GB of upload (set to 0 to disable buying upload)                                                                                                                                                                                                    |
-| SQ_SITE_WIDE_FREELEECH     | envs    | `false`                                  | Whether or not to enable freeleech on all torrents                                                                                                                                                                                                                                           |
-| SQ_TORRENT_CATEGORIES      | envs    | `{ "Movies": ["HD", ...], "TV": [...] }` | A dictionary of categories, each with an array of zero or more sources available within that category                                                                                                                                                                                        |
-| SQ_ALLOW_UNREGISTERED_VIEW | envs    | `false`                                  | Whether or not torrent pages can be viewed by unregistered users. If true, only logged in users will be able to download/interact, but anyone (search engines included) will be able to view/read torrent info.                                                                              |
-| SQ_BASE_URL                | envs    | https://demo.sqtracker.dev               | The URL of your tracker site                                                                                                                                                                                                                                                                 |
-| SQ_API_URL                 | envs    | https://demo.sqtracker.dev/api           | The URL of your API. Under the recommended setup, it should be `${SQ_BASE_URL}/api`                                                                                                                                                                                                          |
-| SQ_MONGO_URL               | envs    | mongodb://sq_mongodb/sq                  | The URL of your MongoDB server. Under the recommended setup, it should be `mongodb://sq_mongodb/sq`                                                                                                                                                                                          |
-| SQ_MAIL_FROM_ADDRESS       | envs    | mail@sqtracker.dev                       | The address that mail will be sent from                                                                                                                                                                                                                                                      |
-| SQ_SMTP_HOST               | envs    | smtp.example.com                         | The hostname of your SMTP server                                                                                                                                                                                                                                                             |
-| SQ_SMTP_PORT               | envs    | 587                                      | The port of your SMTP server                                                                                                                                                                                                                                                                 |
-| SQ_SMTP_SECURE             | envs    | `false`                                  | Whether or not to force SMTP TLS: if true the connection will use TLS when connecting to server. If false (the default) then TLS is used if server supports the STARTTLS extension. In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false |
-| SQ_JWT_SECRET              | secrets | —                                        | A secret value to sign tokens with. Should be long and random                                                                                                                                                                                                                                |
-| SQ_SERVER_SECRET           | secrets | —                                        | A secret value to verify server requests with. Should be long and random, and different to the JWT secret                                                                                                                                                                                    |
-| SQ_ADMIN_EMAIL             | secrets | admin@example.com                        | The email address to use for the initial admin user. Must be valid                                                                                                                                                                                                                           |
-| SQ_SMTP_USER               | secrets | —                                        | The username to authenticate with your SMTP server with                                                                                                                                                                                                                                      |
-| SQ_SMTP_PASS               | secrets | —                                        | The password to authenticate with your SMTP server with                                                                                                                                                                                                                                      |
-
-### Example configuration
-
-An example configuration can be found in `config.example.js`.
 
 ## Screenshots
 
