@@ -1,8 +1,10 @@
 # ■ sqtracker
 
-sqtracker is a private BitTorrent tracker platform.
+sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
+
+Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and general chat.
 
 ## Features
 
@@ -113,7 +115,7 @@ Request
 Report
 <img width="1707" alt="report" src="https://user-images.githubusercontent.com/6264509/218762109-b76bd5f1-b333-4d09-9c9a-e2fa87b3c2de.png">
 
-## Contrubting
+## Contributing
 
 Pull requests are welcome! If you fork sqtracker and think you have made some improvements, please open a pull request so other users deploying sqtracker from this repository can also get the benefits.
 
