@@ -153,14 +153,12 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                   <Home size={24} />
                 </NavLink>
               </Link>
-              {!!Object.keys(SQ_TORRENT_CATEGORIES).length && (
-                <Link href="/categories" passHref>
-                  <NavLink>
-                    <Text>Browse</Text>
-                    <ListUl size={24} />
-                  </NavLink>
-                </Link>
-              )}
+              <Link href="/categories" passHref>
+                <NavLink>
+                  <Text>Browse</Text>
+                  <ListUl size={24} />
+                </NavLink>
+              </Link>
               <Link href="/search" passHref>
                 <NavLink>
                   <Text>Search</Text>
