@@ -852,3 +852,24 @@ export const toggleBookmark = async (req, res, next) => {
     next(e);
   }
 };
+
+export const listTags = async (req, res, next) => {
+  try {
+    const torrents = await Torrent.find(
+      { tags: { $exists: true, $not: { $size: 0 } } },
+      { tags: 1 }
+    ).lean();
+
+    const uniqueTags = new Set();
+
+    for (const { tags } of torrents) {
+      for (const tag of tags) {
+        if (tag !== "") uniqueTags.add(tag);
+      }
+    }
+
+    res.json(Array.from(uniqueTags));
+  } catch (e) {
+    next(e);
+  }
+};

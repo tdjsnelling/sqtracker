@@ -4,10 +4,11 @@ import Link from "next/link";
 import styled from "styled-components";
 import css from "@styled-system/css";
 import slugify from "slugify";
-import { withAuth } from "../../utils/withAuth";
+import { withAuth, withAuthServerSideProps } from "../../utils/withAuth";
 import SEO from "../../components/SEO";
 import Box from "../../components/Box";
 import Text from "../../components/Text";
+import qs from "qs";
 
 const CategoryItem = styled.li(() =>
   css({
@@ -24,7 +25,7 @@ const CategoryItem = styled.li(() =>
   })
 );
 
-const Categories = () => {
+const Categories = ({ tags }) => {
   const {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
   } = getConfig();
@@ -35,30 +36,91 @@ const Categories = () => {
       <Text as="h1" mb={5}>
         Categories
       </Text>
-      {Object.keys(SQ_TORRENT_CATEGORIES).length ? (
-        <Box
-          as="ul"
-          display="grid"
-          gridTemplateColumns={["1fr", "repeat(4, 1fr)"]}
-          gridGap={4}
-          _css={{ pl: 0, listStyle: "none" }}
-        >
-          {Object.keys(SQ_TORRENT_CATEGORIES).map((category) => (
-            <CategoryItem key={category}>
-              <Link
-                href={`/categories/${slugify(category, { lower: true })}`}
-                passHref
-              >
-                <a>{category}</a>
+      <Box mb={5}>
+        {Object.keys(SQ_TORRENT_CATEGORIES).length ? (
+          <Box
+            as="ul"
+            display="grid"
+            gridTemplateColumns={["1fr", "repeat(4, 1fr)"]}
+            gridGap={4}
+            _css={{ pl: 0, listStyle: "none" }}
+          >
+            {Object.keys(SQ_TORRENT_CATEGORIES).map((category) => (
+              <CategoryItem key={category}>
+                <Link
+                  href={`/categories/${slugify(category, { lower: true })}`}
+                  passHref
+                >
+                  <a>{category}</a>
+                </Link>
+              </CategoryItem>
+            ))}
+          </Box>
+        ) : (
+          <Text color="grey">No categories have been defined.</Text>
+        )}
+      </Box>
+      <Text as="h1" mb={5}>
+        Tags
+      </Text>
+      {tags.length ? (
+        <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
+          {tags.map((tag) => (
+            <Box
+              key={`tag-${tag}`}
+              bg="sidebar"
+              border="1px solid"
+              borderColor="border"
+              borderRadius={1}
+              m={1}
+            >
+              <Link href={`/tags/${tag}`} passHref>
+                <Text
+                  as="a"
+                  display="block"
+                  color="text"
+                  _css={{ "&:visited": { color: "text" } }}
+                  px={3}
+                  py={1}
+                >
+                  {tag}
+                </Text>
               </Link>
-            </CategoryItem>
+            </Box>
           ))}
         </Box>
       ) : (
-        <Text color="grey">No categories have been defined.</Text>
+        <Text color="grey">No tags have been defined.</Text>
       )}
     </>
   );
 };
 
-export default withAuth(Categories);
+export const getServerSideProps = withAuthServerSideProps(
+  async ({ token, fetchHeaders }) => {
+    if (!token) return { props: {} };
+
+    const {
+      publicRuntimeConfig: { SQ_API_URL },
+    } = getConfig();
+
+    try {
+      const tagsRes = await fetch(`${SQ_API_URL}/torrent/tags`, {
+        headers: fetchHeaders,
+      });
+      if (
+        tagsRes.status === 403 &&
+        (await tagsRes.text()) === "User is banned"
+      ) {
+        throw "banned";
+      }
+      const tags = await tagsRes.json();
+      return { props: { tags } };
+    } catch (e) {
+      if (e === "banned") throw "banned";
+      return { props: {} };
+    }
+  }
+);
+
+export default Categories;
