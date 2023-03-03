@@ -599,8 +599,6 @@ export const getTorrentsPage = async ({
     { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
   ]);
 
-  console.log(torrents);
-
   const [count] = await Torrent.aggregate([
     ...(query
       ? [

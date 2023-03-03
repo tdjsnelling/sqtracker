@@ -632,7 +632,14 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
                 m={1}
               >
                 <Link href={`/tags/${tag}`} passHref>
-                  <Text as="a" display="block" color="text" px={3} py={1}>
+                  <Text
+                    as="a"
+                    display="block"
+                    color="text"
+                    _css={{ "&:visited": { color: "text" } }}
+                    px={3}
+                    py={1}
+                  >
                     {tag}
                   </Text>
                 </Link>
