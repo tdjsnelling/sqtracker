@@ -6,8 +6,16 @@ const Request = new mongoose.Schema({
   body: String,
   createdBy: mongoose.Schema.ObjectId,
   created: Number,
-  candidates: Array,
-  fulfilledBy: mongoose.Schema.ObjectId,
+  candidates: [
+    {
+      torrent: mongoose.Schema.ObjectId,
+      suggestedBy: mongoose.Schema.ObjectId,
+    },
+  ],
+  fulfilledBy: {
+    torrent: mongoose.Schema.ObjectId,
+    suggestedBy: mongoose.Schema.ObjectId,
+  },
 });
 
 export default mongoose.model("request", Request);

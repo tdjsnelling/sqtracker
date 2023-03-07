@@ -1,6 +1,7 @@
 import Request from "../schema/request";
 import Comment from "../schema/comment";
 import Torrent from "../schema/torrent";
+import User from "../schema/user";
 
 export const createRequest = async (req, res, next) => {
   if (req.body.title && req.body.body) {
@@ -153,7 +154,7 @@ export const fetchRequest = async (req, res, next) => {
         $lookup: {
           from: "torrents",
           as: "candidates",
-          let: { torrentIds: "$candidates" },
+          let: { torrentIds: "$candidates.torrent" },
           pipeline: [
             { $match: { $expr: { $in: ["$_id", "$$torrentIds"] } } },
             {
@@ -254,7 +255,7 @@ export const addCandidate = async (req, res, next) => {
 
       if (
         request.candidates
-          .map((c) => c.toString())
+          .map((c) => c.torrent.toString())
           .includes(torrent._id.toString())
       ) {
         res.status(409).send("Torrent has already been suggested");
@@ -263,7 +264,11 @@ export const addCandidate = async (req, res, next) => {
 
       await Request.findOneAndUpdate(
         { _id: req.params.requestId },
-        { $addToSet: { candidates: torrent._id } }
+        {
+          $addToSet: {
+            candidates: { torrent: torrent._id, suggestedBy: req.userId },
+          },
+        }
       );
 
       res.status(200).send({ torrent });
@@ -293,11 +298,11 @@ export const acceptCandidate = async (req, res, next) => {
         infoHash: req.body.infoHash,
       }).lean();
 
-      if (
-        !request.candidates.some(
-          (candidate) => candidate.toString() === torrent._id.toString()
-        )
-      ) {
+      const candidate = request.candidates.find(
+        (c) => c.torrent.toString() === torrent._id.toString()
+      );
+
+      if (!candidate) {
         res
           .status(403)
           .send("Cannot accept a torrent that has not been suggested");
@@ -307,6 +312,20 @@ export const acceptCandidate = async (req, res, next) => {
       await Request.findOneAndUpdate(
         { _id: req.params.requestId },
         { $set: { fulfilledBy: torrent._id } }
+      );
+
+      await User.findOneAndUpdate(
+        { _id: candidate.suggestedBy },
+        {
+          $inc: {
+            bonusPoints:
+              process.env.SQ_BP_EARNED_PER_FILLED_REQUEST *
+              (torrent.uploadedBy.toString() ===
+              candidate.suggestedBy.toString()
+                ? 2
+                : 1),
+          },
+        }
       );
 
       res.status(200).send({ torrent: torrent._id });

@@ -47,6 +47,10 @@ module.exports = {
     // Number of bonus points awarded to a user for each GB they upload. Minimum 0.
     SQ_BP_EARNED_PER_GB: 1,
 
+    // Number of bonus points awarded to a user if they suggest a torrent to fill a request and it gets accepted
+    // They get double if they also the uploader of the accepted torrent
+    SQ_BP_EARNED_PER_FILLED_REQUEST: 1,
+
     // Number of bonus it costs a user to buy 1 invite (set to 0 to disable buying invites).
     SQ_BP_COST_PER_INVITE: 3,
 
