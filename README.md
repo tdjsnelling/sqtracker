@@ -1,5 +1,11 @@
 # ■ sqtracker
 
+![Latest stable release](https://badgen.net/github/release/tdjsnelling/sqtracker/stable)
+[![License GPLv3](https://badgen.net/badge/license/GPLv3/blue)](./LICENSE)
+[![Client Docker image](https://badgen.net/badge/icon/sqtracker-client/blue?icon=docker&label)](https://github.com/tdjsnelling/sqtracker/pkgs/container/sqtracker-client)
+[![API Docker image](https://badgen.net/badge/icon/sqtracker-api/blue?icon=docker&label)](https://github.com/tdjsnelling/sqtracker/pkgs/container/sqtracker-api)
+[![Discord](https://badgen.net/discord/members/BEGXEk29Up)](https://discord.gg/BEGXEk29Up)
+
 sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
@@ -38,6 +44,18 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
   * Ban / unban users
 * Tracker appearance
   * Configurable theme / CSS
+  
+## Configuration
+
+All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
+
+An example configuration can be found in `config.example.js`. This file contains examples and explanations for each config value.
+
+If your configuration is not valid, sqtracker will fail to start.
+
+### The initial admin user
+
+On first start up, sqtracker will cread a user named `admin` with the password `admin`. A confirmation email will be sent to the admin email address you specified in your config file. Once logged in for the first time, you should change the admin password immediately. This admin user can be used to send other admin invites (normal accounts cannot send admin invites). This user cannot be deleted/banned.
 
 ## Deploying
 
@@ -74,14 +92,6 @@ sqtracker is reasonably light-weight, but you should still invest in a VPS with 
 Alternatively, you can deploy each service individually on a PaaS cloud platform such as [Northflank](https://northflank.com).
 
 You will need to deploy each of the 4 components listed above. The Docker images for the client and API services are published in this repository.
-
-## Configuration
-
-All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
-
-An example configuration can be found in `config.example.js`. This file contains examples and explanations for each config value.
-
-If your configuration is not valid, sqtracker will fail to start.
 
 ## Screenshots
 
@@ -120,6 +130,10 @@ Report
 Pull requests are welcome! If you fork sqtracker and think you have made some improvements, please open a pull request so other users deploying sqtracker from this repository can also get the benefits.
 
 Please see the [CONTRIBUTING](./CONTRIBUTING.md) document for guidance on code style etc.
+
+## Donations
+
+A lot of hard work goes into building and maintaining sqtracker. If you're feeling kind, my PayPal link is in the GitHub "Sponsor this project" section. If you would prefer a different method, please reach out to me on Discord.
 
 ## License
 
