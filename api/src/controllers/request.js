@@ -255,7 +255,7 @@ export const addCandidate = async (req, res, next) => {
 
       if (
         request.candidates
-          .map((c) => c.torrent.toString())
+          .map((c) => c.torrent?.toString())
           .includes(torrent._id.toString())
       ) {
         res.status(409).send("Torrent has already been suggested");
@@ -299,7 +299,7 @@ export const acceptCandidate = async (req, res, next) => {
       }).lean();
 
       const candidate = request.candidates.find(
-        (c) => c.torrent.toString() === torrent._id.toString()
+        (c) => c.torrent?.toString() === torrent._id.toString()
       );
 
       if (!candidate) {

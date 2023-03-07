@@ -88,6 +88,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
     publicRuntimeConfig: {
       SQ_API_URL,
       SQ_BP_EARNED_PER_GB,
+      SQ_BP_EARNED_PER_FILLED_REQUEST,
       SQ_BP_COST_PER_INVITE,
       SQ_BP_COST_PER_GB,
       SQ_ALLOW_REGISTER,
@@ -333,11 +334,22 @@ const Account = ({ token, invites = [], user, userRole }) => {
       <Text as="h2" mb={4}>
         Bonus points
       </Text>
-      <Text mb={4}>
-        You currently have <strong>{bonusPoints}</strong> bonus points. You will
-        earn {SQ_BP_EARNED_PER_GB} {pluralize("point", SQ_BP_EARNED_PER_GB)} for
-        every GB you upload.
+      <Text mb={3}>
+        You currently have <strong>{bonusPoints}</strong> bonus points.
       </Text>
+      <Box as="ul" mb={4}>
+        <Text as="li">
+          You will earn <strong>{SQ_BP_EARNED_PER_GB}</strong>{" "}
+          {pluralize("point", SQ_BP_EARNED_PER_GB)} for every GB you upload.
+        </Text>
+        <Text as="li">
+          You will earn <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST}</strong>{" "}
+          {pluralize("point", SQ_BP_EARNED_PER_FILLED_REQUEST)} for every
+          request you fulfill, or{" "}
+          <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST * 2}</strong> if you are also
+          the uploader of the accepted torrent.
+        </Text>
+      </Box>
       <Box _css={{ "> * + *": { mt: 3 } }} mb={5}>
         {SQ_ALLOW_REGISTER === "invite" && (
           <BuyItem
