@@ -44,6 +44,18 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
   * Ban / unban users
 * Tracker appearance
   * Configurable theme / CSS
+  
+## Configuration
+
+All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
+
+An example configuration can be found in `config.example.js`. This file contains examples and explanations for each config value.
+
+If your configuration is not valid, sqtracker will fail to start.
+
+### The initial admin user
+
+On first start up, sqtracker will cread a user named `admin` with the password `admin`. A confirmation email will be sent to the admin email address you specified in your config file. Once logged in for the first time, you should change the admin password immediately. This admin user can be used to send other admin invites (normal accounts cannot send admin invites). This user cannot be deleted/banned.
 
 ## Deploying
 
@@ -80,14 +92,6 @@ sqtracker is reasonably light-weight, but you should still invest in a VPS with 
 Alternatively, you can deploy each service individually on a PaaS cloud platform such as [Northflank](https://northflank.com).
 
 You will need to deploy each of the 4 components listed above. The Docker images for the client and API services are published in this repository.
-
-## Configuration
-
-All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
-
-An example configuration can be found in `config.example.js`. This file contains examples and explanations for each config value.
-
-If your configuration is not valid, sqtracker will fail to start.
 
 ## Screenshots
 
