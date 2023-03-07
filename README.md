@@ -12,21 +12,21 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
   * Registration modes (open / closed / invite only)
   * Sending of invites
   * Account management (2FA, password resets etc.)
-  * Bonus points system
+  * Bonus points system (purchase invites, upload etc.)
   * Option to browse torrents without logging in (for search engine discovery)
 * Torrent management
   * Uploading torrents with rich metadata (title, description, source, mediainfo, category, tags etc.)
   * Searching torrents or browsing by category or tags
-  * Freeleech options (specific torrents, sitewide)
+  * Freeleech options (specific torrents, site-wide)
   * Torrent grouping (e.g. different formats of same movie)
   * Bookmarks
 * Upload / download tracking
   * Track how much content each user has uploaded / downloaded
   * Track ratios
   * Limit up / downloading per user based on ratio
-  * Award invites based on ratio
+  * Award bonus points based on upload
 * User interaction
-  * Commenting on torrents
+  * Commenting on torrents and announcements
   * Up / down voting torrents
   * Requests system
 * Moderation

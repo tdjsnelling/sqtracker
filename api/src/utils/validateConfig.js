@@ -2,6 +2,7 @@ import * as yup from "yup";
 
 const httpRegex = /http(s)?:\/\/.*/;
 const mongoRegex = /mongodb:\/\/.*/;
+const hexRegex = /#([a-f0-9]){6}/i;
 
 const configSchema = yup
   .object({
@@ -9,7 +10,6 @@ const configSchema = yup
       .object({
         SQ_SITE_NAME: yup.string().min(1).max(20).required(),
         SQ_SITE_DESCRIPTION: yup.string().min(1).max(80).required(),
-        SQ_THEME_COLOUR: yup.string().matches(/#([a-f0-9]){6}/i),
         SQ_ALLOW_REGISTER: yup
           .string()
           .oneOf(["open", "invite", "closed"])
@@ -39,6 +39,14 @@ const configSchema = yup
           return yup.object(entries).required();
         }),
         SQ_ALLOW_UNREGISTERED_VIEW: yup.boolean().required(),
+        SQ_CUSTOM_THEME: yup.object({
+          primary: yup.string().matches(hexRegex),
+          background: yup.string().matches(hexRegex),
+          sidebar: yup.string().matches(hexRegex),
+          border: yup.string().matches(hexRegex),
+          text: yup.string().matches(hexRegex),
+          grey: yup.string().matches(hexRegex),
+        }),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),

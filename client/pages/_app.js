@@ -27,31 +27,31 @@ import { NotificationsProvider } from "../components/Notifications";
 import Text from "../components/Text";
 import LoadingContext from "../utils/LoadingContext";
 
-const getThemeColours = (theme, primary = "#f45d48") => {
-  switch (theme) {
+const getThemeColours = (themeName, customTheme = {}) => {
+  switch (themeName) {
     case "light":
       return {
-        primary,
-        background: "#ffffff",
-        sidebar: "#f8f8f8",
-        text: "#202224",
-        grey: "#747474",
+        primary: customTheme.primary ?? "#f45d48",
+        background: customTheme.background ?? "#ffffff",
+        sidebar: customTheme.sidebar ?? "#f8f8f8",
+        border: customTheme.border ?? "#deebf1",
+        text: customTheme.text ?? "#202224",
+        grey: customTheme.grey ?? "#747474",
         error: "#f33",
         success: "#44d944",
         info: "#427ee1",
-        border: "#deebf1",
       };
     case "dark":
       return {
-        primary,
-        background: "#1f2023",
-        sidebar: "#27282b",
-        text: "#f8f8f8",
-        grey: "#aaa",
+        primary: customTheme.primary ?? "#f45d48",
+        background: customTheme.background ?? "#1f2023",
+        sidebar: customTheme.sidebar ?? "#27282b",
+        border: customTheme.border ?? "#303236",
+        text: customTheme.text ?? "#f8f8f8",
+        grey: customTheme.grey ?? "#aaa",
         error: "#f33",
         success: "#44d944",
         info: "#427ee1",
-        border: "#303236",
       };
   }
 };
@@ -169,12 +169,16 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
 
   const {
     publicRuntimeConfig: {
-      SQ_THEME_COLOUR,
+      SQ_CUSTOM_THEME,
       SQ_SITE_WIDE_FREELEECH,
       SQ_API_URL,
       SQ_MINIMUM_RATIO,
     },
   } = getConfig();
+
+  const allowThemeToggle = !Object.keys(SQ_CUSTOM_THEME ?? {}).some(
+    (key) => key !== "primary"
+  );
 
   const setThemeAndSave = (theme) => {
     setTheme(theme);
@@ -193,12 +197,14 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       setIsMobile(matches);
     });
 
-    const { theme: themeCookie } = cookies;
-    const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
-    if (!themeCookie) setThemeAndSave(themeQuery.matches ? "light" : "dark");
-    themeQuery.addEventListener("change", ({ matches }) => {
-      setThemeAndSave(matches ? "light" : "dark");
-    });
+    if (allowThemeToggle) {
+      const { theme: themeCookie } = cookies;
+      const themeQuery = window.matchMedia("(prefers-color-scheme: light)");
+      if (!themeCookie) setThemeAndSave(themeQuery.matches ? "light" : "dark");
+      themeQuery.addEventListener("change", ({ matches }) => {
+        setThemeAndSave(matches ? "light" : "dark");
+      });
+    }
 
     Router.events.on("routeChangeStart", () => setLoading(true));
     Router.events.on("routeChangeComplete", () => setLoading(false));
@@ -226,7 +232,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
 
   const appTheme = {
     ...baseTheme,
-    colors: getThemeColours(theme, SQ_THEME_COLOUR),
+    colors: getThemeColours(theme, SQ_CUSTOM_THEME),
     name: theme,
   };
 
@@ -353,22 +359,24 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                         ref={searchRef}
                       />
                     </Box>
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setThemeAndSave(theme === "light" ? "dark" : "light");
-                      }}
-                      width="40px"
-                      px={2}
-                      py={2}
-                      ml={3}
-                    >
-                      {theme === "light" ? (
-                        <Sun size={24} />
-                      ) : (
-                        <Moon size={24} />
-                      )}
-                    </Button>
+                    {allowThemeToggle && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setThemeAndSave(theme === "light" ? "dark" : "light");
+                        }}
+                        width="40px"
+                        px={2}
+                        py={2}
+                        ml={3}
+                      >
+                        {theme === "light" ? (
+                          <Sun size={24} />
+                        ) : (
+                          <Moon size={24} />
+                        )}
+                      </Button>
+                    )}
                   </Box>
                 )}
               </Box>

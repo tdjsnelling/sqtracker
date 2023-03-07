@@ -9,8 +9,18 @@ module.exports = {
     // A short description of your tracker site. Maximum 80 characters.
     SQ_SITE_DESCRIPTION: "A short description for your tracker site",
 
-    // A hex colour code used as the main theme colour of your site.
-    SQ_THEME_COLOUR: "#f45d48",
+    // A map of custom hex colours to use as the theme of your site.
+    // If not specified, the default light and dark themes will be used.
+    // If only "primary" is specified, the default light and dark themes will be used but with your main brand colour.
+    // If the other values are specified, the fully custom theme will be used and not the default light/dark.
+    SQ_CUSTOM_THEME: {
+      primary: "#f45d48",
+      // background: "#1f2023", // Page background colour
+      // sidebar: "#27282b",    // A secondary background colour, used for sidebar, infoboxes etc.
+      // border: "#303236",     // Border colour
+      // text: "#f8f8f8",       // Text colour. Should be readable against background and sidebar
+      // grey: "#aaa",          // Secondary text colour, used for less important text
+    },
 
     // Registration mode. Either "open", "invite" or "closed".
     // Open: anyone can register.
