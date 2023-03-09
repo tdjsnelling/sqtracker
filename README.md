@@ -54,6 +54,7 @@ The roadmap is still being expanded.
 * Forum support
 * Better profiles (avatar, bio etc.)
 * Premoderation option
+* Anti-cheat
   
 ## Configuration
 
