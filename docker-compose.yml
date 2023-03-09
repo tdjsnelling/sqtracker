@@ -7,11 +7,17 @@ services:
       - "--api.insecure=true"
       - "--providers.file=true"
       - "--providers.file.filename=/config/traefik.yml"
-      - "--entrypoints.web.address=:80"
+      - "--entrypoints.webinsecure.address=:80"
+      - "--entrypoints.web.address=:443"
       - "--entryPoints.web.proxyProtocol.insecure"
       - "--entryPoints.web.forwardedHeaders.insecure"
+      - "--certificatesresolvers.tlsresolver.acme.email=email@example.com"
+      - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.tlsresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.tlsresolver.acme.httpchallenge.entrypoint=webinsecure"
     ports:
       - "80:80"
+      - "443:443"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

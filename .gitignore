@@ -6,3 +6,4 @@ data/
 config.js
 .DS_Store
 dist/
+letsencrypt/

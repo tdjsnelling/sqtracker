@@ -4,17 +4,21 @@ http:
       service: api
       entryPoints:
         - web
-      rule: "PathPrefix(`/api`, `/sq`)"
+      rule: "Host(`example.com`) && PathPrefix(`/api`, `/sq`)"
       middlewares:
         - api-prefix
         - apiHostHeaderSet
+      tls:
+        certResolver: tlsresolver
     client:
       service: client
       entryPoints:
         - web
-      rule: "PathPrefix(`/`)"
+      rule: "Host(`example.com`) && PathPrefix(`/`)"
       middlewares:
         - clientHostHeaderSet
+      tls:
+        certResolver: tlsresolver
   services:
     api:
       loadBalancer:

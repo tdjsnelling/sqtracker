@@ -93,6 +93,11 @@ The HTTP proxy allows the client, API, and BitTorrent tracker to all be accessib
 
 The sqtracker platform is designed to be deployed via Docker. Once a configuration file is created, deploying is as simple as running `docker compose up -d` at the root of the project.
 
+To get HTTPS working, you will need to change a few values:
+
+* In `docker-compose.yml`: `--certificatesresolvers.tlsresolver.acme.email=` needs to have a valid email address.
+* In `traefik.yml`: 2 instances of `` Host(`example.com`) `` need to contain your domain name.
+
 If you change the name of any services in `docker-compose.yml`, you will also need to update the relevant host names in your `config.js` and `traefik.yml` files.
 
 sqtracker is reasonably light-weight, but you should still invest in a VPS with decent resources if you want to run a fast and performant tracker.
