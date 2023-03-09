@@ -10,6 +10,8 @@ sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
 
+Check out the demo at [demo.sqtracker.dev](https://demo.sqtracker.dev).
+
 Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and general chat.
 
 ## Features
@@ -45,6 +47,14 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
 * Tracker appearance
   * Configurable theme / CSS
   
+## Roadmap
+
+The roadmap is still being expanded.
+
+* Forum support
+* Better profiles (avatar, bio etc.)
+* Premoderation option
+  
 ## Configuration
 
 All configuration is provided via a single JavaScript file named `config.js`. This file must export an object containing 2 keys: `envs` and `secrets`.
@@ -55,7 +65,7 @@ If your configuration is not valid, sqtracker will fail to start.
 
 ### The initial admin user
 
-On first start up, sqtracker will cread a user named `admin` with the password `admin`. A confirmation email will be sent to the admin email address you specified in your config file. Once logged in for the first time, you should change the admin password immediately. This admin user can be used to send other admin invites (normal accounts cannot send admin invites). This user cannot be deleted/banned.
+On first start up, sqtracker will create a user named `admin` with the password `admin`. A confirmation email will be sent to the admin email address you specified in your config file. Once logged in for the first time, you should change the admin password immediately. This admin user can be used to send other admin invites (normal accounts cannot send admin invites). This user cannot be deleted/banned.
 
 ## Deploying
 
