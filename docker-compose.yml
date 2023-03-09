@@ -34,7 +34,7 @@ services:
       - database
   client:
     container_name: sq_client
-    image: ghcr.io/tdjsnelling/sqtracker-api:latest
+    image: ghcr.io/tdjsnelling/sqtracker-client:latest
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
