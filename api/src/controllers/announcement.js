@@ -258,7 +258,8 @@ export const getLatestAnnouncement = async (req, res, next) => {
         },
       },
     ]);
-    res.json(announcement);
+    if (announcement) res.json(announcement);
+    else res.sendStatus(404);
   } catch (e) {
     next(e);
   }

@@ -173,7 +173,10 @@ export const getServerSideProps = withAuthServerSideProps(
           headers: fetchHeaders,
         }
       );
-      const latestAnnouncement = await latestAnnouncementRes.json();
+      let latestAnnouncement = null;
+      if (latestAnnouncementRes.status === 200) {
+        latestAnnouncement = await latestAnnouncementRes.json();
+      }
 
       const verifiedRes = await fetch(`${SQ_API_URL}/account/get-verified`, {
         headers: fetchHeaders,
@@ -184,6 +187,7 @@ export const getServerSideProps = withAuthServerSideProps(
         props: { latestTorrents, latestAnnouncement, emailVerified, token },
       };
     } catch (e) {
+      console.error(e);
       if (e === "banned") throw "banned";
       return { props: {} };
     }
