@@ -71,14 +71,14 @@ export const withAuthServerSideProps = (
         fetchHeaders["Authorization"] = `Bearer ${token}`;
       }
 
-      const { props: ssProps } = await getServerSideProps({
+      const { props: ssProps, notFound } = await getServerSideProps({
         ...ctx,
         token,
         userId,
         fetchHeaders,
         isPublicAccess,
       });
-      return { props: { ...ssProps, token } };
+      return { props: { ...ssProps, token }, notFound };
     } catch (e) {
       if (e === "banned")
         return {
