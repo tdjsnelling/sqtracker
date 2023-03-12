@@ -127,6 +127,7 @@ validateConfig(config).then(() => {
         return req.headers["x-forwarded-for"].split(",")[0];
       return req.ip;
     },
+    skip: () => process.env.NODE_ENV !== "production",
   });
   app.use(limiter);
 
