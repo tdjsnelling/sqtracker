@@ -275,6 +275,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
               borderColor="border"
               position="fixed"
               top={0}
+              zIndex={9}
             >
               <Box
                 display="flex"
