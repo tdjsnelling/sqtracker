@@ -51,10 +51,10 @@ module.exports = {
     // They get double if they also the uploader of the accepted torrent
     SQ_BP_EARNED_PER_FILLED_REQUEST: 1,
 
-    // Number of bonus it costs a user to buy 1 invite (set to 0 to disable buying invites).
+    // Number of bonus points it costs a user to buy 1 invite (set to 0 to disable buying invites).
     SQ_BP_COST_PER_INVITE: 3,
 
-    // Number of bonus it costs a user to buy 1 GB of upload (set to 0 to disable buying upload).
+    // Number of bonus points it costs a user to buy 1 GB of upload (set to 0 to disable buying upload).
     SQ_BP_COST_PER_GB: 3,
 
     // Whether to enable freeleech on all torrents.
