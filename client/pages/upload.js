@@ -269,15 +269,14 @@ const Upload = ({ token, userId }) => {
       </Text>
       <Box mb={5}>
         <Text icon={LinkIcon} iconColor="primary">
-          Announce URL must be set to{" "}
+          Announce URL:{" "}
           <Text
             as="strong"
             fontFamily="mono"
             _css={{ userSelect: "all", wordBreak: "break-all" }}
           >
             {SQ_BASE_URL}/sq/{userId}/announce
-          </Text>{" "}
-          or upload will be rejected
+          </Text>
         </Text>
       </Box>
       <form onSubmit={handleUpload}>

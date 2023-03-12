@@ -33,16 +33,6 @@ export const uploadTorrent = async (req, res, next) => {
       const torrent = Buffer.from(req.body.torrent, "base64");
       const parsed = bencode.decode(torrent);
 
-      if (parsed.info.private !== 1) {
-        res.status(400).send("Torrent must be set to private");
-        return;
-      }
-
-      if (!parsed.announce || parsed["announce-list"]) {
-        res.status(400).send("One and only one announce URL must be set");
-        return;
-      }
-
       if (process.env.SQ_TORRENT_CATEGORIES.length && !req.body.type) {
         res.status(400).send("Torrent must have a category");
         return;
@@ -67,14 +57,6 @@ export const uploadTorrent = async (req, res, next) => {
 
       const user = await User.findOne({ _id: req.userId }).lean();
 
-      if (
-        parsed.announce.toString() !==
-        `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`
-      ) {
-        res.status(400).send("Announce URL is invalid");
-        return;
-      }
-
       const infoHash = crypto
         .createHash("sha1")
         .update(bencode.encode(parsed.info))
@@ -86,6 +68,10 @@ export const uploadTorrent = async (req, res, next) => {
         res.status(409).send("Torrent with this info hash already exists");
         return;
       }
+
+      parsed.info.private = 1;
+      parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
+      delete parsed["announce-list"];
 
       let files;
       if (parsed.info.files) {
