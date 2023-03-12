@@ -77,38 +77,54 @@ export const Info = ({ title, items }) => (
   </Infobox>
 );
 
-const FileItem = ({ file, depth = 0 }) => (
-  <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.75 }}>
-    <Text
-      fontSize={1}
-      icon={file.children.length ? Folder : File}
-      iconSize={18}
-    >
-      {file.name}
-      {file.size !== undefined ? (
-        <>
-          {" "}
-          <Text as="span" color="grey">
-            ({prettyBytes(file.size)})
+const WrapExpandable = ({ wrap, children }) =>
+  wrap ? <details>{children}</details> : children;
+
+const FileItem = ({ file, depth = 0 }) => {
+  return (
+    <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.75 }}>
+      <WrapExpandable wrap={!!file.children.length}>
+        <Box
+          as="summary"
+          _css={{
+            cursor: file.children.length ? "pointer" : "caret",
+            "&::marker": { color: "grey" },
+          }}
+        >
+          <Text
+            fontSize={1}
+            icon={file.children.length ? Folder : File}
+            iconSize={18}
+            iconTextWrapperProps={{ verticalAlign: "middle" }}
+          >
+            {file.name}
+            {file.size !== undefined ? (
+              <>
+                {" "}
+                <Text as="span" color="grey">
+                  ({prettyBytes(file.size)})
+                </Text>
+              </>
+            ) : (
+              "/"
+            )}
           </Text>
-        </>
-      ) : (
-        "/"
-      )}
-    </Text>
-    {!!file.children.length && (
-      <Box as="ul" pl={0} css={{ listStyle: "none" }}>
-        {file.children.map((child) => (
-          <FileItem
-            key={`file-${child.name}-${depth}`}
-            file={child}
-            depth={depth + 1}
-          />
-        ))}
-      </Box>
-    )}
-  </Box>
-);
+        </Box>
+        {!!file.children.length && (
+          <Box as="ul" pl={0} css={{ listStyle: "none" }}>
+            {file.children.map((child) => (
+              <FileItem
+                key={`file-${child.name}-${depth}`}
+                file={child}
+                depth={depth + 1}
+              />
+            ))}
+          </Box>
+        )}
+      </WrapExpandable>
+    </Box>
+  );
+};
 
 const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
   const [showReportModal, setShowReportModal] = useState(false);
