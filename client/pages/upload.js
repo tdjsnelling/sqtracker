@@ -8,6 +8,8 @@ import slugify from "slugify";
 import { Link as LinkIcon } from "@styled-icons/boxicons-regular/Link";
 import { Check } from "@styled-icons/boxicons-regular/Check";
 import { InfoCircle } from "@styled-icons/boxicons-regular/InfoCircle";
+import { Plus } from "@styled-icons/boxicons-regular/Plus";
+import { X } from "@styled-icons/boxicons-regular/X";
 import { withAuth } from "../utils/withAuth";
 import SEO from "../components/SEO";
 import Box from "../components/Box";
@@ -48,6 +50,7 @@ export const TorrentFields = ({
     values?.type ?? slugify(Object.keys(categories)[0], { lower: true })
   );
   const [sources, setSources] = useState([]);
+  const [tags, setTags] = useState(values?.tags?.split(",") ?? []);
 
   useEffect(() => {
     setSources(
@@ -126,13 +129,53 @@ export const TorrentFields = ({
         fontFamily="mono"
         mb={4}
       />
-      <Input
-        name="tags"
-        label="Tags"
-        placeholder="Separated by commas"
-        defaultValue={values?.tags}
-        mb={4}
-      />
+      <WrapLabel as={Box} label="Tags" mb={4}>
+        <Box display="flex" flexWrap="wrap" m={-2}>
+          {tags.map((tag, i) => (
+            <Box key={`tag-${i}`} display="flex" m={2}>
+              <Input
+                value={tag}
+                onChange={(e) => {
+                  setTags((t) => {
+                    const curTags = [...t];
+                    curTags.splice(i, 1, e.target.value);
+                    return curTags;
+                  });
+                }}
+                width="138px"
+                mr={2}
+              />
+              <Button
+                onClick={() => {
+                  setTags((t) => {
+                    const curTags = [...t];
+                    curTags.splice(i, 1);
+                    return curTags;
+                  });
+                }}
+                type="button"
+                variant="secondary"
+                px={3}
+              >
+                <X size={20} />
+              </Button>
+            </Box>
+          ))}
+          <Button
+            onClick={() => setTags((t) => [...t, ""])}
+            type="button"
+            display="flex"
+            alignItems="center"
+            m={2}
+          >
+            <Plus size={18} />
+            <Text as="span" ml={3}>
+              Add tag
+            </Text>
+          </Button>
+        </Box>
+      </WrapLabel>
+      <Input name="tags" value={tags.join(",")} display="none" />
     </>
   );
 };
