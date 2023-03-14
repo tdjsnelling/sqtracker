@@ -9,6 +9,15 @@ import Comment from "../schema/comment";
 import Group from "../schema/group";
 import { createGroup, addToGroup, removeFromGroup } from "./group";
 
+const urlReservedCharRegex = /[&$+,/:;=?@#<>\[\]{}|\\\^%]/g;
+
+const formatTag = (tag) =>
+  tag
+    .trim()
+    .toLowerCase()
+    .replaceAll(urlReservedCharRegex, "")
+    .replaceAll(" ", "-");
+
 export const embellishTorrentsWithTrackerScrape = async (tracker, torrents) => {
   if (!torrents.length) return [];
 
@@ -127,9 +136,7 @@ export const uploadTorrent = async (req, res, next) => {
         upvotes: [],
         downvotes: [],
         freeleech: false,
-        tags: (req.body.tags ?? "")
-          .split(",")
-          .map((t) => slugify(t.trim(), { lower: true })),
+        tags: (req.body.tags ?? "").split(",").map((t) => formatTag(t)),
         group: groupId,
         mediaInfo: req.body.mediaInfo,
       });
@@ -200,9 +207,7 @@ export const editTorrent = async (req, res, next) => {
             type: req.body.type,
             source: req.body.source,
             description: req.body.description,
-            tags: (req.body.tags ?? "")
-              .split(",")
-              .map((t) => slugify(t.trim(), { lower: true })),
+            tags: (req.body.tags ?? "").split(",").map((t) => formatTag(t)),
           },
           mediaInfo: req.body.mediaInfo,
         }
@@ -684,7 +689,7 @@ export const searchTorrents = (tracker) => async (req, res, next) => {
       query: query ? decodeURIComponent(query) : undefined,
       category,
       source,
-      tag,
+      tag: tag ? decodeURIComponent(tag) : undefined,
       userId: req.userId,
       tracker,
     });
