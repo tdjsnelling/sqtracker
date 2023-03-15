@@ -12,6 +12,7 @@ import Button from "../components/Button";
 import Box from "../components/Box";
 import { NotificationContext } from "../components/Notifications";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
 
 export const usernamePattern = "[A-Za-z0-9.]+";
 
@@ -21,6 +22,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
   const { colors } = useContext(ThemeContext);
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const router = useRouter();
 
@@ -60,11 +62,17 @@ const Register = ({ token: inviteToken, tokenError }) => {
       setCookie("userId", uid, { path: "/", expires });
       setCookie("username", username, { path: "/", expires });
 
-      addNotification("success", `Welcome ${form.get("username")}!`);
+      addNotification(
+        "success",
+        `${getLocaleString("welcome")} ${form.get("username")}!`
+      );
 
       router.push("/");
     } catch (e) {
-      addNotification("error", `Could not register: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("registerFailed")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -74,28 +82,34 @@ const Register = ({ token: inviteToken, tokenError }) => {
   if (SQ_ALLOW_REGISTER !== "open" && SQ_ALLOW_REGISTER !== "invite") {
     return (
       <>
-        <SEO title="Register" />
+        <SEO title={getLocaleString("register")} />
         <Text as="h1" mb={5}>
-          Register
+          {getLocaleString("register")}
         </Text>
-        <p>Registration is closed.</p>
+        <p>{getLocaleString("registrationClosed")}.</p>
       </>
     );
   }
 
   return (
     <>
-      <SEO title="Register" />
+      <SEO title={getLocaleString("register")} />
       <Text as="h1" mb={5}>
-        Register
+        {getLocaleString("register")}
       </Text>
       {!tokenError ? (
         <form onSubmit={handleRegister}>
-          <Input name="email" type="email" label="Email" mb={4} required />
+          <Input
+            name="email"
+            type="email"
+            label={getLocaleString("email")}
+            mb={4}
+            required
+          />
           <Input
             name="username"
-            label="Username"
-            placeholder={`Can only consist of letters, numbers, and “.”`}
+            label={getLocaleString("username")}
+            placeholder={getLocaleString("usernameRules")}
             pattern={usernamePattern}
             mb={4}
             required
@@ -103,11 +117,11 @@ const Register = ({ token: inviteToken, tokenError }) => {
           <Input
             name="password"
             type="password"
-            label="Password"
+            label={getLocaleString("password")}
             mb={4}
             required
           />
-          <Button>Register</Button>
+          <Button>{getLocaleString("register")}</Button>
         </form>
       ) : (
         <Box
@@ -117,7 +131,9 @@ const Register = ({ token: inviteToken, tokenError }) => {
           borderRadius={1}
           p={4}
         >
-          <Text>Could not register: {tokenError}</Text>
+          <Text>
+            {getLocaleString("registerFailed")}: {tokenError}
+          </Text>
         </Box>
       )}
     </>

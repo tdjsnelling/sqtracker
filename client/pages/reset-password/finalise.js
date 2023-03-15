@@ -8,10 +8,12 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 const FinalisePasswordReset = ({ token, email, tokenError }) => {
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const router = useRouter();
 
@@ -42,13 +44,13 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Password was reset successfully");
+      addNotification("success", getLocaleString("passwordResetSuccess"));
 
       router.push("/login");
     } catch (e) {
       addNotification(
         "error",
-        `Could not complete password reset: ${e.message}`
+        `${getLocaleString("passwordResetFailed")}: ${e.message}`
       );
       console.error(e);
     }
@@ -58,24 +60,32 @@ const FinalisePasswordReset = ({ token, email, tokenError }) => {
 
   return (
     <>
-      <SEO title="Reset password" />
+      <SEO title={getLocaleString("resetPassword")} />
       <Text as="h1" mb={5}>
-        Reset password
+        {getLocaleString("resetPassword")}
       </Text>
-      <Input type="email" label="Email" value={email} mb={4} disabled />
+      <Input
+        type="email"
+        label={getLocaleString("email")}
+        value={email}
+        mb={4}
+        disabled
+      />
       {!tokenError ? (
         <form onSubmit={handleInitiate}>
           <Input
             name="newPassword"
             type="password"
-            label="New password"
+            label={getLocaleString("newPassword")}
             mb={4}
             required
           />
-          <Button>Reset password</Button>
+          <Button>{getLocaleString("resetPassword")}</Button>
         </form>
       ) : (
-        <p>Token error: {tokenError}</p>
+        <p>
+          {getLocaleString("tokenError")}: {tokenError}
+        </p>
       )}
     </>
   );

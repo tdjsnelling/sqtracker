@@ -9,6 +9,7 @@ import Input from "../components/Input";
 import Button from "../components/Button";
 import { NotificationContext } from "../components/Notifications";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
 import { usernamePattern } from "./register";
 
 const Login = () => {
@@ -18,6 +19,7 @@ const Login = () => {
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const router = useRouter();
 
@@ -57,11 +59,17 @@ const Login = () => {
       setCookie("userId", uid, { path: "/", expires });
       setCookie("username", username, { path: "/", expires });
 
-      addNotification("success", `Welcome back ${form.get("username")}!`);
+      addNotification(
+        "success",
+        `${getLocaleString("welcomeBack")} ${form.get("username")}!`
+      );
 
       router.push("/");
     } catch (e) {
-      addNotification("error", `Could not log in: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("logInFailed")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -70,14 +78,14 @@ const Login = () => {
 
   return (
     <>
-      <SEO title="Log in" />
+      <SEO title={getLocaleString("logIn")} />
       <Text as="h1" mb={5}>
-        Log in
+        {getLocaleString("logIn")}
       </Text>
       <form onSubmit={handleLogin}>
         <Input
           name="username"
-          label="Username"
+          label={getLocaleString("username")}
           pattern={usernamePattern}
           mb={4}
           required
@@ -85,18 +93,18 @@ const Login = () => {
         <Input
           name="password"
           type="password"
-          label="Password"
+          label={getLocaleString("password")}
           mb={4}
           required
         />
         {totpRequired && (
-          <Input name="totp" label="One-time code" mb={4} required />
+          <Input name="totp" label={getLocaleString("totp")} mb={4} required />
         )}
-        <Button>Log in</Button>
+        <Button>{getLocaleString("logIn")}</Button>
       </form>
       <Link href="/reset-password/initiate" passHref>
         <Text as="a" display="inline-block" mt={5}>
-          Reset password
+          {getLocaleString("resetPassword")}
         </Text>
       </Link>
     </>

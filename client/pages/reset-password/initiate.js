@@ -6,10 +6,12 @@ import Input from "../../components/Input";
 import Button from "../../components/Button";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 const InitiatePasswordReset = () => {
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const {
     publicRuntimeConfig: { SQ_API_URL },
@@ -38,12 +40,12 @@ const InitiatePasswordReset = () => {
 
       addNotification(
         "success",
-        "If an account with that email address exists, you will receive an email shortly"
+        getLocaleString("passwordResetRequestSuccess")
       );
     } catch (e) {
       addNotification(
         "error",
-        `Could not initiate password reset: ${e.message}`
+        `${getLocaleString("passwordResetRequestFailed")}: ${e.message}`
       );
       console.error(e);
     }
@@ -53,13 +55,19 @@ const InitiatePasswordReset = () => {
 
   return (
     <>
-      <SEO title="Reset password" />
+      <SEO title={getLocaleString("resetPassword")} />
       <Text as="h1" mb={5}>
-        Reset password
+        {getLocaleString("resetPassword")}
       </Text>
       <form onSubmit={handleInitiate}>
-        <Input name="email" type="email" label="Email" mb={4} required />
-        <Button>Reset password</Button>
+        <Input
+          name="email"
+          type="email"
+          label={getLocaleString("email")}
+          mb={4}
+          required
+        />
+        <Button>{getLocaleString("resetPassword")}</Button>
       </form>
     </>
   );
