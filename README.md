@@ -51,10 +51,11 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
 
 The roadmap is still being expanded.
 
-* Forum support
+* Forum support & direct messages
 * Better profiles (avatar, bio etc.)
 * Premoderation option
 * Anti-cheat
+* Localisation (ongoing)
   
 ## Configuration
 
