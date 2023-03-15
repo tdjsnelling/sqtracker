@@ -24,6 +24,7 @@ import { UserPlus } from "@styled-icons/boxicons-regular/UserPlus";
 import Box from "./Box";
 import Text from "./Text";
 import Button from "./Button";
+import LocaleContext from "../utils/LocaleContext";
 
 const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   const router = useRouter();
@@ -56,12 +57,27 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   });
 });
 
+const LocaleSelector = styled.select(() =>
+  css({
+    background: "none",
+    color: "text",
+    border: 0,
+    fontSize: 0,
+    fontFamily: "body",
+    cursor: "pointer",
+    p: 0,
+  })
+);
+
 const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const [cookies] = useCookies();
   const [role, setRole] = useState("user");
   const [isServer, setIsServer] = useState(true);
 
   const theme = useContext(ThemeContext);
+
+  const { locale, setLocale, locales, getLocaleString } =
+    useContext(LocaleContext);
 
   const { asPath } = useRouter();
 
@@ -236,7 +252,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             <Box display="grid" gridAutoFlow="row" gridGap={0}>
               <Link href="/login" passHref>
                 <NavLink>
-                  <Text>Log in</Text>
+                  <Text>{getLocaleString("logIn")}</Text>
                   <LogInCircle size={24} />
                 </NavLink>
               </Link>
@@ -244,7 +260,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 SQ_ALLOW_REGISTER === "invite") && (
                 <Link href="/register" passHref>
                   <NavLink>
-                    <Text>Register</Text>
+                    <Text>{getLocaleString("register")}</Text>
                     <UserPlus size={24} />
                   </NavLink>
                 </Link>
@@ -288,10 +304,18 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
           >
             ■ sqtracker
           </a>{" "}
-        </Text>
-        <Text color="grey" fontSize={0}>
           v{SQ_VERSION}
         </Text>
+        <LocaleSelector
+          value={locale}
+          onChange={(e) => setLocale(e.target.value)}
+        >
+          {locales.map((l) => (
+            <option key={`locale-${l}`} value={l}>
+              {l.toUpperCase()}
+            </option>
+          ))}
+        </LocaleSelector>
       </Box>
     </Box>
   );

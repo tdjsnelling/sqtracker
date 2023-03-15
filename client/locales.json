@@ -1,0 +1,16 @@
+{
+  "en": {
+    "poweredBy": "Powered by",
+    "logIn": "Log in",
+    "register": "Register",
+    "email": "Email",
+    "username": "Username",
+    "usernameRules": "Can only consist of letters, numbers, and “.”",
+    "password": "Password",
+    "resetPassword": "Reset password",
+    "newPassword": "New password"
+  },
+  "fr": {
+    "logIn": "Se connecter"
+  }
+}

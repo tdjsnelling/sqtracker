@@ -27,6 +27,8 @@ import Input from "../components/Input";
 import { NotificationsProvider } from "../components/Notifications";
 import Text from "../components/Text";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
+import locales from "../locales.json";
 
 const getThemeColours = (themeName, customTheme = {}) => {
   switch (themeName) {
@@ -152,6 +154,9 @@ const Loading = styled(LoaderAlt)`
   animation: ${spin} 1s linear infinite;
 `;
 
+const getLocaleString = (locale) => (key) =>
+  locales[locale][key] ?? locales.en[key];
+
 const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -159,6 +164,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isServer, setIsServer] = useState(true);
   const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState();
+  const [locale, setLocale] = useState("en");
 
   const router = useRouter();
 
@@ -207,6 +213,9 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
         setThemeAndSave(matches ? "light" : "dark");
       });
     }
+
+    const { locale: localeCookie } = cookies;
+    if (Object.keys(locales).includes(localeCookie)) setLocale(localeCookie);
 
     Router.events.on("routeChangeStart", () => setLoading(true));
     Router.events.on("routeChangeComplete", () => setLoading(false));
@@ -263,6 +272,17 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       <ThemeProvider theme={appTheme}>
         <GlobalStyle />
         <LoadingContext.Provider value={{ loading, setLoading }}>
+          <LocaleContext.Provider
+            value={{
+              locale,
+              setLocale: (l) => {
+                setLocale(l);
+                setCookie("locale", l, { path: "/" });
+              },
+              locales: Object.keys(locales),
+              getLocaleString: getLocaleString(locale),
+            }}
+          >
           <NotificationsProvider>
             <Navigation
               isMobile={isMobile}
@@ -409,6 +429,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
               <Component {...pageProps} />
             </Box>
           </NotificationsProvider>
+          </LocaleContext.Provider>
         </LoadingContext.Provider>
       </ThemeProvider>
     </>
