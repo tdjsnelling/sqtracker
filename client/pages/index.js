@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,34 +13,38 @@ import Infobox from "../components/Infobox";
 import { ErrorCircle } from "@styled-icons/boxicons-regular/ErrorCircle";
 import { News } from "@styled-icons/boxicons-regular/News";
 import moment from "moment/moment";
+import LocaleContext from "../utils/LocaleContext";
 
-const PublicLanding = ({ name, allowRegister }) => (
-  <Box
-    minHeight="calc(100vh - 173px)"
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-    flexDirection="column"
-  >
-    <Text as="h1" fontSize={6} textAlign="center" lineHeight={1.2}>
-      {name}
-    </Text>
-    <Box display="flex" mt={4}>
-      <Box>
-        <Link href="/login">
-          <a>Log in</a>
-        </Link>
-      </Box>
-      {allowRegister && (
-        <Box ml={4}>
-          <Link href="/register">
-            <a>Register</a>
+const PublicLanding = ({ name, allowRegister }) => {
+  const { getLocaleString } = useContext(LocaleContext);
+  return (
+    <Box
+      minHeight="calc(100vh - 173px)"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column"
+    >
+      <Text as="h1" fontSize={6} textAlign="center" lineHeight={1.2}>
+        {name}
+      </Text>
+      <Box display="flex" mt={4}>
+        <Box>
+          <Link href="/login">
+            <a>{getLocaleString("logIn")}</a>
           </Link>
         </Box>
-      )}
+        {allowRegister && (
+          <Box ml={4}>
+            <Link href="/register">
+              <a>{getLocaleString("register")}</a>
+            </Link>
+          </Box>
+        )}
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const Index = ({
   token,

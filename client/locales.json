@@ -7,8 +7,19 @@
     "username": "Username",
     "usernameRules": "Can only consist of letters, numbers, and “.”",
     "password": "Password",
+    "totp": "One-time code",
     "resetPassword": "Reset password",
-    "newPassword": "New password"
+    "newPassword": "New password",
+    "welcomeBack": "Welcome back",
+    "logInFailed": "Could not log in",
+    "welcome": "Welcome",
+    "registerFailed": "Could not register",
+    "registrationClosed": "Registration closed",
+    "passwordResetRequestSuccess": "If an account with that email address exists, you will receive an email shortly",
+    "passwordResetRequestFailed": "Could not initiate password reset",
+    "passwordResetSuccess": "Password was reset successfully",
+    "passwordResetFailed": "Could not complete password reset",
+    "tokenError": "Token error"
   },
   "fr": {
     "logIn": "Se connecter"
