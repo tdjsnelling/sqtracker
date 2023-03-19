@@ -122,16 +122,6 @@ const handleAnnounce = async (req, res) => {
     );
   }
 
-  console.log({
-    bytes,
-    uploaded,
-    alreadyUploadedSession,
-    uploadDeltaSession,
-    downloaded,
-    alreadyDownloadedSession,
-    downloadDeltaSession,
-  });
-
   await Progress.findOneAndUpdate(
     { userId: user._id, infoHash },
     {

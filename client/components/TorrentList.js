@@ -6,6 +6,7 @@ import slugify from "slugify";
 import { ListUl } from "@styled-icons/boxicons-regular/ListUl";
 import { Upload } from "@styled-icons/boxicons-regular/Upload";
 import { Download } from "@styled-icons/boxicons-regular/Download";
+import { File } from "@styled-icons/boxicons-regular/File";
 import { Chat } from "@styled-icons/boxicons-solid/Chat";
 import { ChevronsLeft } from "@styled-icons/boxicons-solid/ChevronsLeft";
 import { ChevronLeft } from "@styled-icons/boxicons-solid/ChevronLeft";
@@ -104,6 +105,20 @@ const TorrentList = ({ torrents = [], categories, total }) => {
                 iconTextWrapperProps={{ justifyContent: "flex-end" }}
               >
                 {value !== undefined ? value : "?"}
+              </Text>
+            ),
+            gridWidth: "100px",
+            rightAlign: true,
+          },
+          {
+            header: "Downloads",
+            accessor: "downloads",
+            cell: ({ value }) => (
+              <Text
+                icon={File}
+                iconTextWrapperProps={{ justifyContent: "flex-end" }}
+              >
+                {value || 0}
               </Text>
             ),
             gridWidth: "100px",
