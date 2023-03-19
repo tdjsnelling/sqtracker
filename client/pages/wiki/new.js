@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import jwt from "jsonwebtoken";
+import slugify from "slugify";
 import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import Input from "../../components/Input";
@@ -25,6 +26,16 @@ export const WikiFields = ({ values }) => {
         label="Path"
         value={slugValue}
         onChange={(e) => setSlugValue(e.target.value)}
+        onBlur={(e) => {
+          let { value } = e.target;
+          if (!value.startsWith("/")) value = `/${value}`;
+          if (value.endsWith("/")) value = value.slice(0, -1);
+          const split = value.split("/");
+          const slugified = split.map((token) =>
+            slugify(token, { lower: true })
+          );
+          setSlugValue(slugified.join("/"));
+        }}
         disabled={values?.slug === "/"}
         mb={2}
         required
