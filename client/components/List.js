@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { toPath } from "lodash";
+import qs from "qs";
+import { CaretUp } from "@styled-icons/boxicons-regular/CaretUp";
+import { CaretDown } from "@styled-icons/boxicons-regular/CaretDown";
 import Box from "../components/Box";
 import Text from "../components/Text";
 
@@ -47,7 +51,17 @@ const ListItem = ({ children }) => {
   );
 };
 
+const getSortIcon = (accessor, sort = "") => {
+  const [sortAccessor, sortDirection] = sort.split(":");
+  if (accessor !== sortAccessor) return null;
+  if (sortDirection === "asc") return CaretUp;
+  if (sortDirection === "desc") return CaretDown;
+  return null;
+};
+
 const List = ({ data = [], columns = [], ...rest }) => {
+  const router = useRouter();
+  const { sort } = router.query;
   return (
     <Box overflowX="auto">
       <Box minWidth="700px">
@@ -65,7 +79,42 @@ const List = ({ data = [], columns = [], ...rest }) => {
               fontWeight={600}
               fontSize={1}
               textAlign={col.rightAlign ? "right" : "left"}
-              _css={{ textTransform: "uppercase" }}
+              _css={{
+                textTransform: "uppercase",
+                cursor: col.sortable ? "pointer" : "text",
+                userSelect: col.sortable ? "none" : "auto",
+              }}
+              onClick={
+                col.sortable
+                  ? () => {
+                      const query = window.location.search;
+                      const parsed = qs.parse(query.replace("?", ""));
+                      if (parsed.sort) {
+                        const [accessor, direction] = parsed.sort.split(":");
+                        if (accessor === col.accessor) {
+                          if (direction === "asc")
+                            parsed.sort = `${col.accessor}:desc`;
+                          else if (direction === "desc") delete parsed.sort;
+                        } else {
+                          parsed.sort = `${col.accessor}:asc`;
+                        }
+                      } else {
+                        parsed.sort = `${col.accessor}:asc`;
+                      }
+                      router.replace(
+                        Object.keys(parsed).length
+                          ? `${window.location.pathname}?${qs.stringify(
+                              parsed
+                            )}`
+                          : window.location.pathname
+                      );
+                    }
+                  : undefined
+              }
+              icon={getSortIcon(col.accessor, sort)}
+              iconTextWrapperProps={{
+                justifyContent: col.rightAlign ? "flex-end" : "flex-start",
+              }}
             >
               {col.header}
             </Text>

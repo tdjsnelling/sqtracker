@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import qs from "qs";
@@ -10,7 +10,9 @@ import Button from "../../components/Button";
 import Box from "../../components/Box";
 import TorrentList from "../../components/TorrentList";
 
-const Search = ({ results, error }) => {
+const Search = ({ results, error, token }) => {
+  const [torrents, setTorrents] = useState(results?.torrents ?? []);
+
   const router = useRouter();
   let {
     query: { query },
@@ -18,7 +20,7 @@ const Search = ({ results, error }) => {
   query = query ? decodeURIComponent(query) : "";
 
   const {
-    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_API_URL },
   } = getConfig();
 
   const handleSearch = (e) => {
@@ -44,11 +46,14 @@ const Search = ({ results, error }) => {
         <>
           {query && (
             <>
-              {results.torrents.length ? (
+              {torrents.length ? (
                 <TorrentList
-                  torrents={results.torrents}
+                  torrents={torrents}
+                  setTorrents={setTorrents}
                   categories={SQ_TORRENT_CATEGORIES}
                   total={results.total}
+                  fetchPath={`${SQ_API_URL}/torrent/search`}
+                  token={token}
                 />
               ) : (
                 <Text color="grey">No results.</Text>
@@ -92,7 +97,7 @@ export const getServerSideProps = withAuthServerSideProps(
         return { props: { error: message } };
       } else {
         const results = await searchRes.json();
-        return { props: { results } };
+        return { props: { results, token } };
       }
     } catch (e) {
       if (e === "banned") throw "banned";

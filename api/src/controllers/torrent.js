@@ -452,9 +452,18 @@ export const getTorrentsPage = async ({
   tag,
   uploadedBy,
   userId,
+  sort,
   tracker,
 }) => {
   const queryNGrams = nGrams(query, false, 2, false).join(" ");
+
+  const [sortField, sortDirString] = sort?.split(":") ?? [];
+  const sortDir = sortDirString === "asc" ? 1 : -1;
+
+  const combinedSort = {};
+  if (sortField) combinedSort[sortField] = sortDir;
+  if (query) combinedSort.confidenceScore = { $meta: "textScore" };
+  combinedSort.created = -1;
 
   const torrents = await Torrent.aggregate([
     ...(query
@@ -530,17 +539,6 @@ export const getTorrentsPage = async ({
         ]
       : []),
     {
-      $sort: query
-        ? { confidenceScore: { $meta: "textScore" } }
-        : { created: -1 },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-    {
       $lookup: {
         from: "comments",
         as: "comments",
@@ -588,6 +586,15 @@ export const getTorrentsPage = async ({
       },
     },
     { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
+    {
+      $sort: combinedSort,
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
   ]);
 
   const [count] = await Torrent.aggregate([
@@ -682,7 +689,7 @@ export const listAll = async (req, res, next) => {
 };
 
 export const searchTorrents = (tracker) => async (req, res, next) => {
-  const { query, category, source, tag, page } = req.query;
+  const { query, category, source, tag, page, sort } = req.query;
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
@@ -691,6 +698,7 @@ export const searchTorrents = (tracker) => async (req, res, next) => {
       source,
       tag: tag ? decodeURIComponent(tag) : undefined,
       userId: req.userId,
+      sort: sort ? decodeURIComponent(sort) : undefined,
       tracker,
     });
     res.json(torrents);
