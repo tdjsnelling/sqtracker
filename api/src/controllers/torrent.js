@@ -463,7 +463,7 @@ export const getTorrentsPage = async ({
   const combinedSort = {};
   if (sortField) combinedSort[sortField] = sortDir;
   if (query) combinedSort.confidenceScore = { $meta: "textScore" };
-  combinedSort.created = -1;
+  if (!combinedSort.created) combinedSort.created = -1;
 
   const torrents = await Torrent.aggregate([
     ...(query
