@@ -80,6 +80,12 @@ export const Info = ({ title, items }) => (
 const WrapExpandable = ({ wrap, children }) =>
   wrap ? <details>{children}</details> : children;
 
+const sortName = (a, b) => {
+  if (a.name > b.name) return 1;
+  if (a.name < b.name) return -1;
+  return 0;
+};
+
 const FileItem = ({ file, depth = 0 }) => {
   return (
     <Box as="li" pl={`${depth * 22}px`} css={{ lineHeight: 1.75 }}>
@@ -112,7 +118,7 @@ const FileItem = ({ file, depth = 0 }) => {
         </Box>
         {!!file.children.length && (
           <Box as="ul" pl={0} css={{ listStyle: "none" }}>
-            {file.children.map((child) => (
+            {file.children.sort(sortName).map((child) => (
               <FileItem
                 key={`file-${child.name}-${depth}`}
                 file={child}
@@ -676,7 +682,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
           Files
         </Text>
         <Box as="ul" pl={0} css={{ listStyle: "none" }}>
-          {parsedFiles.map((file, i) => (
+          {parsedFiles.sort(sortName).map((file, i) => (
             <FileItem key={`file-${i}`} file={file} />
           ))}
         </Box>
