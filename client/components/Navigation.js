@@ -73,19 +73,20 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       SQ_API_URL,
       SQ_ALLOW_REGISTER,
       SQ_VERSION,
-      SQ_TORRENT_CATEGORIES,
     },
   } = getConfig();
 
   useEffect(() => {
     const getUserRole = async () => {
-      const roleRes = await fetch(`${SQ_API_URL}/account/get-role`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const role = await roleRes.text();
-      setRole(role);
+      try {
+        const roleRes = await fetch(`${SQ_API_URL}/account/get-role`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const role = await roleRes.text();
+        setRole(role);
+      } catch (e) {}
     };
     if (token) getUserRole();
     setIsServer(false);
