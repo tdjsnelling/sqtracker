@@ -17,7 +17,13 @@ import LoadingContext from "../../utils/LoadingContext";
 import Modal from "../../components/Modal";
 import { WikiFields } from "./new";
 
-const Wiki = ({ page, token, userRole, slug }) => {
+const sortSlug = (a, b) => {
+  if (a.slug > b.slug) return 1;
+  if (a.slug < b.slug) return -1;
+  return 0;
+};
+
+const Wiki = ({ page, allPages, token, userRole, slug }) => {
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -161,24 +167,57 @@ const Wiki = ({ page, token, userRole, slug }) => {
             </Text>
           </Box>
           {!editing ? (
-            <MarkdownBody>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  a({ href, ...props }) {
-                    return href.startsWith("http") ? (
-                      <a href={href} target="_blank" {...props} />
-                    ) : (
-                      <Link href={href} passHref>
-                        <a {...props} />
-                      </Link>
-                    );
-                  },
-                }}
+            <Box
+              display="grid"
+              gridTemplateColumns={["1fr", "200px auto"]}
+              gridGap={5}
+            >
+              <Box
+                bg="sidebar"
+                border="1px solid"
+                borderColor="border"
+                borderRadius={1}
+                p={3}
               >
-                {page.body}
-              </ReactMarkdown>
-            </MarkdownBody>
+                <Text
+                  fontWeight={600}
+                  fontSize={1}
+                  mb={3}
+                  _css={{ textTransform: "uppercase" }}
+                >
+                  Pages
+                </Text>
+                {allPages.sort(sortSlug).map((p) => (
+                  <Link
+                    key={`page-${p.slug}`}
+                    href={`/wiki/${p.slug}`}
+                    passHref
+                  >
+                    <Text as="a" display="block">
+                      {p.title}
+                    </Text>
+                  </Link>
+                ))}
+              </Box>
+              <MarkdownBody>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    a({ href, ...props }) {
+                      return href.startsWith("http") ? (
+                        <a href={href} target="_blank" {...props} />
+                      ) : (
+                        <Link href={href} passHref>
+                          <a {...props} />
+                        </Link>
+                      );
+                    },
+                  }}
+                >
+                  {page.body}
+                </ReactMarkdown>
+              </MarkdownBody>
+            </Box>
           ) : (
             <form onSubmit={handleEdit}>
               <WikiFields values={page} />
@@ -246,8 +285,10 @@ export const getServerSideProps = withAuthServerSideProps(
       ) {
         throw "banned";
       }
-      const page = await wikiRes.json();
-      return { props: { page, token, userRole: role, slug: parsedSlug } };
+      const { page, allPages } = await wikiRes.json();
+      return {
+        props: { page, allPages, token, userRole: role, slug: parsedSlug },
+      };
     } catch (e) {
       if (e === "banned") throw "banned";
       return { props: { token, userRole: role, slug: parsedSlug } };

@@ -29,7 +29,7 @@ export const WikiFields = ({ values }) => {
         onBlur={(e) => {
           let { value } = e.target;
           if (!value.startsWith("/")) value = `/${value}`;
-          if (value.endsWith("/")) value = value.slice(0, -1);
+          if (value.endsWith("/") && value !== "/") value = value.slice(0, -1);
           const split = value.split("/");
           const slugified = split.map((token) =>
             slugify(token, { lower: true })

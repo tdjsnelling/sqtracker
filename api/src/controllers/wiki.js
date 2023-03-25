@@ -5,7 +5,7 @@ const slugRegex = /^\/([a-z0-9-_\/])*/i;
 
 const formatSlug = (slug) => {
   if (!slug.startsWith("/")) slug = `/${slug}`;
-  if (slug.endsWith("/")) slug = slug.slice(0, -1);
+  if (slug.endsWith("/") && slug !== "/") slug = slug.slice(0, -1);
   const split = slug.split("/");
   const slugified = split.map((token) => slugify(token, { lower: true }));
   return slugified.join("/");
@@ -98,7 +98,9 @@ export const getWiki = async (req, res, next) => {
       return;
     }
 
-    res.json(page);
+    const allPages = await Wiki.find({}, { slug: 1, title: 1 }).lean();
+
+    res.json({ page, allPages });
   } catch (e) {
     next(e);
   }
