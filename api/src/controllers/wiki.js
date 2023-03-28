@@ -47,6 +47,7 @@ export const createWiki = async (req, res, next) => {
         title: req.body.title,
         body: req.body.body,
         createdBy: req.userId,
+        public: !!req.body.public,
         created: Date.now(),
       });
 
@@ -64,7 +65,7 @@ export const getWiki = async (req, res, next) => {
   try {
     const slug = req.params[0];
 
-    const [page] = await Wiki.aggregate([
+    let [page] = await Wiki.aggregate([
       {
         $match: { slug },
       },
@@ -98,7 +99,17 @@ export const getWiki = async (req, res, next) => {
       return;
     }
 
-    const allPages = await Wiki.find({}, { slug: 1, title: 1 }).lean();
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId && !page.public) {
+      page = null;
+    }
+
+    const query = {};
+
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId) {
+      query.public = true;
+    }
+
+    const allPages = await Wiki.find(query, { slug: 1, title: 1 }).lean();
 
     res.json({ page, allPages });
   } catch (e) {
@@ -174,6 +185,7 @@ export const updateWiki = async (req, res, next) => {
             slug,
             title: req.body.title,
             body: req.body.body,
+            public: !!req.body.public,
             updated: Date.now(),
           },
         }

@@ -42,8 +42,13 @@ const Tag = ({ results, token }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders, query: { tag, page: pageParam } }) => {
-    if (!token) return { props: {} };
+  async ({
+    token,
+    fetchHeaders,
+    isPublicAccess,
+    query: { tag, page: pageParam },
+  }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
@@ -74,7 +79,8 @@ export const getServerSideProps = withAuthServerSideProps(
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Tag;

@@ -50,9 +50,10 @@ export const getServerSideProps = withAuthServerSideProps(
   async ({
     token,
     fetchHeaders,
+    isPublicAccess,
     query: { category, source, page: pageParam },
   }) => {
-    if (!token) return { props: {} };
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
@@ -84,7 +85,8 @@ export const getServerSideProps = withAuthServerSideProps(
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Category;

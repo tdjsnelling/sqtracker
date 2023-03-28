@@ -73,6 +73,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       SQ_API_URL,
       SQ_ALLOW_REGISTER,
       SQ_VERSION,
+      SQ_ALLOW_UNREGISTERED_VIEW,
     },
   } = getConfig();
 
@@ -247,6 +248,22 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                     <UserPlus size={24} />
                   </NavLink>
                 </Link>
+              )}
+              {SQ_ALLOW_UNREGISTERED_VIEW && (
+                <>
+                  <Link href="/categories" passHref>
+                    <NavLink>
+                      <Text>Browse</Text>
+                      <ListUl size={24} />
+                    </NavLink>
+                  </Link>
+                  <Link href="/wiki" passHref>
+                    <NavLink>
+                      <Text>Wiki</Text>
+                      <BookOpen size={24} />
+                    </NavLink>
+                  </Link>
+                </>
               )}
             </Box>
           )}

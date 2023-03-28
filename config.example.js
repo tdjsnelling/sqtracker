@@ -62,6 +62,7 @@ module.exports = {
 
     // Whether torrent pages can be viewed by unregistered users.
     // If true, only logged-in users will be able to download/interact, but anyone (search engines included) will be able to view/read torrent info.
+    // Non-logged-in users will also be able to browse category/tag pages and wiki pages that have been set to public.
     // Enable if you want torrents to be indexed to help search traffic.
     SQ_ALLOW_UNREGISTERED_VIEW: false,
 

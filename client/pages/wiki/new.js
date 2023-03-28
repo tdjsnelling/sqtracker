@@ -11,13 +11,16 @@ import MarkdownInput from "../../components/MarkdownInput";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import Checkbox from "../../components/Checkbox";
 
 export const WikiFields = ({ values }) => {
   const [slugValue, setSlugValue] = useState(values?.slug);
 
   const {
-    publicRuntimeConfig: { SQ_BASE_URL },
+    publicRuntimeConfig: { SQ_BASE_URL, SQ_ALLOW_UNREGISTERED_VIEW },
   } = getConfig();
+
+  console.log(values);
 
   return (
     <>
@@ -59,6 +62,14 @@ export const WikiFields = ({ values }) => {
         mb={4}
         required
       />
+      {SQ_ALLOW_UNREGISTERED_VIEW && (
+        <Checkbox
+          name="public"
+          label="Allow unregistered view"
+          inputProps={{ defaultChecked: values?.public }}
+          mb={4}
+        />
+      )}
     </>
   );
 };
@@ -93,6 +104,7 @@ const NewWiki = ({ token, userRole }) => {
           slug: form.get("slug"),
           title: form.get("title"),
           body: form.get("body"),
+          public: !!form.get("public"),
         }),
       });
 

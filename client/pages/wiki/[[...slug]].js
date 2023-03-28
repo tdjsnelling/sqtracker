@@ -87,6 +87,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
             slug: page.slug === "/" ? "/" : form.get("slug"),
             title: form.get("title"),
             body: form.get("body"),
+            public: !!form.get("public"),
           }),
         }
       );
@@ -169,36 +170,10 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
           {!editing ? (
             <Box
               display="grid"
-              gridTemplateColumns={["1fr", "200px auto"]}
+              gridTemplateColumns={["1fr", "auto 200px"]}
               gridGap={5}
+              alignItems="start"
             >
-              <Box
-                bg="sidebar"
-                border="1px solid"
-                borderColor="border"
-                borderRadius={1}
-                p={3}
-              >
-                <Text
-                  fontWeight={600}
-                  fontSize={1}
-                  mb={3}
-                  _css={{ textTransform: "uppercase" }}
-                >
-                  Pages
-                </Text>
-                {allPages.sort(sortSlug).map((p) => (
-                  <Link
-                    key={`page-${p.slug}`}
-                    href={`/wiki/${p.slug}`}
-                    passHref
-                  >
-                    <Text as="a" display="block">
-                      {p.title}
-                    </Text>
-                  </Link>
-                ))}
-              </Box>
               <MarkdownBody>
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -217,6 +192,30 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
                   {page.body}
                 </ReactMarkdown>
               </MarkdownBody>
+              <Box
+                bg="sidebar"
+                border="1px solid"
+                borderColor="border"
+                borderRadius={1}
+                p={4}
+                _css={{ order: [-1, "unset"] }}
+              >
+                <Text
+                  fontWeight={600}
+                  fontSize={1}
+                  mb={3}
+                  _css={{ textTransform: "uppercase" }}
+                >
+                  Pages
+                </Text>
+                {allPages.sort(sortSlug).map((p) => (
+                  <Link key={`page-${p.slug}`} href={`/wiki${p.slug}`} passHref>
+                    <Text as="a" display="block">
+                      {p.title}
+                    </Text>
+                  </Link>
+                ))}
+              </Box>
             </Box>
           ) : (
             <form onSubmit={handleEdit}>
@@ -263,8 +262,8 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders, query: { slug } }) => {
-    if (!token) return { props: {} };
+  async ({ token, fetchHeaders, isPublicAccess, query: { slug } }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const parsedSlug = slug?.length ? slug.join("/") : "";
 
@@ -273,7 +272,7 @@ export const getServerSideProps = withAuthServerSideProps(
       serverRuntimeConfig: { SQ_JWT_SECRET },
     } = getConfig();
 
-    const { role } = jwt.verify(token, SQ_JWT_SECRET);
+    const { role } = token ? jwt.verify(token, SQ_JWT_SECRET) : { role: null };
 
     try {
       const wikiRes = await fetch(`${SQ_API_URL}/wiki/${parsedSlug}`, {
@@ -293,7 +292,8 @@ export const getServerSideProps = withAuthServerSideProps(
       if (e === "banned") throw "banned";
       return { props: { token, userRole: role, slug: parsedSlug } };
     }
-  }
+  },
+  true
 );
 
 export default Wiki;
