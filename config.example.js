@@ -32,8 +32,12 @@ module.exports = {
     // Admins can still see who uploaded anonymously, but other users cannot.
     SQ_ALLOW_ANONYMOUS_UPLOADS: false,
 
-    // Minimum allowed ratio. Below this users will not be able to download. Minimum 0.
+    // Minimum allowed ratio. Below this users will not be able to download. Set to -1 to disable.
     SQ_MINIMUM_RATIO: 0.75,
+
+    // Maximum allowed hit'n'runs. Above this users will not be allowed to download. Set to -1 to disable.
+    // A user has committed a hit'n'run when a torrent is fully downloaded and not seeded to a 1:1 ratio.
+    SQ_MAXIMUM_HIT_N_RUNS: 1,
 
     // A map of torrent categories that can be selected when uploading.
     // Each has an array of zero or more sources available within that category.

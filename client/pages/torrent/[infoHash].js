@@ -132,7 +132,7 @@ const FileItem = ({ file, depth = 0 }) => {
   );
 };
 
-const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
+const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -160,6 +160,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
       SQ_API_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_SITE_WIDE_FREELEECH,
+      SQ_MINIMUM_RATIO,
+      SQ_MAXIMUM_HIT_N_RUNS,
     },
   } = getConfig();
 
@@ -481,6 +483,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
     .map(({ path, size }) => ({ path: path.split("/"), size }))
     .reduce((children, { path, size }) => insert(children, path, size), []);
 
+  const downloadDisabled =
+    (Number(SQ_MINIMUM_RATIO) !== -1 &&
+      userStats.ratio < Number(SQ_MINIMUM_RATIO)) ||
+    (Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 &&
+      userStats.hitnruns > Number(SQ_MAXIMUM_HIT_N_RUNS));
+
   return (
     <>
       <SEO title={torrent.name} />
@@ -537,11 +545,16 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid }) => {
               {isFreeleech ? "Unset" : "Set"} freeleech
             </Button>
           )}
-          {!!userId ? (
+          {userId ? (
             <Button
               as="a"
-              href={`${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`}
+              href={
+                downloadDisabled
+                  ? undefined
+                  : `${SQ_API_URL}/torrent/download/${torrent.infoHash}/${uid}`
+              }
               target="_blank"
+              disabled={downloadDisabled}
             >
               Download .torrent
             </Button>
@@ -893,7 +906,17 @@ export const getServerSideProps = withAuthServerSideProps(
       if (torrentRes.status === 404) return { notFound: true };
 
       const torrent = await torrentRes.json();
-      return { props: { torrent, userId: id, userRole: role, uid: userId } };
+
+      const userStatsRes = await fetch(`${SQ_API_URL}/account/get-stats`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userStats = await userStatsRes.json();
+
+      return {
+        props: { torrent, userId: id, userRole: role, uid: userId, userStats },
+      };
     } catch (e) {
       if (e === "banned") throw "banned";
       return { props: {} };
