@@ -66,6 +66,10 @@ export const uploadTorrent = async (req, res, next) => {
 
       const user = await User.findOne({ _id: req.userId }).lean();
 
+      parsed.info.private = 1;
+      parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
+      delete parsed["announce-list"];
+
       const infoHash = crypto
         .createHash("sha1")
         .update(bencode.encode(parsed.info))
@@ -77,10 +81,6 @@ export const uploadTorrent = async (req, res, next) => {
         res.status(409).send("Torrent with this info hash already exists");
         return;
       }
-
-      parsed.info.private = 1;
-      parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
-      delete parsed["announce-list"];
 
       let files;
       if (parsed.info.files) {

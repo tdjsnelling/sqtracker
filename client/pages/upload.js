@@ -191,7 +191,7 @@ const Upload = ({ token, userId }) => {
       SQ_API_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_ALLOW_ANONYMOUS_UPLOAD,
-      SQ_EXTENSION_BLACKLIST,
+      SQ_EXTENSION_BLACKLIST = [],
     },
   } = getConfig();
 

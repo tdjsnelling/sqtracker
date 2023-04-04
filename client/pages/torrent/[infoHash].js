@@ -485,6 +485,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
   const downloadDisabled =
     (Number(SQ_MINIMUM_RATIO) !== -1 &&
+      userStats.ratio !== -1 &&
       userStats.ratio < Number(SQ_MINIMUM_RATIO)) ||
     (Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 &&
       userStats.hitnruns > Number(SQ_MAXIMUM_HIT_N_RUNS));
