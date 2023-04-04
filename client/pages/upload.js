@@ -33,7 +33,7 @@ const FileUpload = styled(Box)(() =>
     borderColor: "border",
     borderRadius: 2,
     cursor: "pointer",
-    p: 5,
+    p: 6,
     "&:hover": {
       bg: "sidebar",
     },
@@ -191,6 +191,7 @@ const Upload = ({ token, userId }) => {
       SQ_API_URL,
       SQ_TORRENT_CATEGORIES,
       SQ_ALLOW_ANONYMOUS_UPLOAD,
+      SQ_EXTENSION_BLACKLIST,
     },
   } = getConfig();
 
@@ -322,6 +323,26 @@ const Upload = ({ token, userId }) => {
           </Text>
         </Text>
       </Box>
+      {!!SQ_EXTENSION_BLACKLIST.length && (
+        <Infobox mb={5}>
+          <Text mb={3}>
+            The following file extensions are blacklisted. Any torrent
+            containing files of these types will not be uploaded.
+          </Text>
+          <Text
+            fontFamily="mono"
+            display="inline-block"
+            bg="background"
+            border="1px solid"
+            borderColor="border"
+            borderRadius={1}
+            px={3}
+            py={1}
+          >
+            {SQ_EXTENSION_BLACKLIST.join(", ")}
+          </Text>
+        </Infobox>
+      )}
       <form onSubmit={handleUpload}>
         <Box mb={4}>
           <WrapLabel label="Torrent file" as="div">

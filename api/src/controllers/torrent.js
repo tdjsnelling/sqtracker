@@ -97,6 +97,19 @@ export const uploadTorrent = async (req, res, next) => {
         ];
       }
 
+      const hasBlackListedFiles = files.some((file) =>
+        (process.env.SQ_EXTENSION_BLACKLIST ?? []).some((ext) =>
+          file.path.endsWith(`.${ext}`)
+        )
+      );
+
+      if (hasBlackListedFiles) {
+        res
+          .status(403)
+          .send("One or more files have blacklisted file extensions");
+        return;
+      }
+
       let groupId;
 
       if (req.body.groupWith) {

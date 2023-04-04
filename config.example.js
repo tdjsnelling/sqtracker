@@ -70,6 +70,9 @@ module.exports = {
     // Enable if you want torrents to be indexed to help search traffic.
     SQ_ALLOW_UNREGISTERED_VIEW: false,
 
+    // An array of blacklisted file extensions. Torrents containing files with these extensions will fail to upload.
+    SQ_EXTENSION_BLACKLIST: ["exe"],
+
     // The URL of your tracker site.
     SQ_BASE_URL: "https://sqtracker.dev",
 

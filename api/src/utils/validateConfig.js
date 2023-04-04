@@ -49,6 +49,7 @@ const configSchema = yup
           text: yup.string().matches(hexRegex),
           grey: yup.string().matches(hexRegex),
         }),
+        SQ_EXTENSION_BLACKLIST: yup.array().of(yup.string()).min(0),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),
