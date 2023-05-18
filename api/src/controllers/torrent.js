@@ -251,6 +251,7 @@ export const downloadTorrent = async (req, res, next) => {
     const parsed = bencode.decode(Buffer.from(binary, "base64"));
 
     parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
+    delete parsed["announce-list"];
     parsed.info.private = 1;
 
     res.setHeader("Content-Type", "application/x-bittorrent");
