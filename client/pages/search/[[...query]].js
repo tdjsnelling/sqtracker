@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import qs from "qs";
@@ -11,7 +11,11 @@ import Box from "../../components/Box";
 import TorrentList from "../../components/TorrentList";
 
 const Search = ({ results, error, token }) => {
-  const [torrents, setTorrents] = useState(results?.torrents ?? []);
+  const [torrents, setTorrents] = useState([]);
+
+  useEffect(() => {
+    setTorrents(results?.torrents ?? []);
+  }, [results?.total]);
 
   const router = useRouter();
   let {
