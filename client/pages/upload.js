@@ -243,6 +243,8 @@ const Upload = ({ token, userId }) => {
     const form = new FormData(e.target);
 
     try {
+      if (!torrentFile) throw new Error("No .torrent file added");
+
       const uploadRes = await fetch(`${SQ_API_URL}/torrent/upload`, {
         method: "POST",
         headers: {
