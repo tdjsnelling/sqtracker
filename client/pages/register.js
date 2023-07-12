@@ -32,6 +32,14 @@ const Register = ({ token: inviteToken, tokenError }) => {
     e.preventDefault();
     setLoading(true);
     const form = new FormData(e.target);
+    const password = form.get("password");
+    const passwordConfirm = form.get("passwordConfirm");
+
+    if (password !== passwordConfirm) {
+      addNotification("error", "Password verification failed! Please ensure both password fields contain the same password.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch(`${SQ_API_URL}/register`, {
@@ -43,6 +51,7 @@ const Register = ({ token: inviteToken, tokenError }) => {
           email: form.get("email"),
           username: form.get("username"),
           password: form.get("password"),
+          password: form.get("passwordConfirm"),
           invite: inviteToken,
         }),
       });
@@ -104,6 +113,13 @@ const Register = ({ token: inviteToken, tokenError }) => {
             name="password"
             type="password"
             label="Password"
+            mb={4}
+            required
+          />
+          <Input
+            name="passwordConfirm"
+            type="password"
+            label="Confirm password"
             mb={4}
             required
           />
