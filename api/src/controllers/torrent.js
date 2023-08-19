@@ -8,6 +8,7 @@ import User from "../schema/user";
 import Comment from "../schema/comment";
 import Group from "../schema/group";
 import { createGroup, addToGroup, removeFromGroup } from "./group";
+import contentDisposition from "content-disposition";
 
 const urlReservedCharRegex = /[&$+,/:;=?@#<>\[\]{}|\\\^%]/g;
 
@@ -254,13 +255,16 @@ export const downloadTorrent = async (req, res, next) => {
     delete parsed["announce-list"];
     parsed.info.private = 1;
 
+    const fileName = `${parsed.info.name.toString()} - ${
+      process.env.SQ_SITE_NAME
+    }.torrent`;
+
     res.setHeader("Content-Type", "application/x-bittorrent");
     res.setHeader(
       "Content-Disposition",
-      `attachment;filename=${parsed.info.name.toString()} - ${
-        process.env.SQ_SITE_NAME
-      }.torrent`
+      `attachment;filename=${contentDisposition(fileName)}`
     );
+
     res.write(bencode.encode(parsed));
     res.end();
   } catch (e) {
