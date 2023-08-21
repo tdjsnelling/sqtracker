@@ -3,12 +3,12 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import { createNGrams, nGrams } from "mongoose-fuzzy-searching/helpers";
 import slugify from "slugify";
+import contentDisposition from "content-disposition";
 import Torrent from "../schema/torrent";
 import User from "../schema/user";
 import Comment from "../schema/comment";
 import Group from "../schema/group";
 import { createGroup, addToGroup, removeFromGroup } from "./group";
-import contentDisposition from "content-disposition";
 
 const urlReservedCharRegex = /[&$+,/:;=?@#<>\[\]{}|\\\^%]/g;
 
