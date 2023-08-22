@@ -260,10 +260,7 @@ export const downloadTorrent = async (req, res, next) => {
     }.torrent`;
 
     res.setHeader("Content-Type", "application/x-bittorrent");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment;filename=${contentDisposition(fileName)}`
-    );
+    res.setHeader("Content-Disposition", contentDisposition(fileName));
 
     res.write(bencode.encode(parsed));
     res.end();
