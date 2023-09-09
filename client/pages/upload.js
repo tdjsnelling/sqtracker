@@ -22,6 +22,7 @@ import Infobox from "../components/Infobox";
 import List from "../components/List";
 import { NotificationContext } from "../components/Notifications";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
 import MarkdownInput from "../components/MarkdownInput";
 
 const FileUpload = styled(Box)(() =>
@@ -52,6 +53,8 @@ export const TorrentFields = ({
   const [sources, setSources] = useState([]);
   const [tags, setTags] = useState(values?.tags?.split(",") ?? []);
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   useEffect(() => {
     setSources(
       category
@@ -68,7 +71,7 @@ export const TorrentFields = ({
     <>
       <Input
         name="name"
-        label="Name"
+        label={getLocaleString("uploadName")}
         defaultValue={values?.name}
         onBlur={
           typeof handleGroupSearch === "function"
@@ -82,7 +85,7 @@ export const TorrentFields = ({
       {!!Object.keys(categories).length && (
         <Select
           name="category"
-          label="Category"
+          label={getLocaleString("uploadCategory")}
           value={category}
           onChange={(e) => {
             setCategory(e.target.value);
@@ -100,7 +103,7 @@ export const TorrentFields = ({
       {!!sources.length && (
         <Select
           name="source"
-          label="Source"
+          label={getLocaleString("uploadSource")}
           defaultValue={values?.source}
           mb={4}
           required
@@ -114,22 +117,22 @@ export const TorrentFields = ({
       )}
       <MarkdownInput
         name="description"
-        label="Description"
+        label={getLocaleString("uploadDescription")}
         rows="10"
-        placeholder="Markdown supported"
+        placeholder={getLocaleString("uploadMarkdownSupport")}
         defaultValue={values?.description}
         mb={4}
         required
       />
       <Input
         name="mediaInfo"
-        label="MediaInfo"
+        label={getLocaleString("uploadMediaInfo")}
         rows="10"
         defaultValue={values?.mediaInfo}
         fontFamily="mono"
         mb={4}
       />
-      <WrapLabel as={Box} label="Tags" mb={4}>
+      <WrapLabel as={Box} label={getLocaleString("uploadTags")} mb={4}>
         <Box display="flex" flexWrap="wrap" m={-2}>
           {tags.map((tag, i) => (
             <Box key={`tag-${i}`} display="flex" m={2}>
@@ -170,7 +173,7 @@ export const TorrentFields = ({
           >
             <Plus size={18} />
             <Text as="span" ml={3}>
-              Add tag
+              {getLocaleString("uploadAddTag")}
             </Text>
           </Button>
         </Box>
@@ -197,6 +200,7 @@ const Upload = ({ token, userId }) => {
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const router = useRouter();
 
@@ -269,12 +273,18 @@ const Upload = ({ token, userId }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Torrent uploaded successfully");
+      addNotification(
+        "success",
+        `${getLocaleString("uploadTorrentUploadSuccess")}`
+      );
 
       const infoHash = await uploadRes.text();
       router.push(`/torrent/${infoHash}`);
     } catch (e) {
-      addNotification("error", `Could not upload file: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("uploadCouldNotUploadFile")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -302,20 +312,23 @@ const Upload = ({ token, userId }) => {
       const { results } = await suggestionsRes.json();
       setGroupSuggestions(results);
     } catch (e) {
-      addNotification("error", `Could not get group suggestions: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("uploadCouldNotGetGroupSuggestions")}: ${e.message}`
+      );
       console.error(e);
     }
   };
 
   return (
     <>
-      <SEO title="Upload" />
+      <SEO title={getLocaleString("uploadUpload")} />
       <Text as="h1" mb={4}>
-        Upload
+        {getLocaleString("uploadUpload")}
       </Text>
       <Box mb={5}>
         <Text icon={LinkIcon} iconColor="primary">
-          Announce URL:{" "}
+          {getLocaleString("uploadAnnounceURL")}:{" "}
           <Text
             as="strong"
             fontFamily="mono"
@@ -328,8 +341,7 @@ const Upload = ({ token, userId }) => {
       {!!SQ_EXTENSION_BLACKLIST.length && (
         <Infobox mb={5}>
           <Text mb={3}>
-            The following file extensions are blacklisted. Any torrent
-            containing files of these types will not be uploaded.
+            {getLocaleString("uploadInfoBox1")}
           </Text>
           <Text
             fontFamily="mono"
@@ -347,7 +359,7 @@ const Upload = ({ token, userId }) => {
       )}
       <form onSubmit={handleUpload}>
         <Box mb={4}>
-          <WrapLabel label="Torrent file" as="div">
+          <WrapLabel label={getLocaleString("uploadTorrentFile")} as="div">
             <FileUpload {...getRootProps()}>
               <input {...getInputProps()} />
               {torrentFile ? (
@@ -355,17 +367,17 @@ const Upload = ({ token, userId }) => {
                   {torrentFile.name}
                 </Text>
               ) : isDragActive ? (
-                <Text color="grey">Drop the file here...</Text>
+                <Text color="grey">{getLocaleString("uploadDropFileHere")}</Text>
               ) : (
                 <Text color="grey">
-                  Drag and drop .torrent file here, or click to select
+                  {getLocaleString("uploadDragDropClickSelect")}
                 </Text>
               )}
             </FileUpload>
           </WrapLabel>
           {dropError && (
             <Text color="error" mt={3}>
-              Could not upload .torrent: {dropError}
+              {getLocaleString("uploadCouldNotUploadTorrent")}: {dropError}
             </Text>
           )}
         </Box>
@@ -376,10 +388,7 @@ const Upload = ({ token, userId }) => {
             groupSuggestions.length ? (
               <Infobox mb={5}>
                 <Text icon={InfoCircle} iconColor="primary" mb={4}>
-                  It looks like these existing torrents have similar names.
-                  Would you like to group your upload with any of them? Groups
-                  should only contain very similar content, e.g. the same movie
-                  in different formats.
+                  {getLocaleString("uploadInfoBox2")}
                 </Text>
                 <List
                   data={groupSuggestions.map((torrent) => ({
@@ -423,7 +432,7 @@ const Upload = ({ token, userId }) => {
                             disabled={groupWith === row.infoHash}
                             small
                           >
-                            Group with this torrent
+                            {getLocaleString("uploadGroupWithThisTorrent")}
                           </Button>
                         </Box>
                       ),
@@ -440,7 +449,7 @@ const Upload = ({ token, userId }) => {
           <Box display="flex" alignItems="flex-end" mb={4}>
             <Input
               name="groupWith"
-              label="Group with"
+              label={getLocaleString("uploadGroupWith")}
               value={groupWith}
               width="100%"
               disabled
@@ -456,17 +465,15 @@ const Upload = ({ token, userId }) => {
           </Box>
         )}
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
-          <Checkbox name="anonymous" label="Anonymous upload" />
+          <Checkbox name="anonymous" label={getLocaleString("uploadAnonymousUpload")} />
         )}
         <Button display="block" ml="auto" mt={5}>
-          Upload
+          {getLocaleString("uploadUpload")}
         </Button>
       </form>
       <Infobox mt={5}>
         <Text color="grey" fontSize={1}>
-          Note: if you have started seeding a torrent before uploading, you may
-          need to refresh trackers in your torrent client once the upload is
-          complete.
+          {getLocaleString("uploadInfoBox3")}
         </Text>
       </Infobox>
     </>
