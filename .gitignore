@@ -7,3 +7,8 @@ config.js
 .DS_Store
 dist/
 letsencrypt/
+*~
+*.bak
+*.orig
+*.diff
+*.patch
