@@ -77,17 +77,18 @@ const Index = ({
     if (query) router.push(`/search/${encodeURIComponent(query)}`);
   };
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="Home" />
+      <SEO title={getLocaleString("navHome")} />
       <Text as="h1" mb={5}>
-        Home
+        {getLocaleString("navHome")}
       </Text>
       {!emailVerified && (
         <Infobox mb={5}>
           <Text icon={ErrorCircle} iconColor="error">
-            Your email address is not yet verified. You will not be able to
-            upload or download any data until this is done.
+            {getLocaleString("indexText1")}
           </Text>
         </Infobox>
       )}
@@ -112,14 +113,14 @@ const Index = ({
                 _css={{ textTransform: "uppercase" }}
                 mb={3}
               >
-                Latest announcement
+                {getLocaleString("indexLatestAnnounce")}
               </Text>
               <Text as="h2" fontSize={3} mb={3}>
                 {latestAnnouncement.title}
               </Text>
               <Text color="grey">
                 Posted{" "}
-                {moment(latestAnnouncement.created).format("HH:mm Do MMM YYYY")}{" "}
+                {moment(latestAnnouncement.created).format(`${getLocaleString("indexTime")}`)}{" "}
                 by{" "}
                 {latestAnnouncement.createdBy?.username ? (
                   <Link
@@ -137,11 +138,11 @@ const Index = ({
         </Link>
       )}
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
-        <Input placeholder="Search torrents" name="query" mr={3} required />
-        <Button>Search</Button>
+        <Input placeholder={getLocaleString("indexSearchTorrents")} name="query" mr={3} required />
+        <Button>{getLocaleString("indexSearch")}</Button>
       </Box>
       <Text as="h2" mb={4}>
-        Latest torrents
+        {getLocaleString("indexLatestTorrents")}
       </Text>
       <TorrentList
         torrents={latestTorrents}
