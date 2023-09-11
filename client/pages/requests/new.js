@@ -10,6 +10,7 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import MarkdownInput from "../../components/MarkdownInput";
+import LocaleContext from "../../utils/LocaleContext";
 
 const NewRequest = ({ token }) => {
   const { addNotification } = useContext(NotificationContext);
@@ -20,6 +21,8 @@ const NewRequest = ({ token }) => {
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig();
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -44,12 +47,16 @@ const NewRequest = ({ token }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Request created successfully");
+      addNotification("success",
+        `${getLocaleString("reqRequestCreatedSuccess")}`
+      );
 
       const { index } = await createRequestRes.json();
       router.push(`/requests/${index}`);
     } catch (e) {
-      addNotification("error", `Could not create request: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqCouldNotCreateReq")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -58,22 +65,22 @@ const NewRequest = ({ token }) => {
 
   return (
     <>
-      <SEO title="New request" />
+      <SEO title={getLocaleString("reqNewRequest")} />
       <Text as="h1" mb={5}>
-        New request
+        {getLocaleString("reqNewRequest")}
       </Text>
       <form onSubmit={handleCreate}>
         <Input
           name="title"
-          label="Title"
-          placeholder="What are you looking for?"
+          label={getLocaleString("reqTitle")}
+          placeholder={getLocaleString("reqWhatYouLookForQ")}
           mb={4}
           required
         />
         <MarkdownInput
           name="body"
-          label="Description"
-          placeholder="Markdown supported"
+          label={getLocaleString("uploadDescription")}
+          placeholder={getLocaleString("uploadMarkdownSupport")}
           rows={10}
           mb={4}
           required

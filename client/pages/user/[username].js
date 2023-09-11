@@ -127,7 +127,7 @@ const User = ({ token, user, userRole }) => {
         )}
       </Box>
       <Text color="grey" mb={5}>
-        {getLocaleString("userUserSince")} {moment(user.created).format("Do MMM YYYY")}
+        {getLocaleString("userUserSince")} {moment(user.created).format(`${getLocaleString("userUserSinceTime")}`)}
       </Text>
       {userRole === "admin" && (
         <Infobox mb={5}>
