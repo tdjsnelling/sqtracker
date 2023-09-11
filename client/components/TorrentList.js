@@ -181,7 +181,7 @@ const TorrentList = ({
             sortable: !!token,
           },
           {
-            header: `${getLocaleString("userUploaded")}`,
+            header: `${getLocaleString("torrUploaded")}`,
             accessor: "created",
             cell: ({ value }) => (
               <Text>{moment(value).format(`${getLocaleString("userUserSinceTime")}`)}</Text>
