@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import moment from "moment";
@@ -18,6 +18,7 @@ import List from "./List";
 import Text from "./Text";
 import Box from "./Box";
 import Button from "./Button";
+import LocaleContext from "../utils/LocaleContext";
 
 const pageSize = 25;
 
@@ -75,6 +76,8 @@ const TorrentList = ({
     if (fetchPath && token) fetchTorrents();
   }, [sort, page]);
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
       <List
@@ -84,7 +87,7 @@ const TorrentList = ({
         }))}
         columns={[
           {
-            header: "Name",
+            header: `${getLocaleString("uploadName")}`,
             accessor: "name",
             cell: ({ value, row }) => (
               <Text title={value}>
@@ -102,7 +105,7 @@ const TorrentList = ({
             gridWidth: "2fr",
           },
           {
-            header: "Category",
+            header: `${getLocaleString("uploadCategory")}`,
             accessor: "type",
             cell: ({ value }) => {
               const category =
@@ -118,7 +121,7 @@ const TorrentList = ({
             gridWidth: "1fr",
           },
           {
-            header: "Seeders",
+            header: `${getLocaleString("torrSeeders")}`,
             accessor: "seeders",
             cell: ({ value }) => (
               <Text
@@ -133,7 +136,7 @@ const TorrentList = ({
             sortable: !!token,
           },
           {
-            header: "Leechers",
+            header: `${getLocaleString("torrLeechers")}`,
             accessor: "leechers",
             cell: ({ value }) => (
               <Text
@@ -148,7 +151,7 @@ const TorrentList = ({
             sortable: !!token,
           },
           {
-            header: "Downloads",
+            header: `${getLocaleString("torrDownloads")}`,
             accessor: "downloads",
             cell: ({ value }) => (
               <Text
@@ -163,7 +166,7 @@ const TorrentList = ({
             sortable: !!token,
           },
           {
-            header: "Comments",
+            header: `${getLocaleString("userComments")}`,
             accessor: "comments.count",
             cell: ({ value }) => (
               <Text
@@ -178,10 +181,10 @@ const TorrentList = ({
             sortable: !!token,
           },
           {
-            header: "Uploaded",
+            header: `${getLocaleString("userUploaded")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format("Do MMM YYYY")}</Text>
+              <Text>{moment(value).format(`${getLocaleString("userUserSinceTime")}`)}</Text>
             ),
             gridWidth: "140px",
             rightAlign: true,
