@@ -170,12 +170,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
   const [cookies] = useCookies();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
     const form = new FormData(e.target);
-
-  const { getLocaleString } = useContext(LocaleContext);
 
     try {
       const uploadRes = await fetch(

@@ -86,7 +86,7 @@ const NewRequest = ({ token }) => {
           required
         />
         <Button display="block" ml="auto">
-          Create request
+          {getLocaleString("reqCreateReq")}
         </Button>
       </form>
     </>
