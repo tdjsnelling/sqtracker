@@ -599,7 +599,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       </Box>
       <Info
         items={{
-          `${getLocaleString("torrUploadedBy")}`: torrent.anonymous ? (
+          [getLocaleString("torrUploadedBy")]: torrent.anonymous ? (
             "Anonymous"
           ) : (
             <>
@@ -612,7 +612,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               )}
             </>
           ),
-          `${getLocaleString("uploadCategory")}`: category ? (
+          [getLocaleString("uploadCategory")]: category ? (
             <Link
               href={`/categories/${slugify(category, { lower: true })}`}
               passHref
@@ -620,7 +620,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{category}</Text>
             </Link>
           ) : undefined,
-          `${getLocaleString("uploadSource")}`: source ? (
+          [getLocaleString("uploadSource")]: source ? (
             <Link
               href={`/categories/${slugify(category, {
                 lower: true,
@@ -630,8 +630,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
-          `${getLocaleString("torrDate")}` moment(torrent.created).format(`${getLocaleString("indexTime")}`),
-          "Info hash": (
+          [getLocaleString("torrDate")]: moment(torrent.created).format(`${getLocaleString("indexTime")}`),
+          [getLocaleString("reqInfohash")]: (
             <Text
               as="span"
               fontFamily="mono"
@@ -640,12 +640,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               {torrent.infoHash}
             </Text>
           ),
-          `${getLocaleString("torrDate")}`: prettyBytes(torrent.size),
-          `${getLocaleString("torrDownloads")}`: torrent.downloads,
-          `${getLocaleString("torrSeeders")}`: torrent.seeders !== undefined ? torrent.seeders : "?",
-          `${getLocaleString("torrLeechers")}`: torrent.leechers !== undefined ? torrent.leechers : "?",
-          `${getLocaleString("torrFreeleech")}`:
-            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? `${getLocaleString("torrYes")}` : `${getLocaleString("torrNo")}`,
+          [getLocaleString("torrSize")]: prettyBytes(torrent.size),
+          [getLocaleString("torrDownloads")]: torrent.downloads,
+          [getLocaleString("torrSeeders")]: torrent.seeders !== undefined ? torrent.seeders : "?",
+          [getLocaleString("torrLeechers")]: torrent.leechers !== undefined ? torrent.leechers : "?",
+          [getLocaleString("torrFreeleech")]:
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? [getLocaleString("torrYes")] : [getLocaleString("torrNo")],
         }}
       />
       <Infobox mb={5}>
