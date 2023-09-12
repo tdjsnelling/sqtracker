@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -7,9 +7,13 @@ import Box from "./Box";
 import Text from "./Text";
 import Infobox from "./Infobox";
 import MarkdownBody from "./MarkdownBody";
+import LocaleContext from "../utils/LocaleContext";
 
 const MarkdownInput = ({ defaultValue, mb, ...rest }) => {
   const [bodyValue, setBodyValue] = useState(defaultValue);
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <Box mb={mb}>
       <Input
@@ -26,7 +30,7 @@ const MarkdownInput = ({ defaultValue, mb, ...rest }) => {
             fontSize={1}
             _css={{ textTransform: "uppercase" }}
           >
-            Markdown preview
+            {getLocaleString("mdMarkdownPreview")}
           </Text>
         </Box>
         <Infobox mt={3}>
