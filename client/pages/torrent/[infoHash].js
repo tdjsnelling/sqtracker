@@ -574,7 +574,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           )}
           {userRole === "admin" && (
             <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
-              {isFreeleech ? "Unset" : "Set"} freeleech
+              {isFreeleech ? `${getLocaleString("torrUnset")}` : `${getLocaleString("torrSet")}`} {getLocaleString("torrFreeleech")}
             </Button>
           )}
           {userId ? (
@@ -599,7 +599,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       </Box>
       <Info
         items={{
-          "Uploaded by": torrent.anonymous ? (
+          `${getLocaleString("torrUploadedBy")}`: torrent.anonymous ? (
             "Anonymous"
           ) : (
             <>
@@ -612,7 +612,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               )}
             </>
           ),
-          Category: category ? (
+          `${getLocaleString("uploadCategory")}`: category ? (
             <Link
               href={`/categories/${slugify(category, { lower: true })}`}
               passHref
@@ -620,7 +620,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{category}</Text>
             </Link>
           ) : undefined,
-          Source: source ? (
+          `${getLocaleString("uploadSource")}`: source ? (
             <Link
               href={`/categories/${slugify(category, {
                 lower: true,
@@ -630,7 +630,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
-          Date: moment(torrent.created).format(`${getLocaleString("indexTime")}`),
+          `${getLocaleString("torrDate")}` moment(torrent.created).format(`${getLocaleString("indexTime")}`),
           "Info hash": (
             <Text
               as="span"
@@ -640,12 +640,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               {torrent.infoHash}
             </Text>
           ),
-          Size: prettyBytes(torrent.size),
-          Downloads: torrent.downloads,
-          Seeders: torrent.seeders !== undefined ? torrent.seeders : "?",
-          Leechers: torrent.leechers !== undefined ? torrent.leechers : "?",
-          Freeleech:
-            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? "Yes" : "No",
+          `${getLocaleString("torrDate")}`: prettyBytes(torrent.size),
+          `${getLocaleString("torrDownloads")}`: torrent.downloads,
+          `${getLocaleString("torrSeeders")}`: torrent.seeders !== undefined ? torrent.seeders : "?",
+          `${getLocaleString("torrLeechers")}`: torrent.leechers !== undefined ? torrent.leechers : "?",
+          `${getLocaleString("torrFreeleech")}`:
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? `${getLocaleString("torrYes")}` : `${getLocaleString("torrNo")}`,
         }}
       />
       <Infobox mb={5}>
@@ -782,7 +782,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           width="100%"
           mb={4}
         >
-          <Text as="h2">Grouped torrents</Text>
+          <Text as="h2">{getLocaleString("torrGroupTorr")}</Text>
           <Box display="flex" justifyContent="flex-end">
             {!!torrent.groupTorrents.length &&
               (userRole === "admin" || userId === torrent.uploadedBy._id) &&
@@ -810,7 +810,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             categories={SQ_TORRENT_CATEGORIES}
           />
         ) : (
-          <Text color="grey">There are no other torrents in this group.</Text>
+          <Text color="grey">{getLocaleString("torrThereAreNoOtherTorrGroup")}</Text>
         )}
       </Box>
       <Text as="h2" mb={4}>
