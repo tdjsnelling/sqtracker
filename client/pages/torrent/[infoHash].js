@@ -30,7 +30,7 @@ import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import { TorrentFields } from "../upload";
 import MarkdownInput from "../../components/MarkdownInput";
-import LocaleContext from "../utils/LocaleContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
@@ -612,7 +612,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               )}
             </>
           ),
-          {getLocaleString("uploadCategory")}: category ? (
+          Category: category ? (
             <Link
               href={`/categories/${slugify(category, { lower: true })}`}
               passHref
