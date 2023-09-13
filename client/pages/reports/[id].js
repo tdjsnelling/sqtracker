@@ -103,7 +103,7 @@ const Report = ({ report, token, userRole }) => {
               {report.torrent.infoHash}
             </Text>
           ),
-          {getLocaleString("accCreated")}: moment(report.torrent.created).format(`${getLocaleString("indexTime")}`),
+          [getLocaleString("accCreated")]: moment(report.torrent.created).format(`${getLocaleString("indexTime")}`),
         }}
       />
       <Text
