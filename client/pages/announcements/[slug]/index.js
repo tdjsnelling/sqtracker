@@ -19,6 +19,7 @@ import Input from "../../../components/Input";
 import Comment from "../../../components/Comment";
 import LoadingContext from "../../../utils/LoadingContext";
 import Modal from "../../../components/Modal";
+import LocaleContext from "../../../utils/LocaleContext";
 
 const Announcement = ({ announcement, token, userRole }) => {
   const [pinned, setPinned] = useState(announcement.pinned);
@@ -37,6 +38,8 @@ const Announcement = ({ announcement, token, userRole }) => {
   const router = useRouter();
 
   const [cookies] = useCookies();
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   const handleDelete = async () => {
     setLoading(true);
@@ -57,11 +60,15 @@ const Announcement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Announcement deleted successfully");
+      addNotification("success"
+        `${getLocaleString("annAnnounceDelSuccess")}`
+      );
 
       router.push("/announcements");
     } catch (e) {
-      addNotification("error", `Could not delete announcement: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("annCouldNotDelAnnounce")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -74,7 +81,7 @@ const Announcement = ({ announcement, token, userRole }) => {
     try {
       const pinRes = await fetch(
         `${SQ_API_URL}/announcements/pin/${announcement._id}/${
-          pinned ? "unpin" : "pin"
+          pinned ? [getLocaleString("annUnpin")] : [getLocaleString("annPin")]
         }`,
         {
           method: "POST",
@@ -91,14 +98,14 @@ const Announcement = ({ announcement, token, userRole }) => {
 
       addNotification(
         "success",
-        `Announcement ${pinned ? "unpinned" : "pinned"} successfully`
+        `Announcement ${pinned ? [getLocaleString("annUnpinned")] : [getLocaleString("annPinned")]} successfully`
       );
 
       setPinned((p) => !p);
     } catch (e) {
       addNotification(
         "error",
-        `Could not ${pinned ? "unpin" : "pin"} announcement: ${e.message}`
+        `${getLocaleString("userCouldNot")} ${pinned ? '${getLocaleString("annUnpin")}' : '${getLocaleString("annPin")}'} announcement: ${e.message}`
       );
       console.error(e);
     }
@@ -131,7 +138,9 @@ const Announcement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Comment posted successfully");
+      addNotification("success",
+        `${getLocaleString("reqCommentPostSuccess")}`
+      );
 
       setComments((c) => {
         const newComment = {
@@ -146,7 +155,9 @@ const Announcement = ({ announcement, token, userRole }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error", `Could not post comment: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqCommentNotPost")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -155,7 +166,7 @@ const Announcement = ({ announcement, token, userRole }) => {
 
   return (
     <>
-      <SEO title={`${announcement.title} | Announcements`} />
+      <SEO title={`${announcement.title} | ${getLocaleString("navAnnouncements")}`} />
       <Box
         display="flex"
         alignItems="center"
@@ -173,12 +184,12 @@ const Announcement = ({ announcement, token, userRole }) => {
         {userRole === "admin" && (
           <Box display="flex" alignItems="center">
             <Button onClick={handlePin} variant="secondary" mr={3}>
-              {pinned ? "Unpin" : "Pin"}
+              {pinned ? `${getLocaleString("annUnpin")}` : `${getLocaleString("annPin")}`}
             </Button>
             <Link href={`${router.asPath}/edit`} passHref>
               <a>
                 <Button variant="secondary" mr={3}>
-                  Edit
+                  {getLocaleString("torrEdit")}
                 </Button>
               </a>
             </Link>
@@ -186,14 +197,14 @@ const Announcement = ({ announcement, token, userRole }) => {
               onClick={() => setShowDeleteModal(true)}
               variant="secondary"
             >
-              Delete
+              {getLocaleString("reqDelete")}
             </Button>
           </Box>
         )}
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          Posted {moment(announcement.created).format("HH:mm Do MMM YYYY")} by{" "}
+          {getLocaleString("reqPosted")} {moment(announcement.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
           {announcement.createdBy?.username ? (
             <Link href={`/user/${announcement.createdBy.username}`} passHref>
               <a>{announcement.createdBy.username}</a>
@@ -204,8 +215,8 @@ const Announcement = ({ announcement, token, userRole }) => {
         </Text>
         {announcement.updated && (
           <Text color="grey" mt={3}>
-            Last updated{" "}
-            {moment(announcement.updated).format("HH:mm Do MMM YYYY")}
+            {getLocaleString("annLastUpdated")}{" "}
+            {moment(announcement.updated).format(`${getLocaleString("indexTime")}`)}
           </Text>
         )}
       </Box>
@@ -218,16 +229,16 @@ const Announcement = ({ announcement, token, userRole }) => {
       </Box>
       <Box>
         <Text as="h2" mb={4}>
-          Comments
+          {getLocaleString("userComments")}
         </Text>
         <form onSubmit={handleComment}>
           <Input
             ref={commentInputRef}
             name="comment"
-            label="Post a comment"
+            label={getLocaleString("reqPostAComment")}
             rows="5"
             placeholder={
-              !announcement.allowComments ? "Comments disabled." : undefined
+              !announcement.allowComments ? `${getLocaleString("annCommentsDisabled")}` : undefined
             }
             disabled={!announcement.allowComments}
             mb={4}
@@ -237,7 +248,7 @@ const Announcement = ({ announcement, token, userRole }) => {
             disabled={!announcement.allowComments}
             ml="auto"
           >
-            Post
+            {getLocaleString("reqPost")}
           </Button>
         </form>
         {!!comments?.length && (
@@ -254,8 +265,7 @@ const Announcement = ({ announcement, token, userRole }) => {
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
           <Text mb={5}>
-            Are you sure you want to delete this announcement? This cannot be
-            undone.
+            {getLocaleString("annAreYouSureYouWantToDelThisannounceQ")}
           </Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
@@ -263,10 +273,10 @@ const Announcement = ({ announcement, token, userRole }) => {
               variant="secondary"
               mr={3}
             >
-              Cancel
+              {getLocaleString("accCancel")}
             </Button>
             <Button onClick={handleDelete} variant="danger">
-              Delete
+              {getLocaleString("reqDelete")}
             </Button>
           </Box>
         </Modal>

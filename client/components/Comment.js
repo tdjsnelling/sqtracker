@@ -34,11 +34,11 @@ const Comment = ({ comment }) => {
       >
         {comment.user?.username ? (
           <Text color="grey" icon={CommentIcon} mb={[2, 0]}>
-            Comment by{" "}
+            {getLocaleString("comCommentBy")}{" "}
             <Link href={`/user/${comment.user.username}`} passHref>
               <Text as="a">{comment.user.username}</Text>
             </Link>{" "}
-            on{" "}
+            {getLocaleString("comOn")}{" "}
             {comment.type === "torrent" && (
               <>
                 {comment.torrent ? (
