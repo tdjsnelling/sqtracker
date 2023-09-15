@@ -27,10 +27,10 @@ const Report = ({ report, token, userRole }) => {
 
   const router = useRouter();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   const handleResolve = async () => {
     setLoading(true);
-
-  const { getLocaleString } = useContext(LocaleContext);
 
     try {
       const resolveRes = await fetch(
@@ -80,7 +80,7 @@ const Report = ({ report, token, userRole }) => {
         <Button onClick={handleResolve}>{getLocaleString("repMarkSolved")}</Button>
       </Box>
       <Text color="grey" mb={5}>
-        {getLocaleString("repRep")} {moment(report.created).format(`${getLocaleString("indexTime")}`)} by{" "}
+        {getLocaleString("repRep")} {moment(report.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
         <Link href={`/user/${report.reportedBy.username}`} passHref>
           <a>{report.reportedBy.username}</a>
         </Link>
@@ -88,13 +88,13 @@ const Report = ({ report, token, userRole }) => {
       <Info
         title={getLocaleString("repTorrDetail")}
         items={{
-          Name: (
+          [getLocaleString("uploadName")]: (
             <Link href={`/torrent/${report.torrent.infoHash}`} passHref>
               <a>{report.torrent.name}</a>
             </Link>
           ),
-          Description: report.torrent.description,
-          "Info hash": (
+          [getLocaleString("uploadDescription")]: report.torrent.description,
+          [getLocaleString("reqInfohash")]: (
             <Text
               as="span"
               fontFamily="mono"
