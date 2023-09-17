@@ -876,7 +876,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               >
                 {getLocaleString("accCancel")}
               </Button>
-              <Button>Save changes</Button>
+              <Button>{getLocaleString("wikiSaveChanges")}</Button>
             </Box>
           </form>
         </Modal>
