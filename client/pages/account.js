@@ -28,6 +28,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
   const [amount, setAmount] = useState(1);
   const unavailable = cost === 0;
   const cannotAfford = amount * cost > wallet;
+  const { getLocaleString } = useContext(LocaleContext);
   return (
     <Box
       display="flex"
@@ -47,7 +48,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <Text color="grey" mr={4}>
             {unavailable
-              ? "Not available to buy"
+              ? [getLocaleString("accNotAvailableToBuy")]
               : `Cost: ${amount * cost} points`}
           </Text>
           <Input
@@ -61,7 +62,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
             disabled={unavailable || cannotAfford}
             mr={3}
           />
-          <Button disabled={unavailable || cannotAfford}>Buy</Button>
+          <Button disabled={unavailable || cannotAfford}>{getLocaleString("accBuy")}</Button>
         </Box>
       </Box>
     </Box>
