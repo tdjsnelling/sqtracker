@@ -310,7 +310,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
           value={locale}
           onChange={(e) => setLocale(e.target.value)}
         >
-          {locales.map((l) => (
+          {locales.sort().map((l) => (
             <option key={`locale-${l}`} value={l}>
               {l.toUpperCase()}
             </option>

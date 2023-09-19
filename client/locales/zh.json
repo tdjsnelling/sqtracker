@@ -1,0 +1,22 @@
+{
+  "poweredBy": "Powered by",
+  "logIn": "登录",
+  "register": "注册",
+  "email": "电子邮箱",
+  "username": "用户名",
+  "usernameRules": "只能由字母、数字和“.”组成",
+  "password": "密码",
+  "totp": "二步验证码",
+  "resetPassword": "忘记密码",
+  "newPassword": "新密码",
+  "welcomeBack": "欢迎回来",
+  "logInFailed": "登录失败",
+  "welcome": "欢迎",
+  "registerFailed": "注册失败",
+  "registrationClosed": "站点关闭注册",
+  "passwordResetRequestSuccess": "如果有使用该电子邮箱的帐户存在，您将收到一封邮件。",
+  "passwordResetRequestFailed": "无法进行密码重置操作，请确认您的信息填写正确后重试。",
+  "passwordResetSuccess": "密码重置成功",
+  "passwordResetFailed": "密码重置失败",
+  "tokenError": "token错误"
+}

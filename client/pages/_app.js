@@ -28,7 +28,7 @@ import { NotificationsProvider } from "../components/Notifications";
 import Text from "../components/Text";
 import LoadingContext from "../utils/LoadingContext";
 import LocaleContext from "../utils/LocaleContext";
-import locales from "../locales.json";
+import locales from "../locales";
 
 const getThemeColours = (themeName, customTheme = {}) => {
   switch (themeName) {
@@ -360,7 +360,9 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                                 ml={1}
                                 mr={2}
                               >
-                                {userStats.ratio === -1 ? "N/A" : userStats.ratio}
+                                {userStats.ratio === -1
+                                  ? "N/A"
+                                  : userStats.ratio}
                               </Text>
                             </>
                           )}
