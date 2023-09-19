@@ -28,6 +28,8 @@ const Stats = ({ stats, userRole }) => {
     return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
+  console.log(stats);
+
   return (
     <>
       <SEO title={getLocaleString("statTrackerStat")} />
@@ -36,12 +38,10 @@ const Stats = ({ stats, userRole }) => {
       </Text>
       <StyledTable>
         {Object.entries(stats).map(([key, value]) => {
-          let readableKey = key.replace(/([A-Z])/g, " $1").toLowerCase();
-          readableKey =
-            readableKey.charAt(0).toUpperCase() + readableKey.slice(1);
+          const localeKey = key.charAt(0).toUpperCase() + key.slice(1);
           return (
             <tr key={`stat-${key}`}>
-              <td>{readableKey}</td>
+              <td>{getLocaleString(`stat${localeKey}`)}</td>
               <td>{value}</td>
             </tr>
           );

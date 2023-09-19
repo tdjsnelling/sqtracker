@@ -60,13 +60,12 @@ const Announcement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success"
-        `${getLocaleString("annAnnounceDelSuccess")}`
-      );
+      addNotification("success"`${getLocaleString("annAnnounceDelSuccess")}`);
 
       router.push("/announcements");
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("annCouldNotDelAnnounce")}: ${e.message}`
       );
       console.error(e);
@@ -81,7 +80,7 @@ const Announcement = ({ announcement, token, userRole }) => {
     try {
       const pinRes = await fetch(
         `${SQ_API_URL}/announcements/pin/${announcement._id}/${
-          pinned ? [getLocaleString("annUnpin")] : [getLocaleString("annPin")]
+          pinned ? "unpin" : "pin"
         }`,
         {
           method: "POST",
@@ -98,14 +97,18 @@ const Announcement = ({ announcement, token, userRole }) => {
 
       addNotification(
         "success",
-        `Announcement ${pinned ? [getLocaleString("annUnpinned")] : [getLocaleString("annPinned")]} successfully`
+        `Announcement ${
+          pinned ? getLocaleString("annUnpinned") : getLocaleString("annPinned")
+        } successfully`
       );
 
       setPinned((p) => !p);
     } catch (e) {
       addNotification(
         "error",
-        `${getLocaleString("userCouldNot")} ${pinned ? '${getLocaleString("annUnpin")}' : '${getLocaleString("annPin")}'} announcement: ${e.message}`
+        `${getLocaleString("userCouldNot")} ${
+          pinned ? getLocaleString("annUnpin") : getLocaleString("annPin")
+        } announcement: ${e.message}`
       );
       console.error(e);
     }
@@ -138,9 +141,7 @@ const Announcement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("reqCommentPostSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("reqCommentPostSuccess")}`);
 
       setComments((c) => {
         const newComment = {
@@ -155,7 +156,8 @@ const Announcement = ({ announcement, token, userRole }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCommentNotPost")}: ${e.message}`
       );
       console.error(e);
@@ -166,7 +168,9 @@ const Announcement = ({ announcement, token, userRole }) => {
 
   return (
     <>
-      <SEO title={`${announcement.title} | ${getLocaleString("navAnnouncements")}`} />
+      <SEO
+        title={`${announcement.title} | ${getLocaleString("navAnnouncements")}`}
+      />
       <Box
         display="flex"
         alignItems="center"
@@ -184,7 +188,9 @@ const Announcement = ({ announcement, token, userRole }) => {
         {userRole === "admin" && (
           <Box display="flex" alignItems="center">
             <Button onClick={handlePin} variant="secondary" mr={3}>
-              {pinned ? `${getLocaleString("annUnpin")}` : `${getLocaleString("annPin")}`}
+              {pinned
+                ? `${getLocaleString("annUnpin")}`
+                : `${getLocaleString("annPin")}`}
             </Button>
             <Link href={`${router.asPath}/edit`} passHref>
               <a>
@@ -204,7 +210,11 @@ const Announcement = ({ announcement, token, userRole }) => {
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          {getLocaleString("reqPosted")} {moment(announcement.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
+          {getLocaleString("reqPosted")}{" "}
+          {moment(announcement.created).format(
+            `${getLocaleString("indexTime")}`
+          )}{" "}
+          {getLocaleString("reqBy")}{" "}
           {announcement.createdBy?.username ? (
             <Link href={`/user/${announcement.createdBy.username}`} passHref>
               <a>{announcement.createdBy.username}</a>
@@ -216,7 +226,9 @@ const Announcement = ({ announcement, token, userRole }) => {
         {announcement.updated && (
           <Text color="grey" mt={3}>
             {getLocaleString("annLastUpdated")}{" "}
-            {moment(announcement.updated).format(`${getLocaleString("indexTime")}`)}
+            {moment(announcement.updated).format(
+              `${getLocaleString("indexTime")}`
+            )}
           </Text>
         )}
       </Box>
@@ -238,7 +250,9 @@ const Announcement = ({ announcement, token, userRole }) => {
             label={getLocaleString("reqPostAComment")}
             rows="5"
             placeholder={
-              !announcement.allowComments ? `${getLocaleString("annCommentsDisabled")}` : undefined
+              !announcement.allowComments
+                ? `${getLocaleString("annCommentsDisabled")}`
+                : undefined
             }
             disabled={!announcement.allowComments}
             mb={4}

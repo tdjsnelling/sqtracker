@@ -202,13 +202,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("torrTorrEditSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("torrTorrEditSuccess")}`);
 
       window.location.reload();
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldEditTorr")}: ${e.message}`
       );
       console.error(e);
@@ -236,13 +235,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("torrTorrDelSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("torrTorrDelSuccess")}`);
 
       router.push("/");
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldNotDelTorr")}: ${e.message}`
       );
       console.error(e);
@@ -276,9 +274,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("reqCommentPostSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("reqCommentPostSuccess")}`);
 
       setComments((c) => {
         const newComment = {
@@ -293,7 +289,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCommentNotPost")}: ${e.message}`
       );
       console.error(e);
@@ -345,11 +342,10 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("torrVoteSubmitSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("torrVoteSubmitSuccess")}`);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldNotSubmitVote")}: ${e.message}`
       );
       console.error(e);
@@ -383,13 +379,15 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("torrReportSubmitSuccess")}`
       );
 
       setShowReportModal(false);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldNotSubmitReport")}: ${e.message}`
       );
       console.error(e);
@@ -417,13 +415,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("torrFLToggleSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("torrFLToggleSuccess")}`);
 
       setIsFreeleech((f) => !f);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldNotToggleFL")}: ${e.message}`
       );
       console.error(e);
@@ -451,7 +448,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("torrTorrRemFromGroupSuccess")}`
       );
 
@@ -488,12 +486,15 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
       addNotification(
         "success",
-        `${getLocaleString("torrTorrent")} ${bookmarked ? "removed from" : "added to"} bookmarks`
+        `${getLocaleString("torrTorrent")} ${
+          bookmarked ? "removed from" : "added to"
+        } bookmarks`
       );
 
       setBookmarked((b) => !b);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("torrCouldNotBookmarkTorr")}: ${e.message}`
       );
       console.error(e);
@@ -574,7 +575,10 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           )}
           {userRole === "admin" && (
             <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
-              {isFreeleech ? `${getLocaleString("torrUnset")}` : `${getLocaleString("torrSet")}`} {getLocaleString("torrFreeleech")}
+              {isFreeleech
+                ? `${getLocaleString("torrUnset")}`
+                : `${getLocaleString("torrSet")}`}{" "}
+              {getLocaleString("torrFreeleech")}
             </Button>
           )}
           {userId ? (
@@ -630,7 +634,9 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
-          [getLocaleString("torrDate")]: moment(torrent.created).format(`${getLocaleString("indexTime")}`),
+          [getLocaleString("torrDate")]: moment(torrent.created).format(
+            `${getLocaleString("indexTime")}`
+          ),
           [getLocaleString("reqInfohash")]: (
             <Text
               as="span"
@@ -642,10 +648,14 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           ),
           [getLocaleString("torrSize")]: prettyBytes(torrent.size),
           [getLocaleString("torrDownloads")]: torrent.downloads,
-          [getLocaleString("torrSeeders")]: torrent.seeders !== undefined ? torrent.seeders : "?",
-          [getLocaleString("torrLeechers")]: torrent.leechers !== undefined ? torrent.leechers : "?",
+          [getLocaleString("torrSeeders")]:
+            torrent.seeders !== undefined ? torrent.seeders : "?",
+          [getLocaleString("torrLeechers")]:
+            torrent.leechers !== undefined ? torrent.leechers : "?",
           [getLocaleString("torrFreeleech")]:
-            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? [getLocaleString("torrYes")] : [getLocaleString("torrNo")],
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true
+              ? [getLocaleString("torrYes")]
+              : [getLocaleString("torrNo")],
         }}
       />
       <Infobox mb={5}>
@@ -810,7 +820,9 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             categories={SQ_TORRENT_CATEGORIES}
           />
         ) : (
-          <Text color="grey">{getLocaleString("torrThereAreNoOtherTorrGroup")}</Text>
+          <Text color="grey">
+            {getLocaleString("torrThereAreNoOtherTorrGroup")}
+          </Text>
         )}
       </Box>
       <Text as="h2" mb={4}>
@@ -850,7 +862,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               mb={4}
               required
             />
-            <Button width="100%">Report</Button>
+            <Button width="100%">{getLocaleString("torrReport")}</Button>
           </form>
         </Modal>
       )}
@@ -883,9 +895,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       )}
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
-          <Text mb={5}>
-            {getLocaleString("torrSureDeleteTorr")}
-          </Text>
+          <Text mb={5}>{getLocaleString("torrSureDeleteTorr")}</Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
               onClick={() => setShowDeleteModal(false)}

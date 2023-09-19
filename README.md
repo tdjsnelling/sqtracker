@@ -121,10 +121,12 @@ The best place to start is to copy the `en.json` file and work through it, trans
 
 ### Existing translations
 
-* English (default)
-* Russian: thanks to @smlinux
-* German (incomplete): thanks to @MikeMatau
-* Simplified Chinese (incomplete): thanks to @0EAC
+| Language           | Complete (estimate) | Contributed by                             |
+|--------------------|---------------------|--------------------------------------------|
+| English            | 100%                |                                            |
+| Russian            | 95%                 | [@smlinux](https://github.com/smlinux)     |
+| German             | 15%                 | [@MikeMatau](https://github.com/MikeMatau) |
+| Simplified Chinese | 15%                 | [@0EAC](https://github.com/0EAC)           |
 
 ## Screenshots
 
