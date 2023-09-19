@@ -17,7 +17,13 @@ import LoadingContext from "../../utils/LoadingContext";
 import Modal from "../../components/Modal";
 import { WikiFields } from "./new";
 
-const Wiki = ({ page, token, userRole, slug }) => {
+const sortSlug = (a, b) => {
+  if (a.slug > b.slug) return 1;
+  if (a.slug < b.slug) return -1;
+  return 0;
+};
+
+const Wiki = ({ page, allPages, token, userRole, slug }) => {
   const [editing, setEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -81,6 +87,7 @@ const Wiki = ({ page, token, userRole, slug }) => {
             slug: page.slug === "/" ? "/" : form.get("slug"),
             title: form.get("title"),
             body: form.get("body"),
+            public: !!form.get("public"),
           }),
         }
       );
@@ -161,24 +168,55 @@ const Wiki = ({ page, token, userRole, slug }) => {
             </Text>
           </Box>
           {!editing ? (
-            <MarkdownBody>
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                components={{
-                  a({ href, ...props }) {
-                    return href.startsWith("http") ? (
-                      <a href={href} target="_blank" {...props} />
-                    ) : (
-                      <Link href={href} passHref>
-                        <a {...props} />
-                      </Link>
-                    );
-                  },
-                }}
+            <Box
+              display="grid"
+              gridTemplateColumns={["1fr", "auto 200px"]}
+              gridGap={5}
+              alignItems="start"
+            >
+              <MarkdownBody>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    a({ href, ...props }) {
+                      return href.startsWith("http") ? (
+                        <a href={href} target="_blank" {...props} />
+                      ) : (
+                        <Link href={href} passHref>
+                          <a {...props} />
+                        </Link>
+                      );
+                    },
+                  }}
+                >
+                  {page.body}
+                </ReactMarkdown>
+              </MarkdownBody>
+              <Box
+                bg="sidebar"
+                border="1px solid"
+                borderColor="border"
+                borderRadius={1}
+                p={4}
+                _css={{ order: [-1, "unset"] }}
               >
-                {page.body}
-              </ReactMarkdown>
-            </MarkdownBody>
+                <Text
+                  fontWeight={600}
+                  fontSize={1}
+                  mb={3}
+                  _css={{ textTransform: "uppercase" }}
+                >
+                  Pages
+                </Text>
+                {allPages.sort(sortSlug).map((p) => (
+                  <Link key={`page-${p.slug}`} href={`/wiki${p.slug}`} passHref>
+                    <Text as="a" display="block">
+                      {p.title}
+                    </Text>
+                  </Link>
+                ))}
+              </Box>
+            </Box>
           ) : (
             <form onSubmit={handleEdit}>
               <WikiFields values={page} />
@@ -224,8 +262,8 @@ const Wiki = ({ page, token, userRole, slug }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders, query: { slug } }) => {
-    if (!token) return { props: {} };
+  async ({ token, fetchHeaders, isPublicAccess, query: { slug } }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const parsedSlug = slug?.length ? slug.join("/") : "";
 
@@ -234,7 +272,7 @@ export const getServerSideProps = withAuthServerSideProps(
       serverRuntimeConfig: { SQ_JWT_SECRET },
     } = getConfig();
 
-    const { role } = jwt.verify(token, SQ_JWT_SECRET);
+    const { role } = token ? jwt.verify(token, SQ_JWT_SECRET) : { role: null };
 
     try {
       const wikiRes = await fetch(`${SQ_API_URL}/wiki/${parsedSlug}`, {
@@ -246,13 +284,16 @@ export const getServerSideProps = withAuthServerSideProps(
       ) {
         throw "banned";
       }
-      const page = await wikiRes.json();
-      return { props: { page, token, userRole: role, slug: parsedSlug } };
+      const { page, allPages } = await wikiRes.json();
+      return {
+        props: { page, allPages, token, userRole: role, slug: parsedSlug },
+      };
     } catch (e) {
       if (e === "banned") throw "banned";
       return { props: { token, userRole: role, slug: parsedSlug } };
     }
-  }
+  },
+  true
 );
 
 export default Wiki;

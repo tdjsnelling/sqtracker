@@ -4,6 +4,7 @@ import User from "../schema/user";
 import Torrent from "../schema/torrent";
 import Progress from "../schema/progress";
 import { getUserRatio } from "../utils/ratio";
+import { getUserHitNRuns } from "../utils/hitnrun";
 
 export const BYTES_GB = 1e9;
 
@@ -11,7 +12,6 @@ export const binaryToHex = (b) => Buffer.from(b, "binary").toString("hex");
 export const hexToBinary = (h) => Buffer.from(h, "hex").toString("binary");
 
 const handleAnnounce = async (req, res) => {
-  //console.log(req)
   const userId = req.originalUrl.split("/")[2];
   req.userId = userId;
 
@@ -58,17 +58,35 @@ const handleAnnounce = async (req, res) => {
   }
 
   const { ratio } = await getUserRatio(user._id);
+  const hitnruns = await getUserHitNRuns(user._id);
 
   console.log(`[DEBUG] user ratio: ${ratio}`);
+  console.log(`[DEBUG] user hit'n'runs: ${hitnruns}`);
 
-  // if users ratio is below the minimum threshold and they are trying to download, deny announce
+  // if users ratio is below the minimum threshold, and they are trying to download, deny announce
   if (
+    Number(process.env.SQ_MINIMUM_RATIO) !== -1 &&
     ratio < Number(process.env.SQ_MINIMUM_RATIO) &&
     ratio !== -1 &&
     Number(params.left > 0)
   ) {
     const response = bencode.encode({
       "failure reason": `Announce denied: Ratio is below minimum threshold ${process.env.SQ_MINIMUM_RATIO}.`,
+      peers: [],
+      peers6: [],
+    });
+    res.send(response);
+    return;
+  }
+
+  // if user has committed more than the allowed number of hit'n'runs, and they are trying to download, deny announce
+  if (
+    Number(process.env.SQ_MAXIMUM_HIT_N_RUNS) !== -1 &&
+    hitnruns >= Number(process.env.SQ_MAXIMUM_HIT_N_RUNS) &&
+    Number(params.left > 0)
+  ) {
+    const response = bencode.encode({
+      "failure reason": `Announce denied: You have committed ${process.env.SQ_MAXIMUM_HIT_N_RUNS} or more hit'n'runs.`,
       peers: [],
       peers6: [],
     });
@@ -121,16 +139,6 @@ const handleAnnounce = async (req, res) => {
       { $inc: { bonusPoints: deltaGb * process.env.SQ_BP_EARNED_PER_GB } }
     );
   }
-
-  console.log({
-    bytes,
-    uploaded,
-    alreadyUploadedSession,
-    uploadDeltaSession,
-    downloaded,
-    alreadyDownloadedSession,
-    downloadDeltaSession,
-  });
 
   await Progress.findOneAndUpdate(
     { userId: user._id, infoHash },

@@ -32,8 +32,12 @@ module.exports = {
     // Admins can still see who uploaded anonymously, but other users cannot.
     SQ_ALLOW_ANONYMOUS_UPLOADS: false,
 
-    // Minimum allowed ratio. Below this users will not be able to download. Minimum 0.
+    // Minimum allowed ratio. Below this users will not be able to download. Set to -1 to disable.
     SQ_MINIMUM_RATIO: 0.75,
+
+    // Maximum allowed hit'n'runs. Above this users will not be allowed to download. Set to -1 to disable.
+    // A user has committed a hit'n'run when a torrent is fully downloaded and not seeded to a 1:1 ratio.
+    SQ_MAXIMUM_HIT_N_RUNS: 1,
 
     // A map of torrent categories that can be selected when uploading.
     // Each has an array of zero or more sources available within that category.
@@ -62,8 +66,12 @@ module.exports = {
 
     // Whether torrent pages can be viewed by unregistered users.
     // If true, only logged-in users will be able to download/interact, but anyone (search engines included) will be able to view/read torrent info.
+    // Non-logged-in users will also be able to browse category/tag pages and wiki pages that have been set to public.
     // Enable if you want torrents to be indexed to help search traffic.
     SQ_ALLOW_UNREGISTERED_VIEW: false,
+
+    // An array of blacklisted file extensions. Torrents containing files with these extensions will fail to upload.
+    SQ_EXTENSION_BLACKLIST: ["exe"],
 
     // The URL of your tracker site.
     SQ_BASE_URL: "https://sqtracker.dev",

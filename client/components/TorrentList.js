@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import moment from "moment";
 import slugify from "slugify";
+import qs from "qs";
 import { ListUl } from "@styled-icons/boxicons-regular/ListUl";
 import { Upload } from "@styled-icons/boxicons-regular/Upload";
 import { Download } from "@styled-icons/boxicons-regular/Download";
+import { File } from "@styled-icons/boxicons-regular/File";
 import { Chat } from "@styled-icons/boxicons-solid/Chat";
 import { ChevronsLeft } from "@styled-icons/boxicons-solid/ChevronsLeft";
 import { ChevronLeft } from "@styled-icons/boxicons-solid/ChevronLeft";
@@ -17,27 +19,61 @@ import Text from "./Text";
 import Box from "./Box";
 import Button from "./Button";
 
-const TorrentList = ({ torrents = [], categories, total }) => {
+const pageSize = 25;
+
+const TorrentList = ({
+  torrents = [],
+  setTorrents,
+  categories,
+  total,
+  fetchPath,
+  token,
+}) => {
   const {
     publicRuntimeConfig: { SQ_SITE_WIDE_FREELEECH },
   } = getConfig();
 
   const router = useRouter();
   const {
-    asPath,
-    query: { page: pageParam },
+    query: { page: pageParam, sort },
   } = router;
 
   const page = pageParam ? parseInt(pageParam) - 1 : 0;
 
-  const maxPage = Math.floor(total / 25);
+  const maxPage = total > pageSize ? Math.floor(total / pageSize) : 0;
   const canPrevPage = page > 0;
   const canNextPage = page < maxPage;
 
   const setPage = (number) => {
-    if (number === 0) router.push(asPath.split("?")[0]);
-    else router.push(`${asPath.split("?")[0]}?page=${number + 1}`);
+    const query = qs.parse(window.location.search.replace("?", ""));
+    if (number === 0) delete query.page;
+    else query.page = number + 1;
+    router.push(
+      Object.keys(query).length
+        ? `${window.location.pathname}?${qs.stringify(query)}`
+        : window.location.pathname
+    );
   };
+
+  useEffect(() => {
+    const fetchTorrents = async () => {
+      try {
+        const searchRes = await fetch(
+          `${fetchPath}?${qs.stringify(router.query)}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const results = await searchRes.json();
+        setTorrents(results.torrents);
+      } catch (e) {}
+    };
+    if (fetchPath && token) fetchTorrents();
+  }, [sort, page]);
 
   return (
     <>
@@ -94,6 +130,7 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             ),
             gridWidth: "100px",
             rightAlign: true,
+            sortable: !!token,
           },
           {
             header: "Leechers",
@@ -108,6 +145,22 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             ),
             gridWidth: "100px",
             rightAlign: true,
+            sortable: !!token,
+          },
+          {
+            header: "Downloads",
+            accessor: "downloads",
+            cell: ({ value }) => (
+              <Text
+                icon={File}
+                iconTextWrapperProps={{ justifyContent: "flex-end" }}
+              >
+                {value || 0}
+              </Text>
+            ),
+            gridWidth: "115px",
+            rightAlign: true,
+            sortable: !!token,
           },
           {
             header: "Comments",
@@ -120,8 +173,9 @@ const TorrentList = ({ torrents = [], categories, total }) => {
                 {value || 0}
               </Text>
             ),
-            gridWidth: "100px",
+            gridWidth: "110px",
             rightAlign: true,
+            sortable: !!token,
           },
           {
             header: "Uploaded",
@@ -131,6 +185,7 @@ const TorrentList = ({ torrents = [], categories, total }) => {
             ),
             gridWidth: "140px",
             rightAlign: true,
+            sortable: !!token,
           },
         ]}
       />

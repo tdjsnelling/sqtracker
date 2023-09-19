@@ -1,6 +1,15 @@
+import slugify from "slugify";
 import Wiki from "../schema/wiki";
 
 const slugRegex = /^\/([a-z0-9-_\/])*/i;
+
+const formatSlug = (slug) => {
+  if (!slug.startsWith("/")) slug = `/${slug}`;
+  if (slug.endsWith("/") && slug !== "/") slug = slug.slice(0, -1);
+  const split = slug.split("/");
+  const slugified = split.map((token) => slugify(token, { lower: true }));
+  return slugified.join("/");
+};
 
 export const createWiki = async (req, res, next) => {
   if (req.body.slug && req.body.title && req.body.body) {
@@ -12,14 +21,17 @@ export const createWiki = async (req, res, next) => {
         return;
       }
 
-      const validSlug = slugRegex.test(req.body.slug);
+      let { slug } = req.body;
+      slug = formatSlug(slug);
+
+      const validSlug = slugRegex.test(slug);
 
       if (!validSlug) {
         res.status(400).send("That is not a valid path");
         return;
       }
 
-      const existing = await Wiki.findOne({ slug: req.body.slug }).lean();
+      const existing = await Wiki.findOne({ slug }).lean();
 
       if (existing) {
         res
@@ -31,15 +43,16 @@ export const createWiki = async (req, res, next) => {
       }
 
       const wiki = new Wiki({
-        slug: req.body.slug,
+        slug,
         title: req.body.title,
         body: req.body.body,
         createdBy: req.userId,
+        public: !!req.body.public,
         created: Date.now(),
       });
 
       await wiki.save();
-      res.send(req.body.slug);
+      res.send(slug);
     } catch (e) {
       next(e);
     }
@@ -52,7 +65,7 @@ export const getWiki = async (req, res, next) => {
   try {
     const slug = req.params[0];
 
-    const [page] = await Wiki.aggregate([
+    let [page] = await Wiki.aggregate([
       {
         $match: { slug },
       },
@@ -86,7 +99,19 @@ export const getWiki = async (req, res, next) => {
       return;
     }
 
-    res.json(page);
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId && !page.public) {
+      page = null;
+    }
+
+    const query = {};
+
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId) {
+      query.public = true;
+    }
+
+    const allPages = await Wiki.find(query, { slug: 1, title: 1 }).lean();
+
+    res.json({ page, allPages });
   } catch (e) {
     next(e);
   }
@@ -130,15 +155,18 @@ export const updateWiki = async (req, res, next) => {
         return;
       }
 
-      const validSlug = slugRegex.test(req.body.slug);
+      let { slug } = req.body;
+      slug = formatSlug(slug);
+
+      const validSlug = slugRegex.test(slug);
 
       if (!validSlug) {
         res.status(400).send("That is not a valid path");
         return;
       }
 
-      if (req.body.slug !== existing.slug) {
-        const existingSlug = await Wiki.findOne({ slug: req.body.slug }).lean();
+      if (slug !== existing.slug) {
+        const existingSlug = await Wiki.findOne({ slug }).lean();
 
         if (existingSlug) {
           res
@@ -154,9 +182,10 @@ export const updateWiki = async (req, res, next) => {
         { _id: req.params.wikiId },
         {
           $set: {
-            slug: req.body.slug,
+            slug,
             title: req.body.title,
             body: req.body.body,
+            public: !!req.body.public,
             updated: Date.now(),
           },
         }

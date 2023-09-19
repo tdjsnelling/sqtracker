@@ -5,6 +5,7 @@ const Wiki = new mongoose.Schema({
   slug: String,
   body: String,
   createdBy: mongoose.Schema.ObjectId,
+  public: Boolean,
   created: Number,
   updated: Number,
 });

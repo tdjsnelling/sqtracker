@@ -18,6 +18,7 @@ import { LoaderAlt } from "@styled-icons/boxicons-regular/LoaderAlt";
 import { Sort } from "@styled-icons/boxicons-regular/Sort";
 import { CaretUp } from "@styled-icons/boxicons-regular/CaretUp";
 import { CaretDown } from "@styled-icons/boxicons-regular/CaretDown";
+import { Run } from "@styled-icons/boxicons-regular/Run";
 import { Award } from "@styled-icons/boxicons-regular/Award";
 import Navigation from "../components/Navigation";
 import Box from "../components/Box";
@@ -179,6 +180,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       SQ_SITE_WIDE_FREELEECH,
       SQ_API_URL,
       SQ_MINIMUM_RATIO,
+      SQ_MAXIMUM_HIT_N_RUNS,
     },
   } = getConfig();
 
@@ -344,20 +346,24 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                           alignItems="center"
                           color="grey"
                         >
-                          <Sort size={14} />
-                          <Text
-                            color={
-                              userStats.ratio !== -1 &&
-                              userStats.ratio < SQ_MINIMUM_RATIO
-                                ? "error"
-                                : "grey"
-                            }
-                            fontSize={0}
-                            ml={1}
-                            mr={2}
-                          >
-                            {userStats.ratio === -1 ? "N/A" : userStats.ratio}
-                          </Text>
+                          {Number(SQ_MINIMUM_RATIO) !== -1 && (
+                            <>
+                              <Sort size={14} />
+                              <Text
+                                color={
+                                  userStats.ratio !== -1 &&
+                                  userStats.ratio < SQ_MINIMUM_RATIO
+                                    ? "error"
+                                    : "grey"
+                                }
+                                fontSize={0}
+                                ml={1}
+                                mr={2}
+                              >
+                                {userStats.ratio === -1 ? "N/A" : userStats.ratio}
+                              </Text>
+                            </>
+                          )}
                           <CaretUp size={16} />
                           <Text fontSize={0} ml={0} mr={2}>
                             {prettyBytes(userStats.up ?? 0)}
@@ -366,6 +372,23 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                           <Text fontSize={0} ml={0} mr={2}>
                             {prettyBytes(userStats.down ?? 0)}
                           </Text>
+                          {Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 && (
+                            <>
+                              <Run size={16} />
+                              <Text
+                                color={
+                                  userStats.hitnruns > SQ_MAXIMUM_HIT_N_RUNS
+                                    ? "error"
+                                    : "grey"
+                                }
+                                fontSize={0}
+                                ml={1}
+                                mr={2}
+                              >
+                                {userStats.hitnruns ?? 0}
+                              </Text>
+                            </>
+                          )}
                           <Award size={16} />
                           <Text fontSize={0} ml={0} mr={4}>
                             {userStats.bp ?? 0} BP

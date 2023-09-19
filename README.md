@@ -31,7 +31,8 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
 * Upload / download tracking
   * Track how much content each user has uploaded / downloaded
   * Track ratios
-  * Limit up / downloading per user based on ratio
+  * Track hit'n'runs
+  * Limit downloading per user based on ratio, HnRs, or both
   * Award bonus points based on upload
 * User interaction
   * Commenting on torrents and announcements
@@ -51,10 +52,11 @@ Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and 
 
 The roadmap is still being expanded.
 
-* Forum support
+* Forum support & direct messages
 * Better profiles (avatar, bio etc.)
 * Premoderation option
 * Anti-cheat
+* Localisation (ongoing)
   
 ## Configuration
 

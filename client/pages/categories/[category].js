@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import getConfig from "next/config";
 import qs from "qs";
@@ -8,14 +8,16 @@ import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import TorrentList from "../../components/TorrentList";
 
-const Category = ({ results }) => {
+const Category = ({ results, token }) => {
+  const [torrents, setTorrents] = useState(results?.torrents ?? []);
+
   const router = useRouter();
   const {
     query: { category: categorySlug },
   } = router;
 
   const {
-    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_API_URL },
   } = getConfig();
 
   const category = Object.keys(SQ_TORRENT_CATEGORIES).find(
@@ -28,11 +30,14 @@ const Category = ({ results }) => {
       <Text as="h1" mb={5}>
         Browse {category}
       </Text>
-      {results?.torrents.length ? (
+      {torrents.length ? (
         <TorrentList
-          torrents={results.torrents}
+          torrents={torrents}
+          setTorrents={setTorrents}
           categories={SQ_TORRENT_CATEGORIES}
           total={results.total}
+          fetchPath={`${SQ_API_URL}/torrent/search`}
+          token={token}
         />
       ) : (
         <Text color="grey">No results.</Text>
@@ -45,9 +50,10 @@ export const getServerSideProps = withAuthServerSideProps(
   async ({
     token,
     fetchHeaders,
+    isPublicAccess,
     query: { category, source, page: pageParam },
   }) => {
-    if (!token) return { props: {} };
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
@@ -74,12 +80,13 @@ export const getServerSideProps = withAuthServerSideProps(
         throw "banned";
       }
       const results = await searchRes.json();
-      return { props: { results } };
+      return { props: { results, token } };
     } catch (e) {
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Category;

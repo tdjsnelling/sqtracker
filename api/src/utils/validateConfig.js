@@ -15,7 +15,8 @@ const configSchema = yup
           .oneOf(["open", "invite", "closed"])
           .required(),
         SQ_ALLOW_ANONYMOUS_UPLOADS: yup.boolean().required(),
-        SQ_MINIMUM_RATIO: yup.number().min(0).required(),
+        SQ_MINIMUM_RATIO: yup.number().min(-1).required(),
+        SQ_MAXIMUM_HIT_N_RUNS: yup.number().integer().min(-1).required(),
         SQ_BP_EARNED_PER_GB: yup.number().min(0).required(),
         SQ_BP_EARNED_PER_FILLED_REQUEST: yup.number().min(0).required(),
         SQ_BP_COST_PER_INVITE: yup.number().min(0).required(),
@@ -48,6 +49,7 @@ const configSchema = yup
           text: yup.string().matches(hexRegex),
           grey: yup.string().matches(hexRegex),
         }),
+        SQ_EXTENSION_BLACKLIST: yup.array().of(yup.string()).min(0),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),

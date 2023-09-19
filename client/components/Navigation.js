@@ -89,18 +89,21 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       SQ_API_URL,
       SQ_ALLOW_REGISTER,
       SQ_VERSION,
+      SQ_ALLOW_UNREGISTERED_VIEW,
     },
   } = getConfig();
 
   useEffect(() => {
     const getUserRole = async () => {
-      const roleRes = await fetch(`${SQ_API_URL}/account/get-role`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const role = await roleRes.text();
-      setRole(role);
+      try {
+        const roleRes = await fetch(`${SQ_API_URL}/account/get-role`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const role = await roleRes.text();
+        setRole(role);
+      } catch (e) {}
     };
     if (token) getUserRole();
     setIsServer(false);
@@ -261,6 +264,22 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                     <UserPlus size={24} />
                   </NavLink>
                 </Link>
+              )}
+              {SQ_ALLOW_UNREGISTERED_VIEW && (
+                <>
+                  <Link href="/categories" passHref>
+                    <NavLink>
+                      <Text>Browse</Text>
+                      <ListUl size={24} />
+                    </NavLink>
+                  </Link>
+                  <Link href="/wiki" passHref>
+                    <NavLink>
+                      <Text>Wiki</Text>
+                      <BookOpen size={24} />
+                    </NavLink>
+                  </Link>
+                </>
               )}
             </Box>
           )}

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import mongoose from "mongoose";
 import { createNGrams, nGrams } from "mongoose-fuzzy-searching/helpers";
 import slugify from "slugify";
+import contentDisposition from "content-disposition";
 import Torrent from "../schema/torrent";
 import User from "../schema/user";
 import Comment from "../schema/comment";
@@ -66,6 +67,10 @@ export const uploadTorrent = async (req, res, next) => {
 
       const user = await User.findOne({ _id: req.userId }).lean();
 
+      parsed.info.private = 1;
+      parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
+      delete parsed["announce-list"];
+
       const infoHash = crypto
         .createHash("sha1")
         .update(bencode.encode(parsed.info))
@@ -77,10 +82,6 @@ export const uploadTorrent = async (req, res, next) => {
         res.status(409).send("Torrent with this info hash already exists");
         return;
       }
-
-      parsed.info.private = 1;
-      parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
-      delete parsed["announce-list"];
 
       let files;
       if (parsed.info.files) {
@@ -95,6 +96,19 @@ export const uploadTorrent = async (req, res, next) => {
             size: parsed.info.length,
           },
         ];
+      }
+
+      const hasBlackListedFiles = files.some((file) =>
+        (process.env.SQ_EXTENSION_BLACKLIST ?? []).some((ext) =>
+          file.path.endsWith(`.${ext}`)
+        )
+      );
+
+      if (hasBlackListedFiles) {
+        res
+          .status(403)
+          .send("One or more files have blacklisted file extensions");
+        return;
       }
 
       let groupId;
@@ -238,15 +252,16 @@ export const downloadTorrent = async (req, res, next) => {
     const parsed = bencode.decode(Buffer.from(binary, "base64"));
 
     parsed.announce = `${process.env.SQ_BASE_URL}/sq/${user.uid}/announce`;
+    delete parsed["announce-list"];
     parsed.info.private = 1;
 
+    const fileName = `${parsed.info.name.toString()} - ${
+      process.env.SQ_SITE_NAME
+    }.torrent`;
+
     res.setHeader("Content-Type", "application/x-bittorrent");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment;filename=${parsed.info.name.toString()} - ${
-        process.env.SQ_SITE_NAME
-      }.torrent`
-    );
+    res.setHeader("Content-Disposition", contentDisposition(fileName));
+
     res.write(bencode.encode(parsed));
     res.end();
   } catch (e) {
@@ -452,9 +467,18 @@ export const getTorrentsPage = async ({
   tag,
   uploadedBy,
   userId,
+  sort,
   tracker,
 }) => {
   const queryNGrams = nGrams(query, false, 2, false).join(" ");
+
+  const [sortField, sortDirString] = sort?.split(":") ?? [];
+  const sortDir = sortDirString === "asc" ? 1 : -1;
+
+  const combinedSort = {};
+  if (sortField) combinedSort[sortField] = sortDir;
+  if (query) combinedSort.confidenceScore = { $meta: "textScore" };
+  if (!combinedSort.created) combinedSort.created = -1;
 
   const torrents = await Torrent.aggregate([
     ...(query
@@ -530,17 +554,6 @@ export const getTorrentsPage = async ({
         ]
       : []),
     {
-      $sort: query
-        ? { confidenceScore: { $meta: "textScore" } }
-        : { created: -1 },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-    {
       $lookup: {
         from: "comments",
         as: "comments",
@@ -588,6 +601,15 @@ export const getTorrentsPage = async ({
       },
     },
     { $unwind: { path: "$fetchedBy", preserveNullAndEmptyArrays: true } },
+    {
+      $sort: combinedSort,
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
   ]);
 
   const [count] = await Torrent.aggregate([
@@ -682,7 +704,7 @@ export const listAll = async (req, res, next) => {
 };
 
 export const searchTorrents = (tracker) => async (req, res, next) => {
-  const { query, category, source, tag, page } = req.query;
+  const { query, category, source, tag, page, sort } = req.query;
   try {
     const torrents = await getTorrentsPage({
       skip: page ? parseInt(page) : 0,
@@ -691,6 +713,7 @@ export const searchTorrents = (tracker) => async (req, res, next) => {
       source,
       tag: tag ? decodeURIComponent(tag) : undefined,
       userId: req.userId,
+      sort: sort ? decodeURIComponent(sort) : undefined,
       tracker,
     });
     res.json(torrents);

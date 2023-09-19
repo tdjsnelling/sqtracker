@@ -97,8 +97,8 @@ const Categories = ({ tags }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders }) => {
-    if (!token) return { props: {} };
+  async ({ token, fetchHeaders, isPublicAccess }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
@@ -120,7 +120,8 @@ export const getServerSideProps = withAuthServerSideProps(
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Categories;

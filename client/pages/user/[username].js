@@ -1,11 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 import moment from "moment";
 import prettyBytes from "pretty-bytes";
 import jwt from "jsonwebtoken";
-import { BarChartSquare } from "@styled-icons/boxicons-regular/BarChartSquare";
+import { Sort } from "@styled-icons/boxicons-regular/Sort";
+import { Run } from "@styled-icons/boxicons-regular/Run";
 import { Upload } from "@styled-icons/boxicons-regular/Upload";
 import { Download } from "@styled-icons/boxicons-regular/Download";
 import { UserCircle } from "@styled-icons/boxicons-regular/UserCircle";
@@ -35,6 +36,7 @@ const User = ({ token, user, userRole }) => {
     publicRuntimeConfig: {
       SQ_TORRENT_CATEGORIES,
       SQ_MINIMUM_RATIO,
+      SQ_MAXIMUM_HIT_N_RUNS,
       SQ_API_URL,
     },
   } = getConfig();
@@ -78,6 +80,13 @@ const User = ({ token, user, userRole }) => {
 
     setLoading(false);
   };
+
+  const cards = useMemo(() => {
+    let c = 2;
+    if (SQ_MINIMUM_RATIO !== -1) c++;
+    if (SQ_MAXIMUM_HIT_N_RUNS !== -1) c++;
+    return c;
+  }, [SQ_MINIMUM_RATIO, SQ_MAXIMUM_HIT_N_RUNS]);
 
   return (
     <>
@@ -151,39 +160,72 @@ const User = ({ token, user, userRole }) => {
       )}
       <Box
         display="grid"
-        gridTemplateColumns={["1fr", "repeat(3, 1fr)"]}
+        gridTemplateColumns={["1fr", `repeat(${cards}, 1fr)`]}
         gridGap={4}
         mb={5}
       >
-        <Box bg="sidebar" borderRadius={2} p={4}>
-          <Text
-            fontWeight={600}
-            fontSize={1}
-            mb={3}
-            _css={{ textTransform: "uppercase" }}
-            icon={BarChartSquare}
-            iconColor="text"
-          >
-            Ratio
-          </Text>
-          <Text fontSize={5}>
-            {typeof user.ratio === "number"
-              ? user.ratio === -1
-                ? "N/A"
-                : user.ratio.toFixed(2)
-              : "?"}
-            {typeof user.ratio === "number" && user.ratio !== -1 && (
-              <Text
-                as="span"
-                fontSize={3}
-                color={user.ratio >= SQ_MINIMUM_RATIO ? "success" : "error"}
-              >
-                {" "}
-                {user.ratio >= SQ_MINIMUM_RATIO ? ">" : "<"} {SQ_MINIMUM_RATIO}
-              </Text>
-            )}
-          </Text>
-        </Box>
+        {SQ_MINIMUM_RATIO !== -1 && (
+          <Box bg="sidebar" borderRadius={2} p={4}>
+            <Text
+              fontWeight={600}
+              fontSize={1}
+              mb={3}
+              _css={{ textTransform: "uppercase" }}
+              icon={Sort}
+              iconColor="text"
+            >
+              Ratio
+            </Text>
+            <Text fontSize={5}>
+              {typeof user.ratio === "number"
+                ? user.ratio === -1
+                  ? "N/A"
+                  : user.ratio.toFixed(2)
+                : "?"}
+              {typeof user.ratio === "number" && user.ratio !== -1 && (
+                <Text
+                  as="span"
+                  fontSize={3}
+                  color={user.ratio >= SQ_MINIMUM_RATIO ? "success" : "error"}
+                >
+                  {" "}
+                  {user.ratio >= SQ_MINIMUM_RATIO ? ">" : "<"}{" "}
+                  {SQ_MINIMUM_RATIO}
+                </Text>
+              )}
+            </Text>
+          </Box>
+        )}
+        {SQ_MAXIMUM_HIT_N_RUNS !== -1 && (
+          <Box bg="sidebar" borderRadius={2} p={4}>
+            <Text
+              fontWeight={600}
+              fontSize={1}
+              mb={3}
+              _css={{ textTransform: "uppercase" }}
+              icon={Run}
+              iconColor="text"
+            >
+              Hit'n'runs
+            </Text>
+            <Text fontSize={5}>
+              {typeof user.hitnruns === "number" ? user.hitnruns : "?"}
+              {typeof user.hitnruns === "number" && (
+                <Text
+                  as="span"
+                  fontSize={3}
+                  color={
+                    user.hitnruns <= SQ_MAXIMUM_HIT_N_RUNS ? "success" : "error"
+                  }
+                >
+                  {" "}
+                  {user.hitnruns <= SQ_MAXIMUM_HIT_N_RUNS ? "<" : ">"}{" "}
+                  {SQ_MAXIMUM_HIT_N_RUNS}
+                </Text>
+              )}
+            </Text>
+          </Box>
+        )}
         <Box bg="sidebar" borderRadius={2} p={4}>
           <Text
             fontWeight={600}

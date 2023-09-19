@@ -111,6 +111,8 @@ validateConfig(config).then(() => {
     })
   );
 
+  app.use(cors());
+
   // rate limit all API routes. if the request comes from Next SSR rather than
   // the client browser, we need to make use of the forwarded IP rather than
   // the origin of the request, as this will be the same for all users. to
@@ -118,7 +120,7 @@ validateConfig(config).then(() => {
   // a secret only available to the server
   const limiter = ratelimit({
     windowMs: 1000 * 60,
-    max: 30,
+    max: 120,
     keyGenerator: (req) => {
       if (
         req.headers["x-forwarded-for"] &&
@@ -127,7 +129,9 @@ validateConfig(config).then(() => {
         return req.headers["x-forwarded-for"].split(",")[0];
       return req.ip;
     },
-    skip: () => process.env.NODE_ENV !== "production",
+    skip: (req) => {
+      return process.env.NODE_ENV !== "production" || req.method === "OPTIONS";
+    },
   });
   app.use(limiter);
 
@@ -142,7 +146,6 @@ validateConfig(config).then(() => {
 
   app.use(bodyParser.json({ limit: "5mb" }));
   app.use(cookieParser());
-  app.use(cors());
 
   app.get("/", (req, res) => {
     res.setHeader("Content-Type", "text/plain");

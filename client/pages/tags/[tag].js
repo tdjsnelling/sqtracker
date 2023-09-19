@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import getConfig from "next/config";
 import qs from "qs";
@@ -7,14 +7,16 @@ import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import TorrentList from "../../components/TorrentList";
 
-const Tag = ({ results }) => {
+const Tag = ({ results, token }) => {
+  const [torrents, setTorrents] = useState(results?.torrents ?? []);
+
   const router = useRouter();
   const {
     query: { tag },
   } = router;
 
   const {
-    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
+    publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_API_URL },
   } = getConfig();
 
   return (
@@ -23,11 +25,14 @@ const Tag = ({ results }) => {
       <Text as="h1" mb={5}>
         Tagged with “{tag}”
       </Text>
-      {results?.torrents.length ? (
+      {torrents.length ? (
         <TorrentList
-          torrents={results.torrents}
+          torrents={torrents}
+          setTorrents={setTorrents}
           categories={SQ_TORRENT_CATEGORIES}
           total={results.total}
+          fetchPath={`${SQ_API_URL}/torrent/search`}
+          token={token}
         />
       ) : (
         <Text color="grey">No results.</Text>
@@ -37,8 +42,13 @@ const Tag = ({ results }) => {
 };
 
 export const getServerSideProps = withAuthServerSideProps(
-  async ({ token, fetchHeaders, query: { tag, page: pageParam } }) => {
-    if (!token) return { props: {} };
+  async ({
+    token,
+    fetchHeaders,
+    isPublicAccess,
+    query: { tag, page: pageParam },
+  }) => {
+    if (!token && !isPublicAccess) return { props: {} };
 
     const {
       publicRuntimeConfig: { SQ_API_URL },
@@ -64,12 +74,13 @@ export const getServerSideProps = withAuthServerSideProps(
         throw "banned";
       }
       const results = await searchRes.json();
-      return { props: { results } };
+      return { props: { results, token } };
     } catch (e) {
       if (e === "banned") throw "banned";
       return { props: {} };
     }
-  }
+  },
+  true
 );
 
 export default Tag;

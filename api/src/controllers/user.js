@@ -8,8 +8,8 @@ import Invite from "../schema/invite";
 import Progress from "../schema/progress";
 import { getTorrentsPage } from "./torrent";
 import { getUserRatio } from "../utils/ratio";
+import { getUserHitNRuns } from "../utils/hitnrun";
 import { BYTES_GB } from "../tracker/announce";
-import Torrent from "../schema/torrent";
 
 export const sendVerificationEmail = async (mail, address, token) => {
   await mail.sendMail({
@@ -684,6 +684,8 @@ export const fetchUser = (tracker) => async (req, res, next) => {
     const { ratio } = await getUserRatio(user._id);
     user.ratio = ratio;
 
+    user.hitnruns = await getUserHitNRuns(user._id);
+
     const { torrents } = await getTorrentsPage({
       uploadedBy: user._id,
       userId: req.userId,
@@ -707,7 +709,9 @@ export const getUserStats = async (req, res, next) => {
     }
 
     const ratioStats = await getUserRatio(user._id);
-    res.json({ ...ratioStats, bp: user.bonusPoints });
+    const hitnruns = await getUserHitNRuns(user._id);
+
+    res.json({ ...ratioStats, bp: user.bonusPoints, hitnruns });
   } catch (e) {
     next(e);
   }
