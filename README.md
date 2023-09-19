@@ -111,6 +111,21 @@ Alternatively, you can deploy each service individually on a PaaS cloud platform
 
 You will need to deploy each of the 4 components listed above. The Docker images for the client and API services are published in this repository.
 
+## Adding a translation
+
+New translations are always appreciated!
+
+To add a new translation in your own language, create a new JSON file with your 2 character locale code in `client/locales`. For example, `client/locales/en.json`. In the `client/locales/index.js` file, you should then import your JSON file and add it to the exported object along with the existing locales.
+
+The best place to start is to copy the `en.json` file and work through it, translating each English string.
+
+### Existing translations
+
+* English (default)
+* Russian: thanks to @smlinux
+* German (incomplete): thanks to @MikeMatau
+* Simplified Chinese (incomplete): thanks to @0EAC
+
 ## Screenshots
 
 Splash screen
