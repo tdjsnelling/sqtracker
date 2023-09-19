@@ -11,6 +11,7 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import MarkdownInput from "../../components/MarkdownInput";
+import LocaleContext from "../../utils/LocaleContext";
 
 const NewAnnouncement = ({ token, userRole }) => {
   if (userRole !== "admin") {
@@ -25,6 +26,8 @@ const NewAnnouncement = ({ token, userRole }) => {
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig();
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -54,12 +57,16 @@ const NewAnnouncement = ({ token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Announcement created successfully");
+      addNotification("success",
+        `${getLocaleString("annAnnounceCreatSuccess")}`
+      );
 
       const slug = await createAnnouncementRes.text();
       router.push(`/announcements/${slug}`);
     } catch (e) {
-      addNotification("error", `Could not create announcement: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("annCouldNotCreateAnnounce")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -68,24 +75,24 @@ const NewAnnouncement = ({ token, userRole }) => {
 
   return (
     <>
-      <SEO title="New announcement" />
+      <SEO title={getLocaleString("annNewAnnounce")} />
       <Text as="h1" mb={5}>
-        New announcement
+        {getLocaleString("annNewAnnounce")}
       </Text>
       <form onSubmit={handleCreate}>
-        <Input name="title" label="Title" mb={4} required />
+        <Input name="title" label={getLocaleString("reqTitle")} mb={4} required />
         <MarkdownInput
           name="body"
-          label="Body"
-          placeholder="Markdown supported"
+          label={getLocaleString("annBody")}
+          placeholder={getLocaleString("uploadMarkdownSupport")}
           rows={10}
           mb={4}
           required
         />
-        <Checkbox label="Pin this announcement?" name="pinned" mb={4} />
-        <Checkbox label="Allow comments?" name="allowComments" mb={4} />
+        <Checkbox label={getLocaleString("annPinThisAnnounceQ")} name="pinned" mb={4} />
+        <Checkbox label={getLocaleString("annAllowCommentsQ")} name="allowComments" mb={4} />
         <Button display="block" ml="auto">
-          Create announcement
+          {getLocaleString("annCreateAnnounce")}
         </Button>
       </form>
     </>

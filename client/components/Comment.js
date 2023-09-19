@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import moment from "moment";
 import { Comment as CommentIcon } from "@styled-icons/boxicons-regular/Comment";
@@ -7,8 +7,12 @@ import { News } from "@styled-icons/boxicons-regular/News";
 import { CommentAdd } from "@styled-icons/boxicons-regular/CommentAdd";
 import Box from "./Box";
 import Text from "./Text";
+import LocaleContext from "../utils/LocaleContext";
 
 const Comment = ({ comment }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <Box
       p={4}
@@ -30,11 +34,11 @@ const Comment = ({ comment }) => {
       >
         {comment.user?.username ? (
           <Text color="grey" icon={CommentIcon} mb={[2, 0]}>
-            Comment by{" "}
+            {getLocaleString("comCommentBy")}{" "}
             <Link href={`/user/${comment.user.username}`} passHref>
               <Text as="a">{comment.user.username}</Text>
             </Link>{" "}
-            on{" "}
+            {getLocaleString("comOn")}{" "}
             {comment.type === "torrent" && (
               <>
                 {comment.torrent ? (
@@ -101,14 +105,14 @@ const Comment = ({ comment }) => {
           </Text>
         ) : (
           <Text>
-            Comment by{" "}
+            {getLocaleString("comCommentBy")}{" "}
             <Text as="span" color="grey">
-              deleted user
+              {getLocaleString("comDelUser")}
             </Text>
           </Text>
         )}
         <Text color="grey" textAlign="right">
-          Posted {moment(comment.created).format("HH:mm Do MMM YYYY")}
+          {getLocaleString("reqPosted")} {moment(comment.created).format(`${getLocaleString("indexTime")}`)}
         </Text>
       </Box>
       <Text>{comment.comment}</Text>

@@ -22,6 +22,7 @@ import Comment from "../../components/Comment";
 import Modal from "../../components/Modal";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 const User = ({ token, user, userRole }) => {
   const [banned, setBanned] = useState(!!user.banned);
@@ -44,6 +45,8 @@ const User = ({ token, user, userRole }) => {
   const downloadedBytes = prettyBytes(user.downloaded?.bytes || 0).split(" ");
   const uploadedBytes = prettyBytes(user.uploaded?.bytes || 0).split(" ");
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   const handleBanUser = async () => {
     setLoading(true);
 
@@ -65,7 +68,7 @@ const User = ({ token, user, userRole }) => {
 
       addNotification(
         "success",
-        `User ${banned ? "unbanned" : "banned"} successfully`
+        `${user.username} ${banned ? [getLocaleString("userUnbanned")] : [getLocaleString("userBanned")]} ${getLocaleString("userSuccessfully")}`
       );
 
       setBanned((b) => !b);
@@ -73,7 +76,7 @@ const User = ({ token, user, userRole }) => {
     } catch (e) {
       addNotification(
         "error",
-        `Could not ${banned ? "unban" : "ban"} user: ${e.message}`
+        `${getLocaleString("userCouldNot")} ${banned ? [getLocaleString("userUnban")] : [getLocaleString("userBan")]} ${user.username}: ${e.message}`
       );
       console.error(e);
     }
@@ -90,7 +93,7 @@ const User = ({ token, user, userRole }) => {
 
   return (
     <>
-      <SEO title={`${user.username}’s profile`} />
+      <SEO title={`${user.username} ${getLocaleString("userProfile")}`} />
       <Box
         display="flex"
         alignItems="center"
@@ -98,7 +101,7 @@ const User = ({ token, user, userRole }) => {
         mb={3}
       >
         <Box display="flex" alignItems="center">
-          <Text as="h1">{user.username}’s profile</Text>
+          <Text as="h1">{user.username} {getLocaleString("userProfile")}</Text>
           {user.role === "admin" && (
             <Text icon={UserCircle} iconColor="primary" ml={3}>
               Admin
@@ -106,25 +109,25 @@ const User = ({ token, user, userRole }) => {
           )}
           {banned && (
             <Text icon={NoEntry} iconColor="error" ml={4}>
-              Banned
+              {getLocaleString("userBanned")}
             </Text>
           )}
         </Box>
         {cookies.username === user.username && (
           <Link href="/account">
             <a>
-              <Button>My account</Button>
+              <Button>{getLocaleString("accMyAccount")}</Button>
             </a>
           </Link>
         )}
         {userRole === "admin" && cookies.username !== user.username && (
           <Button onClick={() => setShowBanModal(true)}>
-            {banned ? "Unban" : "Ban"} user
+            {banned ? [getLocaleString("userUnban")] : [getLocaleString("userBan")]} {user.username}
           </Button>
         )}
       </Box>
       <Text color="grey" mb={5}>
-        User since {moment(user.created).format("Do MMM YYYY")}
+        {getLocaleString("userUserSince")} {moment(user.created).format(`${getLocaleString("userUserSinceTime")}`)}
       </Text>
       {userRole === "admin" && (
         <Infobox mb={5}>
@@ -134,26 +137,26 @@ const User = ({ token, user, userRole }) => {
             mb={3}
             _css={{ textTransform: "uppercase" }}
           >
-            Only admins can see this
+            {getLocaleString("userOnlyAdminsSee")}
           </Text>
           <ul>
-            {user.email && <li>Email: {user.email}</li>}
+            {user.email && <li>{getLocaleString("email")}: {user.email}</li>}
             {typeof user.emailVerified === "boolean" && (
-              <li>Email verified: {user.emailVerified ? "yes" : "no"}</li>
+              <li>{getLocaleString("userEmailVerified")}: {user.emailVerified ? "yes" : "no"}</li>
             )}
             {user.invitedBy && (
               <li>
-                Invited by:{" "}
+                {getLocaleString("userInvitedBy")}:{" "}
                 <Link href={`/user/${user.invitedBy.username}`}>
                   <a>{user.invitedBy.username}</a>
                 </Link>
               </li>
             )}
             {typeof user.remainingInvites === "number" && (
-              <li>Remaining invites: {user.remainingInvites}</li>
+              <li>{getLocaleString("userRemainingInvites")}: {user.remainingInvites}</li>
             )}
             {typeof user.bonusPoints === "number" && (
-              <li>Bonus points: {user.bonusPoints}</li>
+              <li>{getLocaleString("accBonusPoints")}: {user.bonusPoints}</li>
             )}
           </ul>
         </Infobox>
@@ -174,7 +177,7 @@ const User = ({ token, user, userRole }) => {
               icon={Sort}
               iconColor="text"
             >
-              Ratio
+              {getLocaleString("userRatio")}
             </Text>
             <Text fontSize={5}>
               {typeof user.ratio === "number"
@@ -235,7 +238,7 @@ const User = ({ token, user, userRole }) => {
             icon={Download}
             iconColor="text"
           >
-            Downloaded
+            {getLocaleString("userDownloaded")}
           </Text>
           <Text fontSize={5}>
             {downloadedBytes[0]}
@@ -254,7 +257,7 @@ const User = ({ token, user, userRole }) => {
             icon={Upload}
             iconColor="text"
           >
-            Uploaded
+            {getLocaleString("userUploaded")}
           </Text>
           <Text fontSize={5}>
             {uploadedBytes[0]}
@@ -266,7 +269,7 @@ const User = ({ token, user, userRole }) => {
         </Box>
       </Box>
       <Text as="h2" mb={4}>
-        Uploaded
+        {getLocaleString("userMyUploads")}
       </Text>
       <Box mb={5}>
         <TorrentList
@@ -275,7 +278,7 @@ const User = ({ token, user, userRole }) => {
         />
       </Box>
       <Text as="h2" mb={4}>
-        Comments
+        {getLocaleString("userComments")}
       </Text>
       {user.comments?.length ? (
         <Box>
@@ -287,12 +290,12 @@ const User = ({ token, user, userRole }) => {
           ))}
         </Box>
       ) : (
-        <Text color="grey">No comments.</Text>
+        <Text color="grey">{getLocaleString("userNoComments")}</Text>
       )}
       {showBanModal && (
         <Modal close={() => setShowBanModal(false)}>
           <Text mb={4}>
-            Are you sure that you want to {banned ? "unban" : "ban"} this user?
+            {getLocaleString("userYouSureWant")} {banned ? [getLocaleString("userUnban")] : [getLocaleString("userBan")]} {getLocaleString("userThisUserQ")}
           </Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
@@ -300,9 +303,9 @@ const User = ({ token, user, userRole }) => {
               variant="secondary"
               mr={3}
             >
-              Cancel
+              {getLocaleString("accCancel")}
             </Button>
-            <Button onClick={handleBanUser}>{banned ? "Unban" : "Ban"}</Button>
+            <Button onClick={handleBanUser}>{banned ? [getLocaleString("userUnban")] : [getLocaleString("userBan")]}</Button>
           </Box>
         </Modal>
       )}

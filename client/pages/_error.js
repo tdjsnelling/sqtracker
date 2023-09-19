@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Link from "next/link";
 import getConfig from "next/config";
 import NextErrorComponent from "next/error";
 import * as Sentry from "@sentry/nextjs";
 import SEO from "../components/SEO";
 import Text from "../components/Text";
+import LocaleContext from "../utils/LocaleContext";
 
 const ErrorPage = () => {
   const [rateLimited, setRateLimited] = useState(false);
@@ -23,30 +24,31 @@ const ErrorPage = () => {
     checkRateLimit();
   }, []);
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="Not found" />
+      <SEO title={getLocaleString("404NotFound")} />
       <Text as="h1" mb={5}>
-        Something went wrong :(
+        {getLocaleString("errSomethingWentWrong")} :(
       </Text>
       {rateLimited ? (
         <Text>
-          Too many requests! You have been rate limited. Please wait a while
-          before trying again.
+          {getLocaleString("errTooManyRequests")}
         </Text>
       ) : (
         <Text>
-          If the error persists, please{" "}
+          {getLocaleString("errIfErrorPersist")}{" "}
           <a
             href="https://github.com/tdjsnelling/sqtracker/issues"
             target="_blank"
             rel="noreferrer"
           >
-            report it
+            {getLocaleString("errReportIt")}
           </a>
           . For now,{" "}
           <Link href="/" passHref>
-            <a>return home</a>
+            <a>{getLocaleString("404ReturnHome")}</a>
           </Link>
           .
         </Text>

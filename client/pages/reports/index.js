@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import jwt from "jsonwebtoken";
 import moment from "moment";
@@ -6,17 +6,21 @@ import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import List from "../../components/List";
+import LocaleContext from "../../utils/LocaleContext";
 
 const Reports = ({ reports, userRole }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
   return (
     <>
-      <SEO title="Unresolved reports" />
+      <SEO title={getLocaleString("repUnresolvedRep")} />
       <Text as="h1" mb={5}>
-        Unresolved reports
+        {getLocaleString("repUnresolvedRep")}
       </Text>
       <List
         data={reports
@@ -27,28 +31,28 @@ const Reports = ({ reports, userRole }) => {
           }))}
         columns={[
           {
-            header: "Torrent",
+            header: `${getLocaleString("torrTorrent")}`,
             accessor: "torrent.name",
             cell: ({ value }) => <Text>{value}</Text>,
             gridWidth: "1fr",
           },
           {
-            header: "Reported by",
+            header: `${getLocaleString("repRepBy")}`,
             accessor: "reportedBy.username",
             cell: ({ value }) => <Text>{value}</Text>,
             gridWidth: "1fr",
           },
           {
-            header: "Reason",
+            header: `${getLocaleString("repReason")}`,
             accessor: "reason",
             cell: ({ value }) => <Text>{value}</Text>,
             gridWidth: "1fr",
           },
           {
-            header: "Created",
+            header: `${getLocaleString("accCreated")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
+              <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
             ),
             rightAlign: true,
             gridWidth: "175px",

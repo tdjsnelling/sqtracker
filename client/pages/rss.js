@@ -1,34 +1,35 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import SEO from "../components/SEO";
 import Text from "../components/Text";
+import LocaleContext from "../utils/LocaleContext";
 
 const Rss = () => {
   const {
     publicRuntimeConfig: { SQ_BASE_URL },
   } = getConfig();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="RSS" />
+      <SEO title={getLocaleString("navRSS")} />
       <Text as="h1" mb={4}>
-        RSS
+        {getLocaleString("navRSS")}
       </Text>
       <Text mb={4}>
-        There is an RSS feed at <strong>{SQ_BASE_URL}/api/rss</strong>.
+        {getLocaleString("rssThereRSSFeedAt")} <strong>{SQ_BASE_URL}/api/rss</strong>.
       </Text>
       <Text mb={4}>
-        To authenticate yourself, you must provide the cookies{" "}
-        <strong>username</strong> and <strong>password</strong> to the RSS
-        endpoint, containing your username and your password respectively.
+        {getLocaleString("rssToAuthenticateYourself")}{" "}
+        <strong>{getLocaleString("username")}</strong> {getLocaleString("rssAnd")} <strong>{getLocaleString("password")}</strong> {getLocaleString("rssToRSSEndpoint")}
       </Text>
       <Text mb={4}>
-        If no query parameters are provided, the RSS feed will contain the 100
-        latest torrents.
+        {getLocaleString("rssNoQueryParametersAreProvided")}
       </Text>
       <Text>
-        To only include matching results in the feed, you can add the{" "}
-        <strong>query</strong> query parameter, e.g.{" "}
+        {getLocaleString("rssOnlyIncludeMatchingResults")}{" "}
+        <strong>query</strong> {getLocaleString("rssQueryParameter")}{" "}
         <strong>/api/rss?query=loremipsum</strong>.
       </Text>
     </>

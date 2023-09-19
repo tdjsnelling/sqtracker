@@ -10,7 +10,7 @@ sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
 
-Check out the demo at [demo.sqtracker.dev](https://demo.sqtracker.dev).
+Check out the demo at [bt.dansh.ru](https://bt.dansh.ru).
 
 Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and general chat.
 

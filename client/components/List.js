@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { toPath } from "lodash";
@@ -7,6 +7,7 @@ import { CaretUp } from "@styled-icons/boxicons-regular/CaretUp";
 import { CaretDown } from "@styled-icons/boxicons-regular/CaretDown";
 import Box from "../components/Box";
 import Text from "../components/Text";
+import LocaleContext from "../utils/LocaleContext";
 
 const getIn = (obj, key, p = 0) => {
   const path = toPath(key);
@@ -62,6 +63,9 @@ const getSortIcon = (accessor, sort = "") => {
 const List = ({ data = [], columns = [], ...rest }) => {
   const router = useRouter();
   const { sort } = router.query;
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <Box overflowX="auto">
       <Box minWidth="700px">
@@ -165,7 +169,7 @@ const List = ({ data = [], columns = [], ...rest }) => {
           ) : (
             <ListItem>
               <Box p={4}>
-                <Text color="grey">No items to show.</Text>
+                <Text color="grey">{getLocaleString("listNoItemShow")}</Text>
               </Box>
             </ListItem>
           )}

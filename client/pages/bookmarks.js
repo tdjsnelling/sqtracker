@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import qs from "qs";
@@ -6,17 +6,20 @@ import { withAuthServerSideProps } from "../utils/withAuth";
 import SEO from "../components/SEO";
 import Text from "../components/Text";
 import TorrentList from "../components/TorrentList";
+import LocaleContext from "../utils/LocaleContext";
 
 const Bookmarks = ({ results }) => {
   const {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
   } = getConfig();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="Your bookmarks" />
+      <SEO title={getLocaleString("bmYourBM")} />
       <Text as="h1" mb={5}>
-        Your bookmarks
+        {getLocaleString("bmYourBM")}
       </Text>
       {results.torrents.length ? (
         <TorrentList
@@ -25,7 +28,7 @@ const Bookmarks = ({ results }) => {
           total={results.total}
         />
       ) : (
-        <Text color="grey">You do not have any bookmarks.</Text>
+        <Text color="grey">{getLocaleString("bmYouNotHaveAnyBM")}</Text>
       )}
     </>
   );
