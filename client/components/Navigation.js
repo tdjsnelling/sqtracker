@@ -167,55 +167,55 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             <Box display="grid" gridAutoFlow="row" gridGap={0}>
               <Link href="/" passHref>
                 <NavLink>
-                  <Text>Home</Text>
+                  <Text>{getLocaleString("navHome")}</Text>
                   <Home size={24} />
                 </NavLink>
               </Link>
               <Link href="/categories" passHref>
                 <NavLink>
-                  <Text>Browse</Text>
+                  <Text>{getLocaleString("navBrowse")}</Text>
                   <ListUl size={24} />
                 </NavLink>
               </Link>
               <Link href="/search" passHref>
                 <NavLink>
-                  <Text>Search</Text>
+                  <Text>{getLocaleString("navSearch")}</Text>
                   <Search size={24} />
                 </NavLink>
               </Link>
               <Link href="/upload" passHref>
                 <NavLink>
-                  <Text>Upload</Text>
+                  <Text>{getLocaleString("navUpload")}</Text>
                   <Upload size={24} />
                 </NavLink>
               </Link>
               <Link href="/requests" passHref>
                 <NavLink>
-                  <Text>Requests</Text>
+                  <Text>{getLocaleString("navRequests")}</Text>
                   <MessageAdd size={24} />
                 </NavLink>
               </Link>
               <Link href="/announcements" passHref>
                 <NavLink>
-                  <Text>Announcements</Text>
+                  <Text>{getLocaleString("navAnnouncements")}</Text>
                   <News size={24} />
                 </NavLink>
               </Link>
               <Link href="/wiki" passHref>
                 <NavLink>
-                  <Text>Wiki</Text>
+                  <Text>{getLocaleString("navWiki")}</Text>
                   <BookOpen size={24} />
                 </NavLink>
               </Link>
               <Link href="/rss" passHref>
                 <NavLink>
-                  <Text>RSS</Text>
+                  <Text>{getLocaleString("navRSS")}</Text>
                   <Rss size={24} />
                 </NavLink>
               </Link>
               <Link href="/bookmarks" passHref>
                 <NavLink>
-                  <Text>Bookmarks</Text>
+                  <Text>{getLocaleString("navBookmarks")}</Text>
                   <Bookmark size={24} />
                 </NavLink>
               </Link>
@@ -229,13 +229,13 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <>
                   <Link href="/reports" passHref>
                     <NavLink highlights={["/reports"]}>
-                      <Text>Reports</Text>
+                      <Text>{getLocaleString("navReports")}</Text>
                       <Error size={24} />
                     </NavLink>
                   </Link>
                   <Link href="/stats" passHref>
                     <NavLink highlights={["/stats"]}>
-                      <Text>Stats</Text>
+                      <Text>{getLocaleString("navStats")}</Text>
                       <TrendingUp size={24} />
                     </NavLink>
                   </Link>
@@ -243,7 +243,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
               )}
               <Link href="/logout" passHref>
                 <NavLink mt={5}>
-                  <Text>Log out</Text>
+                  <Text>{getLocaleString("navLogOut")}</Text>
                   <LogOutCircle size={24} />
                 </NavLink>
               </Link>
@@ -269,13 +269,13 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <>
                   <Link href="/categories" passHref>
                     <NavLink>
-                      <Text>Browse</Text>
+                      <Text>{getLocaleString("navBrowse")}</Text>
                       <ListUl size={24} />
                     </NavLink>
                   </Link>
                   <Link href="/wiki" passHref>
                     <NavLink>
-                      <Text>Wiki</Text>
+                      <Text>{getLocaleString("navWiki")}</Text>
                       <BookOpen size={24} />
                     </NavLink>
                   </Link>
@@ -296,7 +296,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         p={3}
       >
         <Text color="grey" fontSize={0}>
-          Powered by{" "}
+          {getLocaleString("poweredBy")}{" "}
           <a
             href="https://github.com/tdjsnelling/sqtracker"
             target="_blank"

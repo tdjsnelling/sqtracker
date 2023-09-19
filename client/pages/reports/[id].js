@@ -15,6 +15,7 @@ import { Info } from "../torrent/[infoHash]";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 const Report = ({ report, token, userRole }) => {
   const { addNotification } = useContext(NotificationContext);
@@ -25,6 +26,8 @@ const Report = ({ report, token, userRole }) => {
   } = getConfig();
 
   const router = useRouter();
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   const handleResolve = async () => {
     setLoading(true);
@@ -45,11 +48,15 @@ const Report = ({ report, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Report marked as solved");
+      addNotification("success",
+        `${getLocaleString("repRepMarkSolved")}`
+      );
 
       router.push("/reports");
     } catch (e) {
-      addNotification("error", `Could not resolve report: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("repCouldNotResolveRep")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -57,37 +64,37 @@ const Report = ({ report, token, userRole }) => {
   };
 
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
   return (
     <>
-      <SEO title={`Report on “${report.torrent.name}” | Reports`} />
+      <SEO title={`${getLocaleString("repRepOn")} “${report.torrent.name}” | ${getLocaleString("navReports")}`} />
       <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
         mb={3}
       >
-        <Text as="h1">Report on “{report.torrent.name}”</Text>
-        <Button onClick={handleResolve}>Mark as solved</Button>
+        <Text as="h1">{getLocaleString("repRepOn")} “{report.torrent.name}”</Text>
+        <Button onClick={handleResolve}>{getLocaleString("repMarkSolved")}</Button>
       </Box>
       <Text color="grey" mb={5}>
-        Reported {moment(report.created).format("HH:mm Do MMM YYYY")} by{" "}
+        {getLocaleString("repRep")} {moment(report.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
         <Link href={`/user/${report.reportedBy.username}`} passHref>
           <a>{report.reportedBy.username}</a>
         </Link>
       </Text>
       <Info
-        title="Torrent details"
+        title={getLocaleString("repTorrDetail")}
         items={{
-          Name: (
+          [getLocaleString("uploadName")]: (
             <Link href={`/torrent/${report.torrent.infoHash}`} passHref>
               <a>{report.torrent.name}</a>
             </Link>
           ),
-          Description: report.torrent.description,
-          "Info hash": (
+          [getLocaleString("uploadDescription")]: report.torrent.description,
+          [getLocaleString("reqInfohash")]: (
             <Text
               as="span"
               fontFamily="mono"
@@ -96,7 +103,7 @@ const Report = ({ report, token, userRole }) => {
               {report.torrent.infoHash}
             </Text>
           ),
-          Created: moment(report.torrent.created).format("HH:mm Do MMM YYYY"),
+          [getLocaleString("accCreated")]: moment(report.torrent.created).format(`${getLocaleString("indexTime")}`),
         }}
       />
       <Text
@@ -105,7 +112,7 @@ const Report = ({ report, token, userRole }) => {
         _css={{ textTransform: "uppercase" }}
         mb={4}
       >
-        Reason for report
+        {getLocaleString("torrReasonForReport")}
       </Text>
       <MarkdownBody>
         <ReactMarkdown remarkPlugins={[remarkGfm]}>

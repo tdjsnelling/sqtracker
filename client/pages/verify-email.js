@@ -7,6 +7,7 @@ import { transparentize } from "polished";
 import SEO from "../components/SEO";
 import Text from "../components/Text";
 import Box from "../components/Box";
+import LocaleContext from "../utils/LocaleContext";
 
 const VerifyEmail = () => {
   const [tokenError, setTokenError] = useState();
@@ -19,6 +20,8 @@ const VerifyEmail = () => {
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig();
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   useEffect(() => {
     const verify = async () => {
@@ -44,7 +47,7 @@ const VerifyEmail = () => {
           setTokenError(e.message);
         }
       } else {
-        setTokenError("No verification token provided");
+        setTokenError(`${getLocaleString("veNoVerificationTokenProvided")}`);
       }
     };
     verify();
@@ -52,18 +55,17 @@ const VerifyEmail = () => {
 
   return (
     <>
-      <SEO title="Verify email" />
+      <SEO title={getLocaleString("veVerifyEmail")} />
       <Text as="h1" mb={5}>
-        Verify email
+        {getLocaleString("veVerifyEmail")}
       </Text>
       {!tokenError ? (
         <>
           <Text>
-            Email address verified successfully.{" "}
+            {getLocaleString("veEmailAddressVerifiedSuccess")}{" "}
             <Link href="/login" passHref>
-              <a>Log in</a>
+              <a>{getLocaleString("logIn")}</a>
             </Link>
-            .
           </Text>
         </>
       ) : (
@@ -74,7 +76,7 @@ const VerifyEmail = () => {
           borderRadius={1}
           p={4}
         >
-          <Text>Could not verify email address: {tokenError}</Text>
+          <Text>{getLocaleString("veCouldNotVerifyEmailAddress")} {tokenError}</Text>
         </Box>
       )}
     </>

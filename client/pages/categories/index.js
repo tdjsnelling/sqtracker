@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import styled from "styled-components";
@@ -8,6 +8,7 @@ import { withAuth, withAuthServerSideProps } from "../../utils/withAuth";
 import SEO from "../../components/SEO";
 import Box from "../../components/Box";
 import Text from "../../components/Text";
+import LocaleContext from "../../utils/LocaleContext";
 import qs from "qs";
 
 const CategoryItem = styled.li(() =>
@@ -29,12 +30,13 @@ const Categories = ({ tags }) => {
   const {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES },
   } = getConfig();
+  const { getLocaleString } = useContext(LocaleContext);
 
   return (
     <>
-      <SEO title="Categories" />
+      <SEO title={getLocaleString("catCategories")} />
       <Text as="h1" mb={5}>
-        Categories
+        {getLocaleString("catCategories")}
       </Text>
       <Box mb={5}>
         {Object.keys(SQ_TORRENT_CATEGORIES).length ? (
@@ -57,11 +59,11 @@ const Categories = ({ tags }) => {
             ))}
           </Box>
         ) : (
-          <Text color="grey">No categories have been defined.</Text>
+          <Text color="grey">{getLocaleString("catNoCategoryHaveBeenDefined")}</Text>
         )}
       </Box>
       <Text as="h1" mb={5}>
-        Tags
+        {getLocaleString("uploadTags")}
       </Text>
       {tags.length ? (
         <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
@@ -90,7 +92,7 @@ const Categories = ({ tags }) => {
           ))}
         </Box>
       ) : (
-        <Text color="grey">No tags have been defined.</Text>
+        <Text color="grey">{getLocaleString("catNoTagsHaveBeenDefined")}</Text>
       )}
     </>
   );

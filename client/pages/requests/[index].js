@@ -23,6 +23,7 @@ import slugify from "slugify";
 import { Check } from "@styled-icons/boxicons-regular/Check";
 import { X } from "@styled-icons/boxicons-regular/X";
 import LoadingContext from "../../utils/LoadingContext";
+import LocaleContext from "../../utils/LocaleContext";
 
 const Request = ({ request, token, user }) => {
   const [comments, setComments] = useState(request.comments);
@@ -32,6 +33,7 @@ const Request = ({ request, token, user }) => {
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+  const { getLocaleString } = useContext(LocaleContext);
 
   const commentInputRef = useRef();
 
@@ -63,11 +65,15 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Request deleted successfully");
+      addNotification("success",
+        `${getLocaleString("reqRequestDelSuccess")}`
+      );
 
       router.push("/requests");
     } catch (e) {
-      addNotification("error", `Could not delete request: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqCouldNotDelReq")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -99,7 +105,9 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Comment posted successfully");
+      addNotification("success",
+        `${getLocaleString("reqCommentPostSuccess")}`
+      );
 
       setComments((c) => {
         const newComment = {
@@ -114,7 +122,9 @@ const Request = ({ request, token, user }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error", `Could not post comment: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqCommentNotPost")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -146,14 +156,18 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Suggestion added successfully");
+      addNotification("success",
+        `${getLocaleString("reqSuggestionAddSuccess")}`
+      );
 
       const { torrent } = await suggestRes.json();
       setCandidates((existing) => [torrent, ...existing]);
 
       setShowSuggestModal(false);
     } catch (e) {
-      addNotification("error", `Could not add suggestion: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqSuggestionNotAdded")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -183,12 +197,16 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Suggestion accepted successfully");
+      addNotification("success",
+        `${getLocaleString("reqSuggestionAcceptSuccess")}`
+      );
 
       const { torrent } = await acceptRes.json();
       setFulfilledBy(torrent);
     } catch (e) {
-      addNotification("error", `Could not accept suggestion: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("reqCouldNotAcceptSuggestion")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -209,13 +227,13 @@ const Request = ({ request, token, user }) => {
         </Box>
         {user === request.createdBy?._id && (
           <Button onClick={handleDelete} variant="secondary">
-            Delete
+            {getLocaleString("reqDelete")}
           </Button>
         )}
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          Posted {moment(request.created).format("HH:mm Do MMM YYYY")} by{" "}
+          {getLocaleString("reqPosted")} {moment(request.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
           {request.createdBy?.username ? (
             <Link href={`/user/${request.createdBy.username}`} passHref>
               <a>{request.createdBy.username}</a>
@@ -239,12 +257,12 @@ const Request = ({ request, token, user }) => {
           justifyContent="space-between"
           mb={4}
         >
-          <Text as="h2">Suggested torrents</Text>
+          <Text as="h2">{getLocaleString("reqSuggestedTorrents")}</Text>
           <Button
             onClick={() => setShowSuggestModal(true)}
             disabled={!!fulfilledBy}
           >
-            Suggest a torrent
+            {getLocaleString("reqSuggestATorrent")}
           </Button>
         </Box>
         {candidates.length ? (
@@ -255,7 +273,7 @@ const Request = ({ request, token, user }) => {
             }))}
             columns={[
               {
-                header: "Name",
+                header: `${getLocaleString("uploadName")}`,
                 accessor: "name",
                 cell: ({ value, row }) => (
                   <Text>
@@ -270,7 +288,7 @@ const Request = ({ request, token, user }) => {
                 gridWidth: "2fr",
               },
               {
-                header: "Category",
+                header: `${getLocaleString("uploadCategory")}`,
                 accessor: "type",
                 cell: ({ value }) => (
                   <Text icon={ListUl}>
@@ -282,7 +300,7 @@ const Request = ({ request, token, user }) => {
                 gridWidth: "1fr",
               },
               {
-                header: "Accepted",
+                header: `${getLocaleString("reqAccepted")}`,
                 accessor: "_id",
                 cell: ({ value }) => (
                   <Box color={value === fulfilledBy ? "success" : "grey"}>
@@ -296,10 +314,10 @@ const Request = ({ request, token, user }) => {
                 gridWidth: "1fr",
               },
               {
-                header: "Uploaded",
+                header: `${getLocaleString("userUploaded")}`,
                 accessor: "created",
                 cell: ({ value }) => (
-                  <Text>{moment(value).format("Do MMM YYYY")}</Text>
+                  <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
                 ),
                 gridWidth: "175px",
                 rightAlign: true,
@@ -316,7 +334,7 @@ const Request = ({ request, token, user }) => {
                           disabled={!!fulfilledBy}
                           small
                         >
-                          Accept
+                          {getLocaleString("reqAccept")}
                         </Button>
                       ),
                       gridWidth: "90px",
@@ -327,23 +345,23 @@ const Request = ({ request, token, user }) => {
             ]}
           />
         ) : (
-          <Text color="grey">No torrents have been suggested yet.</Text>
+          <Text color="grey">{getLocaleString("reqNoTorrentsHaveBeenSuggestedYet")}</Text>
         )}
       </Box>
       <Box>
         <Text as="h2" mb={4}>
-          Comments
+          {getLocaleString("userComments")}
         </Text>
         <form onSubmit={handleComment}>
           <Input
             ref={commentInputRef}
             name="comment"
-            label="Post a comment"
+            label={getLocaleString("reqPostAComment")}
             rows="5"
             mb={4}
           />
           <Button display="block" ml="auto">
-            Post
+            {getLocaleString("reqPost")}
           </Button>
         </form>
         {!!comments?.length && (
@@ -359,7 +377,7 @@ const Request = ({ request, token, user }) => {
       </Box>
       {showSuggestModal && (
         <Modal close={() => setShowSuggestModal(false)}>
-          <Text mb={5}>Enter the infohash of a torrent below.</Text>
+          <Text mb={5}>{getLocaleString("reqEnterInfohashTorrentBelow")}</Text>
           <form onSubmit={handleSuggestion}>
             <Input name="infoHash" label="Infohash" mb={4} />
             <Box display="flex" justifyContent="flex-end">
@@ -369,9 +387,9 @@ const Request = ({ request, token, user }) => {
                 variant="secondary"
                 mr={3}
               >
-                Cancel
+                {getLocaleString("accCancel")}
               </Button>
-              <Button>Suggest</Button>
+              <Button>{getLocaleString("reqSuggest")}</Button>
             </Box>
           </form>
         </Modal>

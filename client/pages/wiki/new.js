@@ -12,6 +12,7 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import Checkbox from "../../components/Checkbox";
+import LocaleContext from "../../utils/LocaleContext";
 
 export const WikiFields = ({ values }) => {
   const [slugValue, setSlugValue] = useState(values?.slug);
@@ -20,13 +21,15 @@ export const WikiFields = ({ values }) => {
     publicRuntimeConfig: { SQ_BASE_URL, SQ_ALLOW_UNREGISTERED_VIEW },
   } = getConfig();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   console.log(values);
 
   return (
     <>
       <Input
         name="slug"
-        label="Path"
+        label={getLocaleString("wikiPath")}
         value={slugValue}
         onChange={(e) => setSlugValue(e.target.value)}
         onBlur={(e) => {
@@ -44,19 +47,19 @@ export const WikiFields = ({ values }) => {
         required
       />
       <Text color="grey" fontSize={0} mb={4}>
-        Page will be visible at {SQ_BASE_URL}/wiki{slugValue}
+        {getLocaleString("wikiPageWillBeVisibleAt")} {SQ_BASE_URL}/wiki{slugValue}
       </Text>
       <Input
         name="title"
-        label="Title"
+        label={getLocaleString("reqTitle")}
         defaultValue={values?.title}
         mb={4}
         required
       />
       <MarkdownInput
         name="body"
-        label="Body"
-        placeholder="Markdown supported"
+        label={getLocaleString("annBody")}
+        placeholder={getLocaleString("uploadMarkdownSupport")}
         defaultValue={values?.body}
         rows={20}
         mb={4}
@@ -65,7 +68,7 @@ export const WikiFields = ({ values }) => {
       {SQ_ALLOW_UNREGISTERED_VIEW && (
         <Checkbox
           name="public"
-          label="Allow unregistered view"
+          label={getLocaleString("wikiAllowUnregisteredView")}
           inputProps={{ defaultChecked: values?.public }}
           mb={4}
         />
@@ -75,8 +78,11 @@ export const WikiFields = ({ values }) => {
 };
 
 const NewWiki = ({ token, userRole }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
   const { addNotification } = useContext(NotificationContext);
@@ -113,12 +119,16 @@ const NewWiki = ({ token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Wiki page created successfully");
+      addNotification("success",
+        `${getLocaleString("wikiPageCreateSuccess")}`
+      );
 
       const slug = await createWikiRes.text();
       router.push(`/wiki/${slug}`);
     } catch (e) {
-      addNotification("error", `Could not create wiki page: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("wikiCouldNotCreatePage")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -127,14 +137,14 @@ const NewWiki = ({ token, userRole }) => {
 
   return (
     <>
-      <SEO title="New wiki page" />
+      <SEO title={getLocaleString("wikiNewPage")} />
       <Text as="h1" mb={5}>
-        New wiki page
+        {getLocaleString("wikiNewPage")}
       </Text>
       <form onSubmit={handleCreate}>
         <WikiFields />
         <Button display="block" ml="auto">
-          Create wiki page
+          {getLocaleString("wikiCreatePage")}
         </Button>
       </form>
     </>
