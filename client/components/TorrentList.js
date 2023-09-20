@@ -235,7 +235,7 @@ const TorrentList = ({
             <ChevronsRight size={24} />
           </Button>
           <Text color="grey">
-            {total.toLocaleString()} results — Page {page + 1} of{" "}
+            {total.toLocaleString()} {getLocaleString("torrResults")} — {getLocaleString("torrPage")} {page + 1} {getLocaleString("torrOf")}{" "}
             {(maxPage + 1).toLocaleString()}
           </Text>
         </Box>
