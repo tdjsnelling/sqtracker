@@ -379,7 +379,7 @@ const Request = ({ request, token, user }) => {
         <Modal close={() => setShowSuggestModal(false)}>
           <Text mb={5}>{getLocaleString("reqEnterInfohashTorrentBelow")}</Text>
           <form onSubmit={handleSuggestion}>
-            <Input name="infoHash" label="Infohash" mb={4} />
+            <Input name="infoHash" label={getLocaleString("reqInfohash")} mb={4} />
             <Box display="flex" justifyContent="flex-end">
               <Button
                 type="button"

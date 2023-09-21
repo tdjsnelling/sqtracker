@@ -536,7 +536,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 <Input
                   name="token"
                   type="number"
-                  label="One-time code"
+                  label={getLocaleString("totp")}
                   width="300px"
                   autoComplete="off"
                   required
@@ -579,7 +579,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                     <Input
                       name="token"
                       type="number"
-                      label="One-time code"
+                      label={getLocaleString("totp")}
                       width="300px"
                       autoComplete="off"
                       required
@@ -639,7 +639,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             {getLocaleString("accInviteText1")}
           </Text>
           <form onSubmit={handleGenerateInvite}>
-            <Input name="email" type="email" label="Email" mb={4} required />
+            <Input name="email" type="email" label={getLocaleString("email")} mb={4} required />
             {userRole === "admin" && (
               <Select name="role" mb={4} required>
                 <option value="user">Role: user</option>
