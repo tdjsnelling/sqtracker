@@ -407,7 +407,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
               pl={4}
             >
               <Text color="grey" mr={4}>
-                {remainingInvites.toLocaleString()} remaining
+                {remainingInvites.toLocaleString()} {getLocaleString("accRemaining")}
               </Text>
               <Button
                 onClick={() => setShowInviteModal(true)}
@@ -642,8 +642,8 @@ const Account = ({ token, invites = [], user, userRole }) => {
             <Input name="email" type="email" label={getLocaleString("email")} mb={4} required />
             {userRole === "admin" && (
               <Select name="role" mb={4} required>
-                <option value="user">Role: user</option>
-                <option value="admin">Role: admin</option>
+                <option value="user">{getLocaleString("accRoleUser")}</option>
+                <option value="admin">{getLocaleString("accRoleAdmin")}</option>
               </Select>
             )}
             <Box display="flex" justifyContent="flex-end">
