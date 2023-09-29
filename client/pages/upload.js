@@ -460,7 +460,7 @@ const Upload = ({ token, userId }) => {
               type="button"
               ml="3"
             >
-              Remove
+              {getLocaleString("uploadRemove")}
             </Button>
           </Box>
         )}
