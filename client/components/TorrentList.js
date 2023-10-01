@@ -97,7 +97,7 @@ const TorrentList = ({
                 )}
                 {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
                   <Text as="span" fontSize={0} color="primary" ml={3}>
-                    FL!
+                    {getLocaleString("torrFL")}
                   </Text>
                 )}
               </Text>

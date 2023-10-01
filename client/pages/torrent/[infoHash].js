@@ -724,7 +724,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             ))}
           </Box>
         ) : (
-          <Text color="grey">This torrent has no tags.</Text>
+          <Text color="grey">{getLocaleString("torrTorrNoTags")}</Text>
         )}
       </Infobox>
       <Infobox mb={5}>

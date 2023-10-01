@@ -14,8 +14,11 @@ import MarkdownInput from "../../components/MarkdownInput";
 import LocaleContext from "../../utils/LocaleContext";
 
 const NewAnnouncement = ({ token, userRole }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
   const { addNotification } = useContext(NotificationContext);
@@ -26,8 +29,6 @@ const NewAnnouncement = ({ token, userRole }) => {
   const {
     publicRuntimeConfig: { SQ_API_URL },
   } = getConfig();
-
-  const { getLocaleString } = useContext(LocaleContext);
 
   const handleCreate = async (e) => {
     e.preventDefault();
