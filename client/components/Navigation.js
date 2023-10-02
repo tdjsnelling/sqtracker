@@ -142,6 +142,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       >
         <Button
           onClick={() => setMenuIsOpen(false)}
+          variant="secondary"
           display={["block", "none"]}
           px={1}
           py={1}
