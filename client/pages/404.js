@@ -5,7 +5,6 @@ import Text from "../components/Text";
 import LocaleContext from "../utils/LocaleContext";
 
 const NotFound = () => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   return (

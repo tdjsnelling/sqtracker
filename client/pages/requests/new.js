@@ -47,14 +47,16 @@ const NewRequest = ({ token }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("reqRequestCreatedSuccess")}`
       );
 
       const { index } = await createRequestRes.json();
       router.push(`/requests/${index}`);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCouldNotCreateReq")}: ${e.message}`
       );
       console.error(e);

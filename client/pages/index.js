@@ -120,7 +120,9 @@ const Index = ({
               </Text>
               <Text color="grey">
                 {getLocaleString("reqPosted")}{" "}
-                {moment(latestAnnouncement.created).format(`${getLocaleString("indexTime")}`)}{" "}
+                {moment(latestAnnouncement.created).format(
+                  `${getLocaleString("indexTime")}`
+                )}{" "}
                 {getLocaleString("reqBy")}{" "}
                 {latestAnnouncement.createdBy?.username ? (
                   <Link
@@ -138,7 +140,12 @@ const Index = ({
         </Link>
       )}
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
-        <Input placeholder={getLocaleString("indexSearchTorrents")} name="query" mr={3} required />
+        <Input
+          placeholder={getLocaleString("indexSearchTorrents")}
+          name="query"
+          mr={3}
+          required
+        />
         <Button>{getLocaleString("indexSearch")}</Button>
       </Box>
       <Text as="h2" mb={4}>

@@ -59,15 +59,14 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("wikiPageDelSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("wikiPageDelSuccess")}`);
 
       setShowDeleteModal(false);
 
       await router.push("/wiki");
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("wikiCouldNotDelPage")}: ${e.message}`
       );
       console.error(e);
@@ -104,16 +103,15 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("wikiPageUpdateSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("wikiPageUpdateSuccess")}`);
 
       if (form.get("slug") === page.slug) window.location.reload();
       else
         window.location.href =
           "/wiki" + (page.slug === "/" ? "" : form.get("slug"));
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("wikiCouldNotUpdatePage")}: ${e.message}`
       );
       console.error(e);
@@ -167,7 +165,9 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
           <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
             <Text color="grey">
               {getLocaleString("wikiLastEdited")}{" "}
-              {moment(page.updated ?? page.created).format(`${getLocaleString("indexTime")}`)}{" "}
+              {moment(page.updated ?? page.created).format(
+                `${getLocaleString("indexTime")}`
+              )}{" "}
               {getLocaleString("reqBy")}{" "}
               {page.createdBy?.username ? (
                 <Link href={`/user/${page.createdBy.username}`} passHref>
@@ -250,9 +250,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
       )}
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
-          <Text mb={5}>
-            {getLocaleString("wikiDelThisPageQ")}
-          </Text>
+          <Text mb={5}>{getLocaleString("wikiDelThisPageQ")}</Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
               onClick={() => setShowDeleteModal(false)}

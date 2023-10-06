@@ -487,7 +487,9 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       addNotification(
         "success",
         `${getLocaleString("torrTorrent")} ${
-          bookmarked ? getLocaleString("torrRemovedFrom") : getLocaleString("torrAddedTo")
+          bookmarked
+            ? getLocaleString("torrRemovedFrom")
+            : getLocaleString("torrAddedTo")
         } ${getLocaleString("navBookmarks")}`
       );
 

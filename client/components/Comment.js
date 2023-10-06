@@ -10,7 +10,6 @@ import Text from "./Text";
 import LocaleContext from "../utils/LocaleContext";
 
 const Comment = ({ comment }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   return (
@@ -112,7 +111,8 @@ const Comment = ({ comment }) => {
           </Text>
         )}
         <Text color="grey" textAlign="right">
-          {getLocaleString("reqPosted")} {moment(comment.created).format(`${getLocaleString("indexTime")}`)}
+          {getLocaleString("reqPosted")}{" "}
+          {moment(comment.created).format(`${getLocaleString("indexTime")}`)}
         </Text>
       </Box>
       <Text>{comment.comment}</Text>

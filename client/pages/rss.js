@@ -18,15 +18,17 @@ const Rss = () => {
         {getLocaleString("navRSS")}
       </Text>
       <Text mb={4}>
-        {getLocaleString("rssThereRSSFeedAt")} <strong>{SQ_BASE_URL}/api/rss</strong>.
+        {getLocaleString("rssThereRSSFeedAt")}{" "}
+        <strong>{SQ_BASE_URL}/api/rss</strong>.
       </Text>
       <Text mb={4}>
         {getLocaleString("rssToAuthenticateYourself")}{" "}
-        <strong>{getLocaleString("username")}</strong> {getLocaleString("rssAnd")} <strong>{getLocaleString("password")}</strong> {getLocaleString("rssToRSSEndpoint")}
+        <strong>{getLocaleString("username")}</strong>{" "}
+        {getLocaleString("rssAnd")}{" "}
+        <strong>{getLocaleString("password")}</strong>{" "}
+        {getLocaleString("rssToRSSEndpoint")}
       </Text>
-      <Text mb={4}>
-        {getLocaleString("rssNoQueryParametersAreProvided")}
-      </Text>
+      <Text mb={4}>{getLocaleString("rssNoQueryParametersAreProvided")}</Text>
       <Text>
         {getLocaleString("rssOnlyIncludeMatchingResults")}{" "}
         <strong>query</strong> {getLocaleString("rssQueryParameter")}{" "}

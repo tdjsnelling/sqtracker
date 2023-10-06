@@ -48,13 +48,12 @@ const Report = ({ report, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("repRepMarkSolved")}`
-      );
+      addNotification("success", `${getLocaleString("repRepMarkSolved")}`);
 
       router.push("/reports");
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("repCouldNotResolveRep")}: ${e.message}`
       );
       console.error(e);
@@ -69,18 +68,28 @@ const Report = ({ report, token, userRole }) => {
 
   return (
     <>
-      <SEO title={`${getLocaleString("repRepOn")} “${report.torrent.name}” | ${getLocaleString("navReports")}`} />
+      <SEO
+        title={`${getLocaleString("repRepOn")} “${
+          report.torrent.name
+        }” | ${getLocaleString("navReports")}`}
+      />
       <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
         mb={3}
       >
-        <Text as="h1">{getLocaleString("repRepOn")} “{report.torrent.name}”</Text>
-        <Button onClick={handleResolve}>{getLocaleString("repMarkSolved")}</Button>
+        <Text as="h1">
+          {getLocaleString("repRepOn")} “{report.torrent.name}”
+        </Text>
+        <Button onClick={handleResolve}>
+          {getLocaleString("repMarkSolved")}
+        </Button>
       </Box>
       <Text color="grey" mb={5}>
-        {getLocaleString("repRep")} {moment(report.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
+        {getLocaleString("repRep")}{" "}
+        {moment(report.created).format(`${getLocaleString("indexTime")}`)}{" "}
+        {getLocaleString("reqBy")}{" "}
         <Link href={`/user/${report.reportedBy.username}`} passHref>
           <a>{report.reportedBy.username}</a>
         </Link>
@@ -103,7 +112,9 @@ const Report = ({ report, token, userRole }) => {
               {report.torrent.infoHash}
             </Text>
           ),
-          [getLocaleString("accCreated")]: moment(report.torrent.created).format(`${getLocaleString("indexTime")}`),
+          [getLocaleString("accCreated")]: moment(
+            report.torrent.created
+          ).format(`${getLocaleString("indexTime")}`),
         }}
       />
       <Text

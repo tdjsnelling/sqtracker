@@ -76,7 +76,9 @@ const VerifyEmail = () => {
           borderRadius={1}
           p={4}
         >
-          <Text>{getLocaleString("veCouldNotVerifyEmailAddress")} {tokenError}</Text>
+          <Text>
+            {getLocaleString("veCouldNotVerifyEmailAddress")} {tokenError}
+          </Text>
         </Box>
       )}
     </>
