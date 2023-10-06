@@ -11,10 +11,14 @@ import { withAuthServerSideProps } from "../../../utils/withAuth";
 import { NotificationContext } from "../../../components/Notifications";
 import LoadingContext from "../../../utils/LoadingContext";
 import MarkdownInput from "../../../components/MarkdownInput";
+import LocaleContext from "../../../utils/LocaleContext";
 
 const EditAnnouncement = ({ announcement, token, userRole }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
 
   const { addNotification } = useContext(NotificationContext);
@@ -54,12 +58,16 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Announcement updated successfully");
+      addNotification("success",
+        `${getLocaleString("annAnnounceUpdatedSuccess")}`
+      );
 
       const slug = await updateAnnouncementRes.text();
       router.push(`/announcements/${slug}`);
     } catch (e) {
-      addNotification("error", `Could not update announcement: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("annCouldNotUpdateAnnounce")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -68,41 +76,41 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
 
   return (
     <>
-      <SEO title="Edit announcement" />
+      <SEO title={getLocaleString("annEditAnnounce")} />
       <Text as="h1" mb={5}>
-        Edit announcement
+        {getLocaleString("annEditAnnounce")}
       </Text>
       <form onSubmit={handleCreate}>
         <Input
           name="title"
-          label="Title"
+          label={getLocaleString("reqTitle")}
           defaultValue={announcement.title}
           mb={4}
           required
         />
         <MarkdownInput
           name="body"
-          label="Body"
-          placeholder="Markdown supported"
+          label={getLocaleString("annBody")}
+          placeholder={getLocaleString("uploadMarkdownSupport")}
           defaultValue={announcement.body}
           rows={10}
           mb={4}
           required
         />
         <Checkbox
-          label="Pin this announcement?"
+          label={getLocaleString("annPinThisAnnounceQ")}
           name="pinned"
           inputProps={{ defaultChecked: announcement.pinned }}
           mb={4}
         />
         <Checkbox
-          label="Allow comments?"
+          label={getLocaleString("annAllowCommentsQ")}
           name="allowComments"
           inputProps={{ defaultChecked: announcement.allowComments }}
           mb={4}
         />
         <Button display="block" ml="auto">
-          Update announcement
+          {getLocaleString("annUpdateAnnounce")}
         </Button>
       </form>
     </>

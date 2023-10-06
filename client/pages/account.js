@@ -22,11 +22,13 @@ import List from "../components/List";
 import { NotificationContext } from "../components/Notifications";
 import Modal from "../components/Modal";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
 
 const BuyItem = ({ text, cost, wallet, handleBuy }) => {
   const [amount, setAmount] = useState(1);
   const unavailable = cost === 0;
   const cannotAfford = amount * cost > wallet;
+  const { getLocaleString } = useContext(LocaleContext);
   return (
     <Box
       display="flex"
@@ -46,7 +48,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
         <Box display="flex" alignItems="center" justifyContent="flex-end">
           <Text color="grey" mr={4}>
             {unavailable
-              ? "Not available to buy"
+              ? [getLocaleString("accNotAvailableToBuy")]
               : `Cost: ${amount * cost} points`}
           </Text>
           <Input
@@ -60,7 +62,7 @@ const BuyItem = ({ text, cost, wallet, handleBuy }) => {
             disabled={unavailable || cannotAfford}
             mr={3}
           />
-          <Button disabled={unavailable || cannotAfford}>Buy</Button>
+          <Button disabled={unavailable || cannotAfford}>{getLocaleString("accBuy")}</Button>
         </Box>
       </Box>
     </Box>
@@ -81,6 +83,8 @@ const Account = ({ token, invites = [], user, userRole }) => {
 
   const { addNotification } = useContext(NotificationContext);
   const { setLoading } = useContext(LoadingContext);
+
+  const { getLocaleString } = useContext(LocaleContext);
 
   const theme = useContext(ThemeContext);
 
@@ -127,13 +131,17 @@ const Account = ({ token, invites = [], user, userRole }) => {
         return currentInvitesList;
       });
 
-      addNotification("success", "Invite sent successfully");
+      addNotification("success",
+        `${getLocaleString("accInviteSentSuccess")}`
+      );
 
       setRemainingInvites((r) => r - 1);
 
       setShowInviteModal(false);
     } catch (e) {
-      addNotification("error", `Could not send invite: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("accCouldNotSendInvite")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -166,7 +174,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Password changed successfully");
+      addNotification("success",
+        `${getLocaleString("accPassChangedSuccess")}`
+      );
 
       const fields = e.target.querySelectorAll("input");
       for (const field of fields) {
@@ -174,7 +184,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
         field.blur();
       }
     } catch (e) {
-      addNotification("error", `Could not change password: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("accCouldNotChangePass")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -206,7 +218,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Items purchased successfully");
+      addNotification("success",
+        `${getLocaleString("accItemsPurchasedSuccess")}`
+      );
 
       const pointsRemaining = await buyRes.text();
       setBonusPoints(parseInt(pointsRemaining));
@@ -219,7 +233,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
         field.blur();
       }
     } catch (e) {
-      addNotification("error", `Could not buy items: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("accCouldNotBuyItems")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -248,7 +264,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
             setTotpBackupCodes(backupCodes);
             setTotpQrData(undefined);
             setTotpEnabled(true);
-            addNotification("success", "2FA enabled");
+            addNotification("success",
+              `${getLocaleString("acc2FAEnabled")}`
+            );
           } else {
             const message = await enableRes.text();
             addNotification("error", message);
@@ -280,14 +298,18 @@ const Account = ({ token, invites = [], user, userRole }) => {
 
         if (disableRes.status === 200) {
           setTotpEnabled(false);
-          addNotification("success", "2FA disabled");
+          addNotification("success",
+            `${getLocaleString("acc2FADisabled")}`
+          );
         } else {
           const message = await disableRes.text();
           addNotification("error", message);
         }
       }
     } catch (e) {
-      addNotification("error", `Could not toggle 2FA: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("accCouldNotToggle2FA")}: ${e.message}`
+      );
       console.error(e);
     }
   };
@@ -315,52 +337,52 @@ const Account = ({ token, invites = [], user, userRole }) => {
 
       await router.push("/logout");
     } catch (e) {
-      addNotification("error", `Could not delete account: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("accCouldNotDelAcc")}: ${e.message}`
+      );
       console.error(e);
     }
   };
 
   return (
     <>
-      <SEO title="My account" />
+      <SEO title={getLocaleString("accMyAccount")} />
       <Text as="h1" mb={5}>
-        My account
+        {getLocaleString("accMyAccount")}
       </Text>
       {userRole === "admin" && (
         <Infobox mb={5}>
-          <Text>This is an admin account.</Text>
+          <Text>{getLocaleString("accThisIsAdminAcc")}</Text>
         </Infobox>
       )}
       <Text as="h2" mb={4}>
-        Bonus points
+        {getLocaleString("accBonusPoints")}
       </Text>
       <Text mb={3}>
-        You currently have <strong>{bonusPoints}</strong> bonus points.
+        {getLocaleString("accYouCurrentlyHave")} <strong>{bonusPoints}</strong> {getLocaleString("accBonusPointsHave")}.
       </Text>
       <Box as="ul" mb={4}>
         <Text as="li">
-          You will earn <strong>{SQ_BP_EARNED_PER_GB}</strong>{" "}
-          {pluralize("point", SQ_BP_EARNED_PER_GB)} for every GB you upload.
+          {getLocaleString("accYouWillEarn")} <strong>{SQ_BP_EARNED_PER_GB}</strong>{" "}
+          {pluralize(`${getLocaleString("accBonusPointsHave")}`, SQ_BP_EARNED_PER_GB)} {getLocaleString("accForEveryGBYouUpload")}.
         </Text>
         <Text as="li">
-          You will earn <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST}</strong>{" "}
-          {pluralize("point", SQ_BP_EARNED_PER_FILLED_REQUEST)} for every
-          request you fulfill, or{" "}
-          <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST * 2}</strong> if you are also
-          the uploader of the accepted torrent.
+          {getLocaleString("accYouWillEarn")} <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST}</strong>{" "}
+          {pluralize(`${getLocaleString("accBonusPointsHave")}`, SQ_BP_EARNED_PER_FILLED_REQUEST)} {getLocaleString("accEveryRequestYouFulfill")}{" "}
+          <strong>{SQ_BP_EARNED_PER_FILLED_REQUEST * 2}</strong> {getLocaleString("accIfYouAreAlsUploaderAcceptTorrent")}.
         </Text>
       </Box>
       <Box _css={{ "> * + *": { mt: 3 } }} mb={5}>
         {SQ_ALLOW_REGISTER === "invite" && (
           <BuyItem
-            text="Purchase invites"
+            text={getLocaleString("accPurchaseInvites")}
             cost={SQ_BP_COST_PER_INVITE}
             wallet={bonusPoints}
             handleBuy={(e) => handleBuy(e, "invite")}
           />
         )}
         <BuyItem
-          text="Purchase upload (1 GB)"
+          text={getLocaleString("accPurchaseUpload1GB")}
           cost={SQ_BP_COST_PER_GB}
           wallet={bonusPoints}
           handleBuy={(e) => handleBuy(e, "upload")}
@@ -375,7 +397,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
             justifyContent="space-between"
             mb={4}
           >
-            <Text as="h2">Invites</Text>
+            <Text as="h2">{getLocaleString("accInvites")}</Text>
             <Box
               display="flex"
               alignItems="center"
@@ -385,13 +407,13 @@ const Account = ({ token, invites = [], user, userRole }) => {
               pl={4}
             >
               <Text color="grey" mr={4}>
-                {remainingInvites.toLocaleString()} remaining
+                {remainingInvites.toLocaleString()} {getLocaleString("accRemaining")}
               </Text>
               <Button
                 onClick={() => setShowInviteModal(true)}
                 disabled={remainingInvites < 1}
               >
-                Send invite
+                {getLocaleString("accSendInvite")}
               </Button>
             </Box>
           </Box>
@@ -399,13 +421,13 @@ const Account = ({ token, invites = [], user, userRole }) => {
             data={invitesList}
             columns={[
               {
-                header: "Email",
+                header: `${getLocaleString("email")}`,
                 accessor: "email",
                 cell: ({ value }) => <Text>{value}</Text>,
                 gridWidth: "1.75fr",
               },
               {
-                header: "Claimed",
+                header: `${getLocaleString("accClaimed")}`,
                 accessor: "claimed",
                 cell: ({ value }) => (
                   <Box color={value ? "success" : "grey"}>
@@ -415,27 +437,27 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 gridWidth: "0.5fr",
               },
               {
-                header: "Valid until",
+                header: `${getLocaleString("accValidUntil")}`,
                 accessor: "validUntil",
                 cell: ({ value }) => (
                   <Text color={value < Date.now() ? "error" : "text"}>
-                    {moment(value).format("HH:mm Do MMM YYYY")}
+                    {moment(value).format(`${getLocaleString("indexTime")}`)}
                   </Text>
                 ),
                 gridWidth: "175px",
               },
               {
-                header: "Created",
+                header: `${getLocaleString("accCreated")}`,
                 accessor: "created",
                 cell: ({ value }) => (
-                  <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
+                  <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
                 ),
                 gridWidth: "175px",
               },
               ...(userRole === "admin"
                 ? [
                     {
-                      header: "Role",
+                      header: `${getLocaleString("accRole")}`,
                       accessor: "role",
                       cell: ({ value }) => (
                         <Text _css={{ textTransform: "capitalize" }}>
@@ -447,7 +469,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                   ]
                 : []),
               {
-                header: "Copy link",
+                header: `${getLocaleString("accCopyLink")}`,
                 cell: ({ row }) => {
                   return (
                     <Button
@@ -458,7 +480,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
                         );
                         addNotification(
                           "success",
-                          "Invite link copied to clipboard"
+                          `${getLocaleString("accInviteLinkCopiedClipboard")}`
                         );
                       }}
                       disabled={row.claimed || row.validUntil < Date.now()}
@@ -479,11 +501,10 @@ const Account = ({ token, invites = [], user, userRole }) => {
       )}
       <Box mb={5}>
         <Text as="h2" mb={4}>
-          Two-factor authentication
+          {getLocaleString("acc2FAuth")}
         </Text>
         <Text mb={4}>
-          Use an authenticator app to add another layer of security to your
-          account.
+          {getLocaleString("acc2FAUseApp")}.
         </Text>
         <form onSubmit={handleToggleTotp}>
           {totpQrData ? (
@@ -510,26 +531,25 @@ const Account = ({ token, invites = [], user, userRole }) => {
               </Box>
               <Box>
                 <Text color="grey" mb={4}>
-                  Scan the QR code with your authenticator app and enter the
-                  one-time code
+                  {getLocaleString("acc2FAScanQR")}
                 </Text>
                 <Input
                   name="token"
                   type="number"
-                  label="One-time code"
+                  label={getLocaleString("totp")}
                   width="300px"
                   autoComplete="off"
                   required
                   mb={4}
                 />
                 <Box display="flex" alignItems="center">
-                  <Button mr={3}>Enable 2FA</Button>
+                  <Button mr={3}>{getLocaleString("accEnable2FA")}</Button>
                   <Button
                     type="button"
                     variant="secondary"
                     onClick={() => setTotpQrData(undefined)}
                   >
-                    Cancel
+                    {getLocaleString("accCancel")}
                   </Button>
                 </Box>
               </Box>
@@ -539,9 +559,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
               {totpBackupCodes ? (
                 <>
                   <Text mb={3}>
-                    2FA enabled successfully. These backup codes can be used to
-                    log in if you lose access to your authenticator app. Save
-                    them now, they will not be visible again.
+                    {getLocaleString("acc2FAText1")}
                   </Text>
                   <Box as="ul">
                     {totpBackupCodes.split(",").map((code) => (
@@ -561,14 +579,14 @@ const Account = ({ token, invites = [], user, userRole }) => {
                     <Input
                       name="token"
                       type="number"
-                      label="One-time code"
+                      label={getLocaleString("totp")}
                       width="300px"
                       autoComplete="off"
                       required
                       mb={4}
                     />
                   )}
-                  <Button>{totpEnabled ? "Disable" : "Enable"} 2FA</Button>
+                  <Button>{totpEnabled ? `${getLocaleString("accDisable")}` : `${getLocaleString("accEnable")}`} 2FA</Button>
                 </>
               )}
             </>
@@ -577,25 +595,25 @@ const Account = ({ token, invites = [], user, userRole }) => {
       </Box>
       <Box mb={5}>
         <Text as="h2" mb={4}>
-          Change password
+          {getLocaleString("accChangePass")}
         </Text>
         <form onSubmit={handleChangePassword}>
           <Input
             name="password"
             type="password"
-            label="Current password"
+            label={getLocaleString("accCurrentPass")}
             mb={4}
             required
           />
           <Input
             name="newPassword"
             type="password"
-            label="New password"
+            label={getLocaleString("newPassword")}
             autoComplete="new-password"
             mb={4}
             required
           />
-          <Button>Change password</Button>
+          <Button>{getLocaleString("accChangePass")}</Button>
         </form>
       </Box>
       {user.username !== "admin" && (
@@ -605,29 +623,27 @@ const Account = ({ token, invites = [], user, userRole }) => {
           p={4}
         >
           <Text as="h2" mb={4}>
-            Danger zone
+            {getLocaleString("accDangerZone")}
           </Text>
           <Button
             variant="danger"
             onClick={() => setShowDeleteAccountModal(true)}
           >
-            Delete my account
+            {getLocaleString("accDeleteMyAcc")}
           </Button>
         </Box>
       )}
       {showInviteModal && (
         <Modal close={() => setShowInviteModal(false)}>
           <Text mb={5}>
-            Enter an email address to send an invite. The invited user will need
-            to sign up with the same email address. Once the invite is
-            generated, you can also copy a direct invite link.
+            {getLocaleString("accInviteText1")}
           </Text>
           <form onSubmit={handleGenerateInvite}>
-            <Input name="email" type="email" label="Email" mb={4} required />
+            <Input name="email" type="email" label={getLocaleString("email")} mb={4} required />
             {userRole === "admin" && (
               <Select name="role" mb={4} required>
-                <option value="user">Role: user</option>
-                <option value="admin">Role: admin</option>
+                <option value="user">{getLocaleString("accRoleUser")}</option>
+                <option value="admin">{getLocaleString("accRoleAdmin")}</option>
               </Select>
             )}
             <Box display="flex" justifyContent="flex-end">
@@ -637,9 +653,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 variant="secondary"
                 mr={3}
               >
-                Cancel
+                {getLocaleString("accCancel")}
               </Button>
-              <Button>Send invite</Button>
+              <Button>{getLocaleString("accSendInvite")}</Button>
             </Box>
           </form>
         </Modal>
@@ -647,15 +663,13 @@ const Account = ({ token, invites = [], user, userRole }) => {
       {showDeleteAccountModal && (
         <Modal close={() => setShowDeleteAccountModal(false)}>
           <Text mb={5}>
-            Are you sure you want to delete your account? This action cannot be
-            undone, and you may not be able to register again. Your personal
-            information will be deleted but your uploaded torrents will remain.
+            {getLocaleString("accDelAccText1")}
           </Text>
           <form onSubmit={handleDeleteAccount}>
             <Input
               name="password"
               type="password"
-              label="Password"
+              label={getLocaleString("password")}
               mb={4}
               required
             />
@@ -666,9 +680,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 variant="secondary"
                 mr={3}
               >
-                Cancel
+                {getLocaleString("accCancel")}
               </Button>
-              <Button variant="danger">Yes, delete my account</Button>
+              <Button variant="danger">{getLocaleString("accDeleteMyAccYes")}</Button>
             </Box>
           </form>
         </Modal>

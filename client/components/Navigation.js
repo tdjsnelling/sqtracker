@@ -24,6 +24,7 @@ import { UserPlus } from "@styled-icons/boxicons-regular/UserPlus";
 import Box from "./Box";
 import Text from "./Text";
 import Button from "./Button";
+import LocaleContext from "../utils/LocaleContext";
 
 const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   const router = useRouter();
@@ -56,12 +57,27 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
   });
 });
 
+const LocaleSelector = styled.select(() =>
+  css({
+    bg: "sidebar",
+    color: "text",
+    border: 0,
+    fontSize: 0,
+    fontFamily: "body",
+    cursor: "pointer",
+    p: 0,
+  })
+);
+
 const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
   const [cookies] = useCookies();
   const [role, setRole] = useState("user");
   const [isServer, setIsServer] = useState(true);
 
   const theme = useContext(ThemeContext);
+
+  const { locale, setLocale, locales, getLocaleString } =
+    useContext(LocaleContext);
 
   const { asPath } = useRouter();
 
@@ -126,7 +142,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       >
         <Button
           onClick={() => setMenuIsOpen(false)}
-          variant="noBackground"
+          variant="secondary"
           display={["block", "none"]}
           px={1}
           py={1}
@@ -151,55 +167,55 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             <Box display="grid" gridAutoFlow="row" gridGap={0}>
               <Link href="/" passHref>
                 <NavLink>
-                  <Text>Home</Text>
+                  <Text>{getLocaleString("navHome")}</Text>
                   <Home size={24} />
                 </NavLink>
               </Link>
               <Link href="/categories" passHref>
                 <NavLink>
-                  <Text>Browse</Text>
+                  <Text>{getLocaleString("navBrowse")}</Text>
                   <ListUl size={24} />
                 </NavLink>
               </Link>
               <Link href="/search" passHref>
                 <NavLink>
-                  <Text>Search</Text>
+                  <Text>{getLocaleString("navSearch")}</Text>
                   <Search size={24} />
                 </NavLink>
               </Link>
               <Link href="/upload" passHref>
                 <NavLink>
-                  <Text>Upload</Text>
+                  <Text>{getLocaleString("navUpload")}</Text>
                   <Upload size={24} />
                 </NavLink>
               </Link>
               <Link href="/requests" passHref>
                 <NavLink>
-                  <Text>Requests</Text>
+                  <Text>{getLocaleString("navRequests")}</Text>
                   <MessageAdd size={24} />
                 </NavLink>
               </Link>
               <Link href="/announcements" passHref>
                 <NavLink>
-                  <Text>Announcements</Text>
+                  <Text>{getLocaleString("navAnnouncements")}</Text>
                   <News size={24} />
                 </NavLink>
               </Link>
               <Link href="/wiki" passHref>
                 <NavLink>
-                  <Text>Wiki</Text>
+                  <Text>{getLocaleString("navWiki")}</Text>
                   <BookOpen size={24} />
                 </NavLink>
               </Link>
               <Link href="/rss" passHref>
                 <NavLink>
-                  <Text>RSS</Text>
+                  <Text>{getLocaleString("navRSS")}</Text>
                   <Rss size={24} />
                 </NavLink>
               </Link>
               <Link href="/bookmarks" passHref>
                 <NavLink>
-                  <Text>Bookmarks</Text>
+                  <Text>{getLocaleString("navBookmarks")}</Text>
                   <Bookmark size={24} />
                 </NavLink>
               </Link>
@@ -213,13 +229,13 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <>
                   <Link href="/reports" passHref>
                     <NavLink highlights={["/reports"]}>
-                      <Text>Reports</Text>
+                      <Text>{getLocaleString("navReports")}</Text>
                       <Error size={24} />
                     </NavLink>
                   </Link>
                   <Link href="/stats" passHref>
                     <NavLink highlights={["/stats"]}>
-                      <Text>Stats</Text>
+                      <Text>{getLocaleString("navStats")}</Text>
                       <TrendingUp size={24} />
                     </NavLink>
                   </Link>
@@ -227,7 +243,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
               )}
               <Link href="/logout" passHref>
                 <NavLink mt={5}>
-                  <Text>Log out</Text>
+                  <Text>{getLocaleString("navLogOut")}</Text>
                   <LogOutCircle size={24} />
                 </NavLink>
               </Link>
@@ -236,7 +252,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
             <Box display="grid" gridAutoFlow="row" gridGap={0}>
               <Link href="/login" passHref>
                 <NavLink>
-                  <Text>Log in</Text>
+                  <Text>{getLocaleString("logIn")}</Text>
                   <LogInCircle size={24} />
                 </NavLink>
               </Link>
@@ -244,7 +260,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 SQ_ALLOW_REGISTER === "invite") && (
                 <Link href="/register" passHref>
                   <NavLink>
-                    <Text>Register</Text>
+                    <Text>{getLocaleString("register")}</Text>
                     <UserPlus size={24} />
                   </NavLink>
                 </Link>
@@ -253,13 +269,13 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
                 <>
                   <Link href="/categories" passHref>
                     <NavLink>
-                      <Text>Browse</Text>
+                      <Text>{getLocaleString("navBrowse")}</Text>
                       <ListUl size={24} />
                     </NavLink>
                   </Link>
                   <Link href="/wiki" passHref>
                     <NavLink>
-                      <Text>Wiki</Text>
+                      <Text>{getLocaleString("navWiki")}</Text>
                       <BookOpen size={24} />
                     </NavLink>
                   </Link>
@@ -280,7 +296,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
         p={3}
       >
         <Text color="grey" fontSize={0}>
-          Powered by{" "}
+          {getLocaleString("poweredBy")}{" "}
           <a
             href="https://github.com/tdjsnelling/sqtracker"
             target="_blank"
@@ -288,10 +304,18 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
           >
             ■ sqtracker
           </a>{" "}
-        </Text>
-        <Text color="grey" fontSize={0}>
           v{SQ_VERSION}
         </Text>
+        <LocaleSelector
+          value={locale}
+          onChange={(e) => setLocale(e.target.value)}
+        >
+          {locales.sort().map((l) => (
+            <option key={`locale-${l}`} value={l}>
+              {l.toUpperCase()}
+            </option>
+          ))}
+        </LocaleSelector>
       </Box>
     </Box>
   );

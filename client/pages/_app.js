@@ -27,6 +27,8 @@ import Input from "../components/Input";
 import { NotificationsProvider } from "../components/Notifications";
 import Text from "../components/Text";
 import LoadingContext from "../utils/LoadingContext";
+import LocaleContext from "../utils/LocaleContext";
+import locales from "../locales";
 
 const getThemeColours = (themeName, customTheme = {}) => {
   switch (themeName) {
@@ -152,6 +154,9 @@ const Loading = styled(LoaderAlt)`
   animation: ${spin} 1s linear infinite;
 `;
 
+const getLocaleString = (locale) => (key) =>
+  locales[locale][key] ?? locales.en[key];
+
 const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
@@ -159,6 +164,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isServer, setIsServer] = useState(true);
   const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState();
+  const [locale, setLocale] = useState("en");
 
   const router = useRouter();
 
@@ -207,6 +213,9 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
         setThemeAndSave(matches ? "light" : "dark");
       });
     }
+
+    const { locale: localeCookie } = cookies;
+    if (Object.keys(locales).includes(localeCookie)) setLocale(localeCookie);
 
     Router.events.on("routeChangeStart", () => setLoading(true));
     Router.events.on("routeChangeComplete", () => setLoading(false));
@@ -263,152 +272,168 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       <ThemeProvider theme={appTheme}>
         <GlobalStyle />
         <LoadingContext.Provider value={{ loading, setLoading }}>
-          <NotificationsProvider>
-            <Navigation
-              isMobile={isMobile}
-              menuIsOpen={menuIsOpen}
-              setMenuIsOpen={setMenuIsOpen}
-            />
-            <Box
-              width="100%"
-              height="60px"
-              bg="background"
-              borderBottom="1px solid"
-              borderColor="border"
-              position="fixed"
-              top={0}
-              zIndex={9}
-            >
+          <LocaleContext.Provider
+            value={{
+              locale,
+              setLocale: (l) => {
+                setLocale(l);
+                setCookie("locale", l, { path: "/" });
+              },
+              locales: Object.keys(locales),
+              getLocaleString: getLocaleString(locale),
+            }}
+          >
+            <NotificationsProvider>
+              <Navigation
+                isMobile={isMobile}
+                menuIsOpen={menuIsOpen}
+                setMenuIsOpen={setMenuIsOpen}
+              />
               <Box
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-                maxWidth="body"
+                width="100%"
                 height="60px"
-                ml={[
-                  0,
-                  `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`,
-                ]}
-                px={[4, 5]}
+                bg="background"
+                borderBottom="1px solid"
+                borderColor="border"
+                position="fixed"
+                top={0}
+                zIndex={9}
               >
-                <Box display="flex" alignItems="center">
-                  <Button
-                    onClick={() => setMenuIsOpen(true)}
-                    variant="noBackground"
-                    display={["block", "none"]}
-                    px={1}
-                    py={1}
-                    mr={3}
-                  >
-                    <Menu size={24} />
-                  </Button>
-                  {loading && (
-                    <Box mr={3}>
-                      <Loading size={24} />
-                    </Box>
-                  )}
-                  {SQ_SITE_WIDE_FREELEECH === true && (
-                    <Text
-                      icon={Bell}
-                      iconColor="primary"
-                      iconWrapperProps={{ justifyContent: "flex-end" }}
-                      fontSize={[0, 2]}
-                    >
-                      Site-wide freeleech enabled!
-                    </Text>
-                  )}
-                </Box>
-                {!isServer && token && (
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  maxWidth="body"
+                  height="60px"
+                  ml={[
+                    0,
+                    `max(calc((100vw - ${appTheme.sizes.body}) / 2), 200px)`,
+                  ]}
+                  px={[4, 5]}
+                >
                   <Box display="flex" alignItems="center">
-                    {userStats && (
-                      <Box
-                        display={["none", "flex"]}
-                        alignItems="center"
-                        color="grey"
-                      >
-                        {Number(SQ_MINIMUM_RATIO) !== -1 && (
-                          <>
-                            <Sort size={14} />
-                            <Text
-                              color={
-                                userStats.ratio !== -1 &&
-                                userStats.ratio < SQ_MINIMUM_RATIO
-                                  ? "error"
-                                  : "grey"
-                              }
-                              fontSize={0}
-                              ml={1}
-                              mr={2}
-                            >
-                              {userStats.ratio === -1 ? "N/A" : userStats.ratio}
-                            </Text>
-                          </>
-                        )}
-                        <CaretUp size={16} />
-                        <Text fontSize={0} ml={0} mr={2}>
-                          {prettyBytes(userStats.up ?? 0)}
-                        </Text>
-                        <CaretDown size={16} />
-                        <Text fontSize={0} ml={0} mr={2}>
-                          {prettyBytes(userStats.down ?? 0)}
-                        </Text>
-                        {Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 && (
-                          <>
-                            <Run size={16} />
-                            <Text
-                              color={
-                                userStats.hitnruns > SQ_MAXIMUM_HIT_N_RUNS
-                                  ? "error"
-                                  : "grey"
-                              }
-                              fontSize={0}
-                              ml={1}
-                              mr={2}
-                            >
-                              {userStats.hitnruns ?? 0}
-                            </Text>
-                          </>
-                        )}
-                        <Award size={16} />
-                        <Text fontSize={0} ml={0} mr={4}>
-                          {userStats.bp ?? 0} BP
-                        </Text>
+                    <Button
+                      onClick={() => setMenuIsOpen(true)}
+                      variant="secondary"
+                      display={["block", "none"]}
+                      px={1}
+                      py={1}
+                      mr={3}
+                    >
+                      <Menu size={24} />
+                    </Button>
+                    {loading && (
+                      <Box mr={3}>
+                        <Loading size={24} />
                       </Box>
                     )}
-                    <Box as="form" onSubmit={handleSearch}>
-                      <Input
-                        name="query"
-                        placeholder="Search"
-                        maxWidth="300px"
-                        ref={searchRef}
-                      />
-                    </Box>
-                    {allowThemeToggle && (
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          setThemeAndSave(theme === "light" ? "dark" : "light");
-                        }}
-                        width="40px"
-                        px={2}
-                        py={2}
-                        ml={3}
+                    {SQ_SITE_WIDE_FREELEECH === true && (
+                      <Text
+                        icon={Bell}
+                        iconColor="primary"
+                        iconWrapperProps={{ justifyContent: "flex-end" }}
+                        fontSize={[0, 2]}
                       >
-                        {theme === "light" ? (
-                          <Sun size={24} />
-                        ) : (
-                          <Moon size={24} />
-                        )}
-                      </Button>
+                        Site-wide freeleech enabled!
+                      </Text>
                     )}
                   </Box>
-                )}
+                  {!isServer && token && (
+                    <Box display="flex" alignItems="center">
+                      {userStats && (
+                        <Box
+                          display={["none", "flex"]}
+                          alignItems="center"
+                          color="grey"
+                        >
+                          {Number(SQ_MINIMUM_RATIO) !== -1 && (
+                            <>
+                              <Sort size={14} />
+                              <Text
+                                color={
+                                  userStats.ratio !== -1 &&
+                                  userStats.ratio < SQ_MINIMUM_RATIO
+                                    ? "error"
+                                    : "grey"
+                                }
+                                fontSize={0}
+                                ml={1}
+                                mr={2}
+                              >
+                                {userStats.ratio === -1
+                                  ? "N/A"
+                                  : userStats.ratio}
+                              </Text>
+                            </>
+                          )}
+                          <CaretUp size={16} />
+                          <Text fontSize={0} ml={0} mr={2}>
+                            {prettyBytes(userStats.up ?? 0)}
+                          </Text>
+                          <CaretDown size={16} />
+                          <Text fontSize={0} ml={0} mr={2}>
+                            {prettyBytes(userStats.down ?? 0)}
+                          </Text>
+                          {Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 && (
+                            <>
+                              <Run size={16} />
+                              <Text
+                                color={
+                                  userStats.hitnruns > SQ_MAXIMUM_HIT_N_RUNS
+                                    ? "error"
+                                    : "grey"
+                                }
+                                fontSize={0}
+                                ml={1}
+                                mr={2}
+                              >
+                                {userStats.hitnruns ?? 0}
+                              </Text>
+                            </>
+                          )}
+                          <Award size={16} />
+                          <Text fontSize={0} ml={0} mr={4}>
+                            {userStats.bp ?? 0} BP
+                          </Text>
+                        </Box>
+                      )}
+                      <Box as="form" onSubmit={handleSearch}>
+                        <Input
+                          name="query"
+                          placeholder="Search"
+                          maxWidth="300px"
+                          ref={searchRef}
+                        />
+                      </Box>
+                      {allowThemeToggle && (
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setThemeAndSave(
+                              theme === "light" ? "dark" : "light"
+                            );
+                          }}
+                          width="40px"
+                          px={2}
+                          py={2}
+                          ml={3}
+                        >
+                          {theme === "light" ? (
+                            <Sun size={24} />
+                          ) : (
+                            <Moon size={24} />
+                          )}
+                        </Button>
+                      )}
+                    </Box>
+                  )}
+                </Box>
               </Box>
-            </Box>
-            <Box as="main" mt="60px">
-              <Component {...pageProps} />
-            </Box>
-          </NotificationsProvider>
+              <Box as="main" mt="60px">
+                <Component {...pageProps} />
+              </Box>
+            </NotificationsProvider>
+          </LocaleContext.Provider>
         </LoadingContext.Provider>
       </ThemeProvider>
     </>

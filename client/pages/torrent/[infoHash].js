@@ -30,6 +30,7 @@ import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import { TorrentFields } from "../upload";
 import MarkdownInput from "../../components/MarkdownInput";
+import LocaleContext from "../../utils/LocaleContext";
 
 // from https://stackoverflow.com/a/44681235/7739519
 const insert = (children = [], [head, ...tail], size) => {
@@ -169,6 +170,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
   const [cookies] = useCookies();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   const handleEdit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -199,11 +202,14 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Torrent edited successfully");
+      addNotification("success", `${getLocaleString("torrTorrEditSuccess")}`);
 
       window.location.reload();
     } catch (e) {
-      addNotification("error", `Could edit torrent: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldEditTorr")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -229,11 +235,14 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Torrent deleted successfully");
+      addNotification("success", `${getLocaleString("torrTorrDelSuccess")}`);
 
       router.push("/");
     } catch (e) {
-      addNotification("error", `Could not delete torrent: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldNotDelTorr")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -265,7 +274,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Comment posted successfully");
+      addNotification("success", `${getLocaleString("reqCommentPostSuccess")}`);
 
       setComments((c) => {
         const newComment = {
@@ -280,7 +289,10 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error", `Could not post comment: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("reqCommentNotPost")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -330,9 +342,12 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Vote submitted successfully");
+      addNotification("success", `${getLocaleString("torrVoteSubmitSuccess")}`);
     } catch (e) {
-      addNotification("error", `Could not submit vote: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldNotSubmitVote")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -364,11 +379,17 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Report submitted successfully");
+      addNotification(
+        "success",
+        `${getLocaleString("torrReportSubmitSuccess")}`
+      );
 
       setShowReportModal(false);
     } catch (e) {
-      addNotification("error", `Could not submit report: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldNotSubmitReport")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -394,11 +415,14 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Freeleech toggled successfully");
+      addNotification("success", `${getLocaleString("torrFLToggleSuccess")}`);
 
       setIsFreeleech((f) => !f);
     } catch (e) {
-      addNotification("error", `Could not toggle freeleech: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldNotToggleFL")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -424,13 +448,16 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Torrent removed from group successfully");
+      addNotification(
+        "success",
+        `${getLocaleString("torrTorrRemFromGroupSuccess")}`
+      );
 
       setHasGroup(false);
     } catch (e) {
       addNotification(
         "error",
-        `Could not remove torrent from group: ${e.message}`
+        `${getLocaleString("torrCouldNotRemTorrFromGroup")}: ${e.message}`
       );
       console.error(e);
     }
@@ -459,12 +486,17 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
 
       addNotification(
         "success",
-        `Torrent ${bookmarked ? "removed from" : "added to"} bookmarks`
+        `${getLocaleString("torrTorrent")} ${
+          bookmarked ? getLocaleString("torrRemovedFrom") : getLocaleString("torrAddedTo")
+        } ${getLocaleString("navBookmarks")}`
       );
 
       setBookmarked((b) => !b);
     } catch (e) {
-      addNotification("error", `Could not bookmark torrent: ${e.message}`);
+      addNotification(
+        "error",
+        `${getLocaleString("torrCouldNotBookmarkTorr")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -504,7 +536,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           {torrent.name}
           {(torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
             <Text as="span" fontSize={3} color="primary" ml={3}>
-              FL!
+              {getLocaleString("torrFL")}
             </Text>
           )}
         </Text>
@@ -530,20 +562,23 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
                 variant="secondary"
                 mr={3}
               >
-                Edit
+                {getLocaleString("torrEdit")}
               </Button>
               <Button
                 onClick={() => setShowDeleteModal(true)}
                 variant="secondary"
                 mr={3}
               >
-                Delete
+                {getLocaleString("reqDelete")}
               </Button>
             </>
           )}
           {userRole === "admin" && (
             <Button onClick={handleToggleFreeleech} variant="secondary" mr={3}>
-              {isFreeleech ? "Unset" : "Set"} freeleech
+              {isFreeleech
+                ? `${getLocaleString("torrUnset")}`
+                : `${getLocaleString("torrSet")}`}{" "}
+              {getLocaleString("torrFreeleech")}
             </Button>
           )}
           {userId ? (
@@ -557,18 +592,18 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               target="_blank"
               disabled={downloadDisabled}
             >
-              Download .torrent
+              {getLocaleString("torrDownload")} .torrent
             </Button>
           ) : (
             <Link href="/login" passHref>
-              <Button as="a">Log in to download</Button>
+              <Button as="a">{getLocaleString("torrLogInDownload")}</Button>
             </Link>
           )}
         </Box>
       </Box>
       <Info
         items={{
-          "Uploaded by": torrent.anonymous ? (
+          [getLocaleString("torrUploadedBy")]: torrent.anonymous ? (
             "Anonymous"
           ) : (
             <>
@@ -581,7 +616,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               )}
             </>
           ),
-          Category: category ? (
+          [getLocaleString("uploadCategory")]: category ? (
             <Link
               href={`/categories/${slugify(category, { lower: true })}`}
               passHref
@@ -589,7 +624,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{category}</Text>
             </Link>
           ) : undefined,
-          Source: source ? (
+          [getLocaleString("uploadSource")]: source ? (
             <Link
               href={`/categories/${slugify(category, {
                 lower: true,
@@ -599,8 +634,10 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               <Text as="a">{source}</Text>
             </Link>
           ) : undefined,
-          Date: moment(torrent.created).format("HH:mm Do MMM YYYY"),
-          "Info hash": (
+          [getLocaleString("torrDate")]: moment(torrent.created).format(
+            `${getLocaleString("indexTime")}`
+          ),
+          [getLocaleString("reqInfohash")]: (
             <Text
               as="span"
               fontFamily="mono"
@@ -609,12 +646,16 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               {torrent.infoHash}
             </Text>
           ),
-          Size: prettyBytes(torrent.size),
-          Downloads: torrent.downloads,
-          Seeders: torrent.seeders !== undefined ? torrent.seeders : "?",
-          Leechers: torrent.leechers !== undefined ? torrent.leechers : "?",
-          Freeleech:
-            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true ? "Yes" : "No",
+          [getLocaleString("torrSize")]: prettyBytes(torrent.size),
+          [getLocaleString("torrDownloads")]: torrent.downloads,
+          [getLocaleString("torrSeeders")]:
+            torrent.seeders !== undefined ? torrent.seeders : "?",
+          [getLocaleString("torrLeechers")]:
+            torrent.leechers !== undefined ? torrent.leechers : "?",
+          [getLocaleString("torrFreeleech")]:
+            torrent.freeleech || SQ_SITE_WIDE_FREELEECH === true
+              ? [getLocaleString("torrYes")]
+              : [getLocaleString("torrNo")],
         }}
       />
       <Infobox mb={5}>
@@ -624,7 +665,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           _css={{ textTransform: "uppercase" }}
           mb={3}
         >
-          Description
+          {getLocaleString("uploadDescription")}
         </Text>
         <MarkdownBody>
           <ReactMarkdown remarkPlugins={[remarkGfm]}>
@@ -640,7 +681,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             _css={{ textTransform: "uppercase" }}
             mb={3}
           >
-            MediaInfo
+            {getLocaleString("uploadMediaInfo")}
           </Text>
           <Box as="pre" fontFamily="mono" fontSize={1} overflowX="auto">
             {torrent.mediaInfo}
@@ -654,7 +695,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           _css={{ textTransform: "uppercase" }}
           mb={3}
         >
-          Tags
+          {getLocaleString("uploadTags")}
         </Text>
         {torrent.tags.filter((t) => !!t).length ? (
           <Box display="flex" flexWrap="wrap" ml={-1} mt={-1}>
@@ -683,7 +724,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             ))}
           </Box>
         ) : (
-          <Text color="grey">This torrent has no tags.</Text>
+          <Text color="grey">{getLocaleString("torrTorrNoTags")}</Text>
         )}
       </Infobox>
       <Infobox mb={5}>
@@ -693,7 +734,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           _css={{ textTransform: "uppercase" }}
           mb={3}
         >
-          Files
+          {getLocaleString("torrFiles")}
         </Text>
         <Box as="ul" pl={0} css={{ listStyle: "none" }}>
           {parsedFiles.sort(sortName).map((file, i) => (
@@ -738,7 +779,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               onClick={() => setShowReportModal(true)}
               variant="noBackground"
             >
-              Report
+              {getLocaleString("torrReport")}
             </Button>
           </>
         )}
@@ -751,7 +792,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           width="100%"
           mb={4}
         >
-          <Text as="h2">Grouped torrents</Text>
+          <Text as="h2">{getLocaleString("torrGroupTorr")}</Text>
           <Box display="flex" justifyContent="flex-end">
             {!!torrent.groupTorrents.length &&
               (userRole === "admin" || userId === torrent.uploadedBy._id) &&
@@ -761,13 +802,13 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
                   variant="secondary"
                   ml={3}
                 >
-                  Remove this torrent
+                  {getLocaleString("torrRemTorr")}
                 </Button>
               )}
             {!!userId && (
               <Link href={`/upload?groupWith=${torrent.infoHash}`} passHref>
                 <Button as="a" ml={3}>
-                  Add a torrent
+                  {getLocaleString("torrAddTorr")}
                 </Button>
               </Link>
             )}
@@ -779,23 +820,25 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             categories={SQ_TORRENT_CATEGORIES}
           />
         ) : (
-          <Text color="grey">There are no other torrents in this group.</Text>
+          <Text color="grey">
+            {getLocaleString("torrThereAreNoOtherTorrGroup")}
+          </Text>
         )}
       </Box>
       <Text as="h2" mb={4}>
-        Comments
+        {getLocaleString("userComments")}
       </Text>
       <form onSubmit={userId ? handleComment : undefined}>
         <Input
           ref={commentInputRef}
           name="comment"
-          label="Post a comment"
+          label={getLocaleString("reqPostAComment")}
           rows="5"
           disabled={!userId}
           mb={4}
         />
         <Button disabled={!userId} display="block" ml="auto">
-          Post
+          {getLocaleString("reqPost")}
         </Button>
       </form>
       {!!comments?.length && (
@@ -813,13 +856,13 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           <form onSubmit={handleReport}>
             <MarkdownInput
               name="reason"
-              label="Reason for report"
-              placeholder="Markdown supported"
+              label={getLocaleString("torrReasonForReport")}
+              placeholder={getLocaleString("uploadMarkdownSupport")}
               rows={8}
               mb={4}
               required
             />
-            <Button width="100%">Report</Button>
+            <Button width="100%">{getLocaleString("torrReport")}</Button>
           </form>
         </Modal>
       )}
@@ -843,28 +886,26 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
                 variant="secondary"
                 mr={3}
               >
-                Cancel
+                {getLocaleString("accCancel")}
               </Button>
-              <Button>Save changes</Button>
+              <Button>{getLocaleString("wikiSaveChanges")}</Button>
             </Box>
           </form>
         </Modal>
       )}
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
-          <Text mb={5}>
-            Are you sure you want to delete this torrent? This cannot be undone.
-          </Text>
+          <Text mb={5}>{getLocaleString("torrSureDeleteTorr")}</Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
               onClick={() => setShowDeleteModal(false)}
               variant="secondary"
               mr={3}
             >
-              Cancel
+              {getLocaleString("accCancel")}
             </Button>
             <Button onClick={handleDelete} variant="danger">
-              Delete
+              {getLocaleString("reqDelete")}
             </Button>
           </Box>
         </Modal>

@@ -16,6 +16,7 @@ import { NotificationContext } from "../../components/Notifications";
 import LoadingContext from "../../utils/LoadingContext";
 import Modal from "../../components/Modal";
 import { WikiFields } from "./new";
+import LocaleContext from "../../utils/LocaleContext";
 
 const sortSlug = (a, b) => {
   if (a.slug > b.slug) return 1;
@@ -40,6 +41,8 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
     setEditing(false);
   }, [router.asPath]);
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   const handleDelete = async () => {
     setLoading(true);
 
@@ -56,13 +59,17 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Wiki page deleted successfully");
+      addNotification("success",
+        `${getLocaleString("wikiPageDelSuccess")}`
+      );
 
       setShowDeleteModal(false);
 
       await router.push("/wiki");
     } catch (e) {
-      addNotification("error", `Could not delete wiki page: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("wikiCouldNotDelPage")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -97,14 +104,18 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
         throw new Error(reason);
       }
 
-      addNotification("success", "Wiki page updated successfully");
+      addNotification("success",
+        `${getLocaleString("wikiPageUpdateSuccess")}`
+      );
 
       if (form.get("slug") === page.slug) window.location.reload();
       else
         window.location.href =
           "/wiki" + (page.slug === "/" ? "" : form.get("slug"));
     } catch (e) {
-      addNotification("error", `Could not update wiki page: ${e.message}`);
+      addNotification("error",
+        `${getLocaleString("wikiCouldNotUpdatePage")}: ${e.message}`
+      );
       console.error(e);
     }
 
@@ -125,7 +136,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
           <Box display="flex" alignItems="center">
             <Link href="/wiki/new" passHref>
               <Button as="a" variant="secondary">
-                Add page
+                {getLocaleString("wikiAddPage")}
               </Button>
             </Link>
             {!!page && (
@@ -135,7 +146,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
                   variant="secondary"
                   ml={3}
                 >
-                  Edit
+                  {getLocaleString("torrEdit")}
                 </Button>
                 {!!slug && (
                   <Button
@@ -143,7 +154,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
                     variant="secondary"
                     ml={3}
                   >
-                    Delete
+                    {getLocaleString("reqDelete")}
                   </Button>
                 )}
               </>
@@ -155,9 +166,9 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
         <>
           <Box borderBottom="1px solid" borderColor="border" pb={5} mb={5}>
             <Text color="grey">
-              Last edited{" "}
-              {moment(page.updated ?? page.created).format("HH:mm Do MMM YYYY")}{" "}
-              by{" "}
+              {getLocaleString("wikiLastEdited")}{" "}
+              {moment(page.updated ?? page.created).format(`${getLocaleString("indexTime")}`)}{" "}
+              {getLocaleString("reqBy")}{" "}
               {page.createdBy?.username ? (
                 <Link href={`/user/${page.createdBy.username}`} passHref>
                   <a>{page.createdBy.username}</a>
@@ -206,7 +217,7 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
                   mb={3}
                   _css={{ textTransform: "uppercase" }}
                 >
-                  Pages
+                  {getLocaleString("wikiPages")}
                 </Text>
                 {allPages.sort(sortSlug).map((p) => (
                   <Link key={`page-${p.slug}`} href={`/wiki${p.slug}`} passHref>
@@ -227,21 +238,20 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
                   variant="secondary"
                   mr={3}
                 >
-                  Cancel
+                  {getLocaleString("accCancel")}
                 </Button>
-                <Button>Save changes</Button>
+                <Button>{getLocaleString("wikiSaveChanges")}</Button>
               </Box>
             </form>
           )}
         </>
       ) : (
-        <Text color="grey">There is nothing here yet.</Text>
+        <Text color="grey">{getLocaleString("wikiThereNothingHereYet")}</Text>
       )}
       {showDeleteModal && (
         <Modal close={() => setShowDeleteModal(false)}>
           <Text mb={5}>
-            Are you sure you want to delete this wiki page? This cannot be
-            undone.
+            {getLocaleString("wikiDelThisPageQ")}
           </Text>
           <Box display="flex" justifyContent="flex-end">
             <Button
@@ -249,10 +259,10 @@ const Wiki = ({ page, allPages, token, userRole, slug }) => {
               variant="secondary"
               mr={3}
             >
-              Cancel
+              {getLocaleString("accCancel")}
             </Button>
             <Button onClick={handleDelete} variant="danger">
-              Delete
+              {getLocaleString("reqDelete")}
             </Button>
           </Box>
         </Modal>

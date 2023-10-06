@@ -10,8 +10,6 @@ sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
 
-Check out the demo at [demo.sqtracker.dev](https://demo.sqtracker.dev).
-
 Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and general chat.
 
 ## Features
@@ -56,7 +54,6 @@ The roadmap is still being expanded.
 * Better profiles (avatar, bio etc.)
 * Premoderation option
 * Anti-cheat
-* Localisation (ongoing)
   
 ## Configuration
 
@@ -110,6 +107,24 @@ sqtracker is reasonably light-weight, but you should still invest in a VPS with 
 Alternatively, you can deploy each service individually on a PaaS cloud platform such as [Northflank](https://northflank.com).
 
 You will need to deploy each of the 4 components listed above. The Docker images for the client and API services are published in this repository.
+
+## Adding a translation
+
+New translations are always appreciated!
+
+To add a new translation in your own language, create a new JSON file with your 2 character locale code in `client/locales`. For example, `client/locales/en.json`. In the `client/locales/index.js` file, you should then import your JSON file and add it to the exported object along with the existing locales.
+
+The best place to start is to copy the `en.json` file and work through it, translating each English string.
+
+### Existing translations
+
+| Language           | Complete (estimate) | Contributed by                             |
+|--------------------|---------------------|--------------------------------------------|
+| English            | 100%                |                                            |
+| Russian            | 100%                | [@smlinux](https://github.com/smlinux)     |
+| Esperanto          | 100%                | [@smlinux](https://github.com/smlinux)     |
+| German             | 15%                 | [@MikeMatau](https://github.com/MikeMatau) |
+| Simplified Chinese | 95%                 | [@0EAC](https://github.com/0EAC)           |
 
 ## Screenshots
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import jwt from "jsonwebtoken";
 import styled from "styled-components";
@@ -6,6 +6,7 @@ import css from "@styled-system/css";
 import SEO from "../components/SEO";
 import Text from "../components/Text";
 import { withAuthServerSideProps } from "../utils/withAuth";
+import LocaleContext from "../utils/LocaleContext";
 
 const StyledTable = styled.table(() =>
   css({
@@ -22,24 +23,25 @@ const StyledTable = styled.table(() =>
 );
 
 const Stats = ({ stats, userRole }) => {
+  const { getLocaleString } = useContext(LocaleContext);
   if (userRole !== "admin") {
-    return <Text>You do not have permission to do that.</Text>;
+    return <Text>{getLocaleString("statYouNotPermission")}</Text>;
   }
+
+  console.log(stats);
 
   return (
     <>
-      <SEO title="Tracker statistics" />
+      <SEO title={getLocaleString("statTrackerStat")} />
       <Text as="h1" mb={5}>
-        Tracker statistics
+        {getLocaleString("statTrackerStat")}
       </Text>
       <StyledTable>
         {Object.entries(stats).map(([key, value]) => {
-          let readableKey = key.replace(/([A-Z])/g, " $1").toLowerCase();
-          readableKey =
-            readableKey.charAt(0).toUpperCase() + readableKey.slice(1);
+          const localeKey = key.charAt(0).toUpperCase() + key.slice(1);
           return (
             <tr key={`stat-${key}`}>
-              <td>{readableKey}</td>
+              <td>{getLocaleString(`stat${localeKey}`)}</td>
               <td>{value}</td>
             </tr>
           );

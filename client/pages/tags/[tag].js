@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import getConfig from "next/config";
 import qs from "qs";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import SEO from "../../components/SEO";
 import Text from "../../components/Text";
+import LocaleContext from "../../utils/LocaleContext";
 import TorrentList from "../../components/TorrentList";
 
 const Tag = ({ results, token }) => {
@@ -19,11 +20,13 @@ const Tag = ({ results, token }) => {
     publicRuntimeConfig: { SQ_TORRENT_CATEGORIES, SQ_API_URL },
   } = getConfig();
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title={`Tagged with “${tag}”`} />
+      <SEO title={`${getLocaleString("tagTaggedWith")} “${tag}”`} />
       <Text as="h1" mb={5}>
-        Tagged with “{tag}”
+        {getLocaleString("tagTaggedWith")} “{tag}”
       </Text>
       {torrents.length ? (
         <TorrentList
@@ -35,7 +38,7 @@ const Tag = ({ results, token }) => {
           token={token}
         />
       ) : (
-        <Text color="grey">No results.</Text>
+        <Text color="grey">{getLocaleString("catNoResults")}</Text>
       )}
     </>
   );

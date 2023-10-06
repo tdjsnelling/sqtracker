@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import getConfig from "next/config";
 import qs from "qs";
@@ -7,6 +7,7 @@ import { withAuthServerSideProps } from "../../utils/withAuth";
 import SEO from "../../components/SEO";
 import Text from "../../components/Text";
 import TorrentList from "../../components/TorrentList";
+import LocaleContext from "../../utils/LocaleContext";
 
 const Category = ({ results, token }) => {
   const [torrents, setTorrents] = useState(results?.torrents ?? []);
@@ -24,11 +25,13 @@ const Category = ({ results, token }) => {
     (c) => slugify(c, { lower: true }) === categorySlug
   );
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title={`Browse ${category}`} />
+      <SEO title={`${getLocaleString("navBrowse")}  ${category}`} />
       <Text as="h1" mb={5}>
-        Browse {category}
+        {getLocaleString("navBrowse")} {category}
       </Text>
       {torrents.length ? (
         <TorrentList
@@ -40,7 +43,7 @@ const Category = ({ results, token }) => {
           token={token}
         />
       ) : (
-        <Text color="grey">No results.</Text>
+        <Text color="grey">{getLocaleString("catNoResults")}</Text>
       )}
     </>
   );

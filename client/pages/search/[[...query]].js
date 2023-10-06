@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import getConfig from "next/config";
 import { useRouter } from "next/router";
 import qs from "qs";
@@ -8,6 +8,7 @@ import Text from "../../components/Text";
 import Input from "../../components/Input";
 import Button from "../../components/Button";
 import Box from "../../components/Box";
+import LocaleContext from "../../utils/LocaleContext";
 import TorrentList from "../../components/TorrentList";
 
 const Search = ({ results, error, token }) => {
@@ -34,18 +35,20 @@ const Search = ({ results, error, token }) => {
     if (query) router.push(`/search/${encodeURIComponent(query)}`);
   };
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title={query ? `Search results for “${query}”` : "Search"} />
+      <SEO title={query ? `${getLocaleString("searchSearchResults")} “${query}”` : `${getLocaleString("indexSearch")}`} />
       <Text as="h1" mb={5}>
-        {query ? `Search results for “${query}”` : "Search"}
+        {query ? `${getLocaleString("searchSearchResults")} “${query}”` : `${getLocaleString("indexSearch")}`}
       </Text>
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
         <Input name="query" mr={3} required />
-        <Button>Search</Button>
+        <Button>{getLocaleString("indexSearch")}</Button>
       </Box>
       {error ? (
-        <Text color="error">Search error: {error}</Text>
+        <Text color="error">{getLocaleString("searchSearchError")}: {error}</Text>
       ) : (
         <>
           {query && (
@@ -60,7 +63,7 @@ const Search = ({ results, error, token }) => {
                   token={token}
                 />
               ) : (
-                <Text color="grey">No results.</Text>
+                <Text color="grey">{getLocaleString("catNoResults")}</Text>
               )}
             </>
           )}

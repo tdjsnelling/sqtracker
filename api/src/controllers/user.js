@@ -371,7 +371,7 @@ export const initiatePasswordReset = (mail) => async (req, res, next) => {
       const user = await User.findOne({ email: req.body.email }).lean();
 
       if (!user) {
-        res.status(404).send("User does not exist");
+        res.sendStatus(200);
         return;
       }
 
@@ -397,7 +397,7 @@ export const initiatePasswordReset = (mail) => async (req, res, next) => {
 ${process.env.SQ_BASE_URL}/reset-password/finalise?token=${token}`,
       });
 
-      res.send(token);
+      res.sendStatus(200);
     } catch (e) {
       next(e);
     }

@@ -1,0 +1,22 @@
+{
+  "poweredBy": "Powered by",
+  "logIn": "Anmelden",
+  "register": "Registrieren",
+  "email": "E-Mail",
+  "username": "Benutzername",
+  "usernameRules": "Nur Buchstaben, Zahlen, und “.” erlaubt.",
+  "password": "Passwort",
+  "totp": "Einmalpasswort",
+  "resetPassword": "Passwort zurücksetzen",
+  "newPassword": "Neues Passwort",
+  "welcomeBack": "Willkommen zurück",
+  "logInFailed": "Anmeldung fehgeschlagen",
+  "welcome": "Willkommen",
+  "registerFailed": "Registrierung fehlgeschlagen",
+  "registrationClosed": "Registrierung geschlossen",
+  "passwordResetRequestSuccess": "Bestätigung versand, falls ein Konto mit dieser E-Mail Adresse existiert",
+  "passwordResetRequestFailed": "Passwort zurücksetzen konnte nicht initiallisiert werden",
+  "passwordResetSuccess": "Passwort wurde erfolgreich zurückgesetzt",
+  "passwordResetFailed": "Passwort wurde nicht erfolgreich zurückgesetzt",
+  "tokenError": "Token Fehler"
+}

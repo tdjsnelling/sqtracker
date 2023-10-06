@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import jwt from "jsonwebtoken";
@@ -9,22 +9,26 @@ import Text from "../../components/Text";
 import { withAuthServerSideProps } from "../../utils/withAuth";
 import Button from "../../components/Button";
 import List from "../../components/List";
+import LocaleContext from "../../utils/LocaleContext";
 
 const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
+
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="Announcements" />
+      <SEO title={getLocaleString("navAnnouncements")} />
       <Box
         display="flex"
         alignItems="center"
         justifyContent="space-between"
         mb={5}
       >
-        <Text as="h1">Announcements</Text>
+        <Text as="h1">{getLocaleString("navAnnouncements")}</Text>
         {userRole === "admin" && (
           <Link href="/announcements/new" passHref>
             <a>
-              <Button>Create new</Button>
+              <Button>{getLocaleString("reqCreateNew")}</Button>
             </a>
           </Link>
         )}
@@ -33,7 +37,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
         <>
           <Box mb={5}>
             <Text as="h3" mb={4}>
-              Pinned announcements
+              {getLocaleString("annPinnedAnnounce")}
             </Text>
             <List
               data={pinnedAnnouncements.map((announcement) => ({
@@ -42,22 +46,22 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
               }))}
               columns={[
                 {
-                  header: "Title",
+                  header: `${getLocaleString("reqTitle")}`,
                   accessor: "title",
                   cell: ({ value }) => <Text>{value}</Text>,
                   gridWidth: "1fr",
                 },
                 {
-                  header: "Posted by",
+                  header: `${getLocaleString("reqPostedBy")}`,
                   accessor: "createdBy.username",
                   cell: ({ value }) => <Text>{value ?? "deleted user"}</Text>,
                   gridWidth: "1fr",
                 },
                 {
-                  header: "Created",
+                  header: `${getLocaleString("accCreated")}`,
                   accessor: "created",
                   cell: ({ value }) => (
-                    <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
+                    <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
                   ),
                   rightAlign: true,
                   gridWidth: "175px",
@@ -66,7 +70,7 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
             />
           </Box>
           <Text as="h3" mb={4}>
-            Other announcements
+            {getLocaleString("annOtherAnnounce")}
           </Text>
         </>
       )}
@@ -77,22 +81,22 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
         }))}
         columns={[
           {
-            header: "Title",
+            header: `${getLocaleString("reqTitle")}`,
             accessor: "title",
             cell: ({ value }) => <Text>{value}</Text>,
             gridWidth: "1fr",
           },
           {
-            header: "Posted by",
+            header: `${getLocaleString("reqPostedBy")}`,
             accessor: "createdBy.username",
             cell: ({ value }) => <Text>{value ?? "deleted user"}</Text>,
             gridWidth: "1fr",
           },
           {
-            header: "Created",
+            header: `${getLocaleString("accCreated")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format("HH:mm Do MMM YYYY")}</Text>
+              <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
             ),
             rightAlign: true,
             gridWidth: "175px",

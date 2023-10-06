@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import getConfig from "next/config";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -13,34 +13,38 @@ import Infobox from "../components/Infobox";
 import { ErrorCircle } from "@styled-icons/boxicons-regular/ErrorCircle";
 import { News } from "@styled-icons/boxicons-regular/News";
 import moment from "moment/moment";
+import LocaleContext from "../utils/LocaleContext";
 
-const PublicLanding = ({ name, allowRegister }) => (
-  <Box
-    minHeight="calc(100vh - 173px)"
-    display="flex"
-    alignItems="center"
-    justifyContent="center"
-    flexDirection="column"
-  >
-    <Text as="h1" fontSize={6} textAlign="center" lineHeight={1.2}>
-      {name}
-    </Text>
-    <Box display="flex" mt={4}>
-      <Box>
-        <Link href="/login">
-          <a>Log in</a>
-        </Link>
-      </Box>
-      {allowRegister && (
-        <Box ml={4}>
-          <Link href="/register">
-            <a>Register</a>
+const PublicLanding = ({ name, allowRegister }) => {
+  const { getLocaleString } = useContext(LocaleContext);
+  return (
+    <Box
+      minHeight="calc(100vh - 173px)"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      flexDirection="column"
+    >
+      <Text as="h1" fontSize={6} textAlign="center" lineHeight={1.2}>
+        {name}
+      </Text>
+      <Box display="flex" mt={4}>
+        <Box>
+          <Link href="/login">
+            <a>{getLocaleString("logIn")}</a>
           </Link>
         </Box>
-      )}
+        {allowRegister && (
+          <Box ml={4}>
+            <Link href="/register">
+              <a>{getLocaleString("register")}</a>
+            </Link>
+          </Box>
+        )}
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 
 const Index = ({
   token,
@@ -73,17 +77,18 @@ const Index = ({
     if (query) router.push(`/search/${encodeURIComponent(query)}`);
   };
 
+  const { getLocaleString } = useContext(LocaleContext);
+
   return (
     <>
-      <SEO title="Home" />
+      <SEO title={getLocaleString("navHome")} />
       <Text as="h1" mb={5}>
-        Home
+        {getLocaleString("navHome")}
       </Text>
       {!emailVerified && (
         <Infobox mb={5}>
           <Text icon={ErrorCircle} iconColor="error">
-            Your email address is not yet verified. You will not be able to
-            upload or download any data until this is done.
+            {getLocaleString("indexText1")}
           </Text>
         </Infobox>
       )}
@@ -108,15 +113,15 @@ const Index = ({
                 _css={{ textTransform: "uppercase" }}
                 mb={3}
               >
-                Latest announcement
+                {getLocaleString("indexLatestAnnounce")}
               </Text>
               <Text as="h2" fontSize={3} mb={3}>
                 {latestAnnouncement.title}
               </Text>
               <Text color="grey">
-                Posted{" "}
-                {moment(latestAnnouncement.created).format("HH:mm Do MMM YYYY")}{" "}
-                by{" "}
+                {getLocaleString("reqPosted")}{" "}
+                {moment(latestAnnouncement.created).format(`${getLocaleString("indexTime")}`)}{" "}
+                {getLocaleString("reqBy")}{" "}
                 {latestAnnouncement.createdBy?.username ? (
                   <Link
                     href={`/user/${latestAnnouncement.createdBy.username}`}
@@ -133,11 +138,11 @@ const Index = ({
         </Link>
       )}
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
-        <Input placeholder="Search torrents" name="query" mr={3} required />
-        <Button>Search</Button>
+        <Input placeholder={getLocaleString("indexSearchTorrents")} name="query" mr={3} required />
+        <Button>{getLocaleString("indexSearch")}</Button>
       </Box>
       <Text as="h2" mb={4}>
-        Latest torrents
+        {getLocaleString("indexLatestTorrents")}
       </Text>
       <TorrentList
         torrents={latestTorrents}
