@@ -10,8 +10,6 @@ sqtracker is a modern private BitTorrent tracker platform.
 
 It implements all of the features required to run a private (or public) tracker and does not focus on any one specific type of content. It is suitable for running a tracker site of any kind.
 
-Check out the demo at [bt.dansh.ru](https://bt.dansh.ru).
-
 Please join the [Discord server](https://discord.gg/BEGXEk29Up) for support and general chat.
 
 ## Features
@@ -56,7 +54,6 @@ The roadmap is still being expanded.
 * Better profiles (avatar, bio etc.)
 * Premoderation option
 * Anti-cheat
-* Localisation (ongoing)
   
 ## Configuration
 
@@ -124,9 +121,10 @@ The best place to start is to copy the `en.json` file and work through it, trans
 | Language           | Complete (estimate) | Contributed by                             |
 |--------------------|---------------------|--------------------------------------------|
 | English            | 100%                |                                            |
-| Russian            | 95%                 | [@smlinux](https://github.com/smlinux)     |
+| Russian            | 100%                | [@smlinux](https://github.com/smlinux)     |
+| Russian            | 100%                | [@smlinux](https://github.com/smlinux)     |
 | German             | 15%                 | [@MikeMatau](https://github.com/MikeMatau) |
-| Simplified Chinese | 15%                 | [@0EAC](https://github.com/0EAC)           |
+| Simplified Chinese | 95%                 | [@0EAC](https://github.com/0EAC)           |
 
 ## Screenshots
 
