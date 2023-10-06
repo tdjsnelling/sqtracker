@@ -102,7 +102,7 @@ const TorrentList = ({
                 )}
               </Text>
             ),
-            gridWidth: "2fr",
+            gridWidth: "minmax(150px, 2fr)",
           },
           {
             header: `${getLocaleString("uploadCategory")}`,
@@ -118,7 +118,7 @@ const TorrentList = ({
                 </Text>
               );
             },
-            gridWidth: "1fr",
+            gridWidth: "minmax(75px, 1fr)",
           },
           {
             header: `${getLocaleString("torrSeeders")}`,
@@ -184,7 +184,11 @@ const TorrentList = ({
             header: `${getLocaleString("torrUploaded")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format(`${getLocaleString("userUserSinceTime")}`)}</Text>
+              <Text>
+                {moment(value).format(
+                  `${getLocaleString("userUserSinceTime")}`
+                )}
+              </Text>
             ),
             gridWidth: "140px",
             rightAlign: true,
@@ -235,7 +239,8 @@ const TorrentList = ({
             <ChevronsRight size={24} />
           </Button>
           <Text color="grey">
-            {total.toLocaleString()} {getLocaleString("torrResults")} — {getLocaleString("torrPage")} {page + 1} {getLocaleString("torrOf")}{" "}
+            {total.toLocaleString()} {getLocaleString("torrResults")} —{" "}
+            {getLocaleString("torrPage")} {page + 1} {getLocaleString("torrOf")}{" "}
             {(maxPage + 1).toLocaleString()}
           </Text>
         </Box>
