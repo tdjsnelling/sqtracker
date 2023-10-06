@@ -104,7 +104,7 @@ const User = ({ token, user, userRole }) => {
           <Text as="h1">{user.username} {getLocaleString("userProfile")}</Text>
           {user.role === "admin" && (
             <Text icon={UserCircle} iconColor="primary" ml={3}>
-              Admin
+              {getLocaleString("userAdmin")}
             </Text>
           )}
           {banned && (
@@ -209,7 +209,7 @@ const User = ({ token, user, userRole }) => {
               icon={Run}
               iconColor="text"
             >
-              Hit'n'runs
+              {getLocaleString("userHitNRuns")}
             </Text>
             <Text fontSize={5}>
               {typeof user.hitnruns === "number" ? user.hitnruns : "?"}

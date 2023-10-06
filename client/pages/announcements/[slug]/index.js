@@ -97,9 +97,9 @@ const Announcement = ({ announcement, token, userRole }) => {
 
       addNotification(
         "success",
-        `Announcement ${
+        `${getLocaleString("annAnnounce")} ${
           pinned ? getLocaleString("annUnpinned") : getLocaleString("annPinned")
-        } successfully`
+        } ${getLocaleString("userSuccessfully")}`
       );
 
       setPinned((p) => !p);

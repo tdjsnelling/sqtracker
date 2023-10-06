@@ -97,7 +97,7 @@ const TorrentList = ({
                 )}
                 {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
                   <Text as="span" fontSize={0} color="primary" ml={3}>
-                    FL!
+                    {getLocaleString("torrFL")}
                   </Text>
                 )}
               </Text>
@@ -235,7 +235,7 @@ const TorrentList = ({
             <ChevronsRight size={24} />
           </Button>
           <Text color="grey">
-            {total.toLocaleString()} results — Page {page + 1} of{" "}
+            {total.toLocaleString()} {getLocaleString("torrResults")} — {getLocaleString("torrPage")} {page + 1} {getLocaleString("torrOf")}{" "}
             {(maxPage + 1).toLocaleString()}
           </Text>
         </Box>

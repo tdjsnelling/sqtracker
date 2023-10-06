@@ -59,7 +59,7 @@ const NavLink = styled.a(({ theme, href, highlights = [], mt = 0 }) => {
 
 const LocaleSelector = styled.select(() =>
   css({
-    background: "none",
+    bg: "sidebar",
     color: "text",
     border: 0,
     fontSize: 0,
@@ -142,7 +142,7 @@ const Navigation = ({ isMobile, menuIsOpen, setMenuIsOpen }) => {
       >
         <Button
           onClick={() => setMenuIsOpen(false)}
-          variant="noBackground"
+          variant="secondary"
           display={["block", "none"]}
           px={1}
           py={1}

@@ -314,7 +314,7 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
                   <Box display="flex" alignItems="center">
                     <Button
                       onClick={() => setMenuIsOpen(true)}
-                      variant="noBackground"
+                      variant="secondary"
                       display={["block", "none"]}
                       px={1}
                       py={1}

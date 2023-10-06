@@ -280,7 +280,7 @@ const Request = ({ request, token, user }) => {
                     {value}
                     {(row.freeleech || SQ_SITE_WIDE_FREELEECH === true) && (
                       <Text as="span" fontSize={0} color="primary" ml={3}>
-                        FL!
+                        {getLocaleString("torrFL")}
                       </Text>
                     )}
                   </Text>
@@ -379,7 +379,7 @@ const Request = ({ request, token, user }) => {
         <Modal close={() => setShowSuggestModal(false)}>
           <Text mb={5}>{getLocaleString("reqEnterInfohashTorrentBelow")}</Text>
           <form onSubmit={handleSuggestion}>
-            <Input name="infoHash" label="Infohash" mb={4} />
+            <Input name="infoHash" label={getLocaleString("reqInfohash")} mb={4} />
             <Box display="flex" justifyContent="flex-end">
               <Button
                 type="button"

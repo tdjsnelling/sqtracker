@@ -119,9 +119,9 @@ const Index = ({
                 {latestAnnouncement.title}
               </Text>
               <Text color="grey">
-                Posted{" "}
+                {getLocaleString("reqPosted")}{" "}
                 {moment(latestAnnouncement.created).format(`${getLocaleString("indexTime")}`)}{" "}
-                by{" "}
+                {getLocaleString("reqBy")}{" "}
                 {latestAnnouncement.createdBy?.username ? (
                   <Link
                     href={`/user/${latestAnnouncement.createdBy.username}`}

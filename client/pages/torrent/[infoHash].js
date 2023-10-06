@@ -487,8 +487,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       addNotification(
         "success",
         `${getLocaleString("torrTorrent")} ${
-          bookmarked ? "removed from" : "added to"
-        } bookmarks`
+          bookmarked ? getLocaleString("torrRemovedFrom") : getLocaleString("torrAddedTo")
+        } ${getLocaleString("navBookmarks")}`
       );
 
       setBookmarked((b) => !b);
@@ -724,7 +724,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             ))}
           </Box>
         ) : (
-          <Text color="grey">This torrent has no tags.</Text>
+          <Text color="grey">{getLocaleString("torrTorrNoTags")}</Text>
         )}
       </Infobox>
       <Infobox mb={5}>
