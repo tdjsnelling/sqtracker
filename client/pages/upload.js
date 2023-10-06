@@ -48,7 +48,7 @@ export const TorrentFields = ({
   groupSuggestions,
 }) => {
   const [category, setCategory] = useState(
-    values?.type ?? slugify(Object.keys(categories)[0], { lower: true })
+    values?.category ?? slugify(Object.keys(categories)[0], { lower: true })
   );
   const [sources, setSources] = useState([]);
   const [tags, setTags] = useState(values?.tags?.split(",") ?? []);
@@ -340,9 +340,7 @@ const Upload = ({ token, userId }) => {
       </Box>
       {!!SQ_EXTENSION_BLACKLIST.length && (
         <Infobox mb={5}>
-          <Text mb={3}>
-            {getLocaleString("uploadInfoBox1")}
-          </Text>
+          <Text mb={3}>{getLocaleString("uploadInfoBox1")}</Text>
           <Text
             fontFamily="mono"
             display="inline-block"
@@ -367,7 +365,9 @@ const Upload = ({ token, userId }) => {
                   {torrentFile.name}
                 </Text>
               ) : isDragActive ? (
-                <Text color="grey">{getLocaleString("uploadDropFileHere")}</Text>
+                <Text color="grey">
+                  {getLocaleString("uploadDropFileHere")}
+                </Text>
               ) : (
                 <Text color="grey">
                   {getLocaleString("uploadDragDropClickSelect")}
@@ -465,7 +465,10 @@ const Upload = ({ token, userId }) => {
           </Box>
         )}
         {SQ_ALLOW_ANONYMOUS_UPLOAD && (
-          <Checkbox name="anonymous" label={getLocaleString("uploadAnonymousUpload")} />
+          <Checkbox
+            name="anonymous"
+            label={getLocaleString("uploadAnonymousUpload")}
+          />
         )}
         <Button display="block" ml="auto" mt={5}>
           {getLocaleString("uploadUpload")}
