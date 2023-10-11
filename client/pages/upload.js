@@ -185,6 +185,7 @@ export const TorrentFields = ({
 
 const Upload = ({ token, userId }) => {
   const [torrentFile, setTorrentFile] = useState();
+  const [posterFile, setPosterFile] = useState();
   const [dropError, setDropError] = useState("");
   const [groupSuggestions, setGroupSuggestions] = useState([]);
 
@@ -234,12 +235,51 @@ const Upload = ({ token, userId }) => {
       setDropError(e.message);
     }
   }, []);
+  const onPosterDrop = useCallback((acceptedFiles) => {
+    try {
+      const [file] = acceptedFiles;
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = async () => {
+          console.log(
+            `[DEBUG] Poster upload complete: ${reader.result.slice(0, 64)}...`
+          );
+          const [, posterB64] = reader.result.split("base64,");
+          setPosterFile({ name: file.name, b64: posterB64 });
+        };
+        reader.onerror = () => {
+          console.log(`[DEBUG] Poster upload error: ${reader.error}`);
+          // Gérer les erreurs, si nécessaire
+        };
+        reader.readAsDataURL(file);
+      }
+    } catch (e) {
+      console.error(e);
+      // Gérer les erreurs, si nécessaire
+    }
+  }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "application/x-bittorrent": [".torrent"] },
     maxFiles: 1,
   });
+  const {
+    getRootProps: getPosterRootProps,
+    getInputProps: getPosterInputProps,
+    isDragActive: isPosterDragActive,
+  } = useDropzone({
+    onDrop: onPosterDrop,
+    accept: {
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+    },
+    maxFiles: 1,
+  });
+  function isPngImage(data) {
+    const pngHeader = "data:image/png;base64,";
+    return data.startsWith(pngHeader);
+  }
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -247,6 +287,7 @@ const Upload = ({ token, userId }) => {
     const form = new FormData(e.target);
 
     try {
+      form.append("poster", posterFile.b64); // Ajoutez la valeur de l'image de l'affiche à la requête
       if (!torrentFile) throw new Error("No .torrent file added");
 
       const uploadRes = await fetch(`${SQ_API_URL}/torrent/upload`, {
@@ -265,6 +306,7 @@ const Upload = ({ token, userId }) => {
           tags: form.get("tags"),
           groupWith,
           mediaInfo: form.get("mediaInfo"),
+          poster: posterFile.b64,
         }),
       });
 
@@ -381,6 +423,31 @@ const Upload = ({ token, userId }) => {
             </Text>
           )}
         </Box>
+        <Box mb={4}>
+          <WrapLabel label={getLocaleString("uploadPosterImage")} as="div">
+            <FileUpload {...getPosterRootProps()}>
+              <input {...getPosterInputProps()} />
+              {posterFile ? (
+                <img
+                  src={`data:image/${
+                    isPngImage(posterFile.b64) ? "png" : "jpeg"
+                  };base64,${posterFile.b64}`}
+                  alt="Poster"
+                  width={"auto"}
+                  height={200}
+                />
+              ) : isPosterDragActive ? (
+                <Text color="grey">
+                  {getLocaleString("uploadDropImageHere")}
+                </Text>
+              ) : (
+                <Text color="grey">
+                  {getLocaleString("uploadDragDropClickSelectPoster")}
+                </Text>
+              )}
+            </FileUpload>
+          </WrapLabel>
+        </Box>
         <TorrentFields
           categories={SQ_TORRENT_CATEGORIES}
           handleGroupSearch={handleGroupSearch}
@@ -445,6 +512,7 @@ const Upload = ({ token, userId }) => {
             ) : undefined
           }
         />
+
         {groupWith && (
           <Box display="flex" alignItems="flex-end" mb={4}>
             <Input

@@ -10,6 +10,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entryPoints.web.proxyProtocol.insecure"
       - "--entryPoints.web.forwardedHeaders.insecure"
+    restart: always
     ports:
       - "80:80"
       - "8080:8080"
@@ -20,7 +21,7 @@ services:
     container_name: sq_mongodb
     image: mongo:6.0
     ports:
-      - "127.0.0.1:27017:27017"
+      - "0.0.0.0:27017:27017"
     volumes:
       - ./data:/data/db
   api:
@@ -28,6 +29,7 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "127.0.0.1:3001:3001"
     volumes:
@@ -41,6 +43,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "127.0.0.1:3000:3000"
     volumes:

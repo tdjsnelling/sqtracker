@@ -18,5 +18,8 @@
   "passwordResetRequestFailed": "Passwort zurücksetzen konnte nicht initiallisiert werden",
   "passwordResetSuccess": "Passwort wurde erfolgreich zurückgesetzt",
   "passwordResetFailed": "Passwort wurde nicht erfolgreich zurückgesetzt",
-  "tokenError": "Token Fehler"
+  "tokenError": "Token Fehler",
+  "uploadPosterImage": "Posterdatei",
+  "PosterImage": "Poster",
+  "uploadDragDropClickSelectPoster": "Ziehen Sie Ihre Posterdatei hierher oder klicken Sie, um sie auszuwählen"
 }

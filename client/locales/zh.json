@@ -291,5 +291,8 @@
   "wikiPages": "页面",
   "wikiSaveChanges": "保存更改",
   "wikiThereNothingHereYet": "目前还没有内容。",
-  "wikiDelThisPageQ": "您确定要删除这个Wiki页面吗？此操作无法撤销。"
+  "wikiDelThisPageQ": "您确定要删除这个Wiki页面吗？此操作无法撤销。",
+  "uploadPosterImage": "上传海报文件",
+  "PosterImage": "海报",
+  "uploadDragDropClickSelectPoster": "拖拽您的海报文件至此，或点击以选择"
 }

@@ -301,5 +301,8 @@
   "wikiPages": "Страницы",
   "wikiSaveChanges": "Сохранить изменения",
   "wikiThereNothingHereYet": "Здесь пока ничего нет.",
-  "wikiDelThisPageQ": "Вы уверены, что хотите удалить эту wiki страницу? Действие необратимо."
+  "wikiDelThisPageQ": "Вы уверены, что хотите удалить эту wiki страницу? Действие необратимо.",
+  "uploadPosterImage": "Загрузить файл плаката",
+  "PosterImage": "Плакат",
+  "uploadDragDropClickSelectPoster": "Перетащите ваш файл плаката сюда или щелкните, чтобы выбрать"
 }
