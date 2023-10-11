@@ -302,5 +302,8 @@
   "wikiPages": "Paĝoj",
   "wikiSaveChanges": "Konservi ŝanĝojn",
   "wikiThereNothingHereYet": "Ankoraŭ estas nenio ĉi tie.",
-  "wikiDelThisPageQ": "Ĉu vi certas, ke vi volas forigi ĉi tiun vikipaĝon? Ĉi tio ne povas esti malfarita."
+  "wikiDelThisPageQ": "Ĉu vi certas, ke vi volas forigi ĉi tiun vikipaĝon? Ĉi tio ne povas esti malfarita.",
+  "uploadPosterImage": "Alŝuti afiŝo-dosieron",
+  "PosterImage": "Afiŝo",
+  "uploadDragDropClickSelectPoster": "Tiri kaj demeti vian afiŝo-dosieron ĉi tien, aŭ klaku por elekti"
 }

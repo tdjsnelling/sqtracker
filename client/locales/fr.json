@@ -349,5 +349,8 @@
   "wikiEditDiscussionCouldNotCreate": "Impossible de créer la discussion",
   "wikiEditDiscussionEdit": "Modifier la discussion",
   "wikiEditDiscussionEditSuccess": "Discussion modifiée avec succès",
-  "wikiEditDiscussionCouldNotEdit": "Impossible de modifier la discussion"
+  "wikiEditDiscussionCouldNotEdit": "Impossible de modifier la discussion",
+  "uploadPosterImage": "Uploader le fichier d'affiche",
+  "PosterImage": "Affiche",
+  "uploadDragDropClickSelectPoster": "Glissez et déposez votre fichier d'affiche ici, ou cliquez pour sélectionner"
 }

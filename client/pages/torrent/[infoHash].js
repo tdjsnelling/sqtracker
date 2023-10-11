@@ -666,7 +666,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       />
       <Infobox mb={5}>
         <Text fontWeight={600} fontSize={1} textTransform="uppercase" mb={3}>
-          {getLocaleString("uploadPosterImage")}
+          {getLocaleString("PosterImage")}
         </Text>
         <img
           src={`data:image/${

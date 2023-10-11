@@ -241,7 +241,6 @@
   "uploadCouldNotUploadTorrent": "Could not upload .torrent",
   "uploadDescription": "Description",
   "uploadDragDropClickSelect": "Drag and drop .torrent file here, or click to select",
-  "uploadDragDropClickSelectPoster": "Drag and drop your poster file here, or click to select",
   "uploadDropFileHere": "Drop the file here...",
   "uploadGroupWith": "Group with",
   "uploadGroupWithThisTorrent": "Group with this torrent",
@@ -254,7 +253,6 @@
   "uploadSource": "Source",
   "uploadTags": "Tags",
   "uploadTorrentFile": "Torrent file",
-  "uploadPosterImage": "Poster file",
   "uploadTorrentUploadSuccess": "Torrent uploaded successfully",
   "uploadUpload": "Upload",
   "uploadRemove": "Remove",
@@ -306,5 +304,8 @@
   "wikiPages": "Pages",
   "wikiSaveChanges": "Save changes",
   "wikiThereNothingHereYet": "There is nothing here yet.",
-  "wikiDelThisPageQ": "Are you sure you want to delete this wiki page? This cannot be undone."
+  "wikiDelThisPageQ": "Are you sure you want to delete this wiki page? This cannot be undone.",
+  "uploadPosterImage": "Poster file",
+  "PosterImage": "Poster",
+  "uploadDragDropClickSelectPoster": "Drag and drop your poster file here, or click to select"
 }
