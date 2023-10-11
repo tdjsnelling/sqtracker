@@ -155,9 +155,6 @@ export const uploadTorrent = async (req, res, next) => {
         group: groupId,
         mediaInfo: req.body.mediaInfo,
       });
-      console.log(req.body.name);
-      console.log(req.body.poster);
-      console.log(req.body);
       await newTorrent.save();
 
       if (groupId) await addToGroup(groupId, infoHash);
@@ -290,6 +287,7 @@ export const fetchTorrent = (tracker) => async (req, res, next) => {
           uploadedBy: 1,
           downloads: 1,
           anonymous: 1,
+          poster: 1,
           size: 1,
           files: 1,
           created: 1,
@@ -510,6 +508,7 @@ export const getTorrentsPage = async ({
         created: 1,
         freeleech: 1,
         tags: 1,
+        poster: 1,
         confidenceScore: 1,
       },
     },

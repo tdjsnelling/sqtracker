@@ -523,7 +523,10 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
       userStats.ratio < Number(SQ_MINIMUM_RATIO)) ||
     (Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 &&
       userStats.hitnruns > Number(SQ_MAXIMUM_HIT_N_RUNS));
-
+  function isPngImage(data) {
+    const pngHeader = "data:image/png;base64,";
+    return data.startsWith(pngHeader);
+  }
   return (
     <>
       <SEO title={torrent.name} />
@@ -603,6 +606,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           )}
         </Box>
       </Box>
+
       <Info
         items={{
           [getLocaleString("torrUploadedBy")]: torrent.anonymous ? (
@@ -661,6 +665,20 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
         }}
       />
       <Infobox mb={5}>
+        <Text fontWeight={600} fontSize={1} textTransform="uppercase" mb={3}>
+          {getLocaleString("uploadPosterImage")}
+        </Text>
+        <img
+          src={`data:image/${
+            isPngImage(torrent.poster) ? "png" : "jpeg"
+          };base64,${torrent.poster}`}
+          alt="Poster"
+          width="auto"
+          height={200}
+        />
+      </Infobox>
+
+      <Infobox mb={5}>
         <Text
           fontWeight={600}
           fontSize={1}
@@ -690,6 +708,7 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           </Box>
         </Infobox>
       )}
+      {console.log(torrent)}
       <Infobox mb={5}>
         <Text
           fontWeight={600}

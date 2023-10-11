@@ -271,7 +271,10 @@ const Upload = ({ token, userId }) => {
     },
     maxFiles: 1,
   });
-
+  function isPngImage(data) {
+    const pngHeader = "data:image/png;base64,";
+    return data.startsWith(pngHeader);
+  }
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -420,22 +423,26 @@ const Upload = ({ token, userId }) => {
             <FileUpload {...getPosterRootProps()}>
               <input {...getPosterInputProps()} />
               {posterFile ? (
-                <Text icon={Check} iconColor="success" iconSize={24} ml={2}>
-                  {posterFile.name}
-                </Text>
+                <img
+                  src={`data:image/${
+                    isPngImage(posterFile.b64) ? "png" : "jpeg"
+                  };base64,${posterFile.b64}`}
+                  alt="Poster"
+                  width={'auto'} // Spécifiez la largeur souhaitée
+                  height={200} // Spécifiez la hauteur souhaitée
+                />
               ) : isPosterDragActive ? (
                 <Text color="grey">
                   {getLocaleString("uploadDropImageHere")}
                 </Text>
               ) : (
                 <Text color="grey">
-                  {getLocaleString("uploadDragDropClickSelect")}
+                  {getLocaleString("uploadDragDropClickSelectPoster")}
                 </Text>
               )}
             </FileUpload>
           </WrapLabel>
         </Box>
-
         <TorrentFields
           categories={SQ_TORRENT_CATEGORIES}
           handleGroupSearch={handleGroupSearch}
@@ -500,6 +507,7 @@ const Upload = ({ token, userId }) => {
             ) : undefined
           }
         />
+
         {groupWith && (
           <Box display="flex" alignItems="flex-end" mb={4}>
             <Input
