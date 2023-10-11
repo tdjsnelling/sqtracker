@@ -1,6 +1,6 @@
 FROM node:16-alpine AS builder
 ARG SENTRY_AUTH_TOKEN
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV SENTRY_ORG=tdjsnelling
 ENV SENTRY_PROJECT=sqtracker-frontend
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
@@ -11,7 +11,7 @@ RUN echo "{}" > /config.js
 RUN ./node_modules/.bin/next build
 
 FROM node:16-alpine
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 ENV SENTRY_DSN="https://22bc43683da04040aa90e7683ffe022a@o140996.ingest.sentry.io/4504646040616960"
 LABEL org.opencontainers.image.source=https://github.com/tdjsnelling/sqtracker
 WORKDIR /sqtracker/client
