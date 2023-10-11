@@ -241,7 +241,9 @@ const Upload = ({ token, userId }) => {
       if (file) {
         const reader = new FileReader();
         reader.onload = async () => {
-          console.log(`[DEBUG] Poster upload complete: ${reader.result.slice(0, 64)}...`);
+          console.log(
+            `[DEBUG] Poster upload complete: ${reader.result.slice(0, 64)}...`
+          );
           const [, posterB64] = reader.result.split("base64,");
           setPosterFile({ name: file.name, b64: posterB64 });
         };
@@ -257,13 +259,16 @@ const Upload = ({ token, userId }) => {
     }
   }, []);
 
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "application/x-bittorrent": [".torrent"] },
     maxFiles: 1,
   });
-  const { getRootProps: getPosterRootProps, getInputProps: getPosterInputProps, isDragActive: isPosterDragActive } = useDropzone({
+  const {
+    getRootProps: getPosterRootProps,
+    getInputProps: getPosterInputProps,
+    isDragActive: isPosterDragActive,
+  } = useDropzone({
     onDrop: onPosterDrop,
     accept: {
       "image/jpeg": [".jpg", ".jpeg"],
@@ -428,8 +433,8 @@ const Upload = ({ token, userId }) => {
                     isPngImage(posterFile.b64) ? "png" : "jpeg"
                   };base64,${posterFile.b64}`}
                   alt="Poster"
-                  width={'auto'} // Spécifiez la largeur souhaitée
-                  height={200} // Spécifiez la hauteur souhaitée
+                  width={"auto"}
+                  height={200}
                 />
               ) : isPosterDragActive ? (
                 <Text color="grey">

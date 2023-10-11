@@ -254,7 +254,7 @@
   "uploadSource": "Source",
   "uploadTags": "Tags",
   "uploadTorrentFile": "Torrent file",
-  "uploadPosterImage" : "Poster file",
+  "uploadPosterImage": "Poster file",
   "uploadTorrentUploadSuccess": "Torrent uploaded successfully",
   "uploadUpload": "Upload",
   "uploadRemove": "Remove",
