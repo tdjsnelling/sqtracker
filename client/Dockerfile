@@ -11,7 +11,7 @@ RUN echo "{}" > /config.js
 RUN ./node_modules/.bin/next build
 
 FROM node:16-alpine
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV SENTRY_DSN="https://22bc43683da04040aa90e7683ffe022a@o140996.ingest.sentry.io/4504646040616960"
 LABEL org.opencontainers.image.source=https://github.com/tdjsnelling/sqtracker
 WORKDIR /sqtracker/client
