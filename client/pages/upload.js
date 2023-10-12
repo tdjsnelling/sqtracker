@@ -249,13 +249,11 @@ const Upload = ({ token, userId }) => {
         };
         reader.onerror = () => {
           console.log(`[DEBUG] Poster upload error: ${reader.error}`);
-          // Gérer les erreurs, si nécessaire
         };
         reader.readAsDataURL(file);
       }
     } catch (e) {
       console.error(e);
-      // Gérer les erreurs, si nécessaire
     }
   }, []);
 
