@@ -74,13 +74,13 @@ module.exports = {
     SQ_EXTENSION_BLACKLIST: ["exe"],
 
     // The URL of your tracker site.
-    SQ_BASE_URL: "http://localhost",
+    SQ_BASE_URL: "https://sqtracker.dev",
 
     // The URL of your API. Under the recommended setup, it should be `${SQ_BASE_URL}/api`.
-    SQ_API_URL: "http://localhost/api",
+    SQ_API_URL: "https://sqtracker.dev/api",
 
     // The URL of your MongoDB server. Under the recommended setup, it should be `mongodb://sq_mongodb/sqtracker`.
-    SQ_MONGO_URL: "mongodb://localhost:27017",
+    SQ_MONGO_URL: "mongodb://sq_mongodb/sqtracker",
 
     // The email address that mail will be sent from.
     SQ_MAIL_FROM_ADDRESS: "mail@sqtracker.dev",
