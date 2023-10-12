@@ -115,6 +115,7 @@
   "passwordResetRequestFailed": "Не удалось инициировать сброс пароля",
   "passwordResetRequestSuccess": "Если учетная запись с таким адресом эл. почты существует, вы вскоре получите эл. письмо.",
   "passwordResetSuccess": "Пароль успешно сброшен",
+  "posterImage": "Плакат",
   "register": "Регистрация",
   "registerFailed": "Не удалось зарегистрироваться",
   "registrationClosed": "Регистрация закрыта",
@@ -238,6 +239,7 @@
   "uploadCouldNotUploadTorrent": "Не удалось загрузить .torrent",
   "uploadDescription": "Описание",
   "uploadDragDropClickSelect": "Перетащите файл .torrent сюда или щелкните, чтобы выбрать",
+  "uploadDragDropClickSelectPoster": "Перетащите ваш файл плаката сюда или щелкните, чтобы выбрать",
   "uploadDropFileHere": "Перетащите файл сюда...",
   "uploadGroupWith": "Группа с",
   "uploadGroupWithThisTorrent": "Группа с этим торрентом",
@@ -247,6 +249,7 @@
   "uploadMarkdownSupport": "Поддержка Markdown",
   "uploadMediaInfo": "Медиаинфо",
   "uploadName": "Имя",
+  "uploadPosterImage": "Загрузить файл плаката",
   "uploadSource": "Источник",
   "uploadTags": "Метки",
   "uploadTorrentFile": "Торрент файл",
@@ -301,8 +304,5 @@
   "wikiPages": "Страницы",
   "wikiSaveChanges": "Сохранить изменения",
   "wikiThereNothingHereYet": "Здесь пока ничего нет.",
-  "wikiDelThisPageQ": "Вы уверены, что хотите удалить эту wiki страницу? Действие необратимо.",
-  "uploadPosterImage": "Загрузить файл плаката",
-  "PosterImage": "Плакат",
-  "uploadDragDropClickSelectPoster": "Перетащите ваш файл плаката сюда или щелкните, чтобы выбрать"
+  "wikiDelThisPageQ": "Вы уверены, что хотите удалить эту wiki страницу? Действие необратимо."
 }
