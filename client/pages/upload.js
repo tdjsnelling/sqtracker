@@ -273,6 +273,7 @@ const Upload = ({ token, userId }) => {
       "image/png": [".png"],
     },
     maxFiles: 1,
+    maxSize: 5242880, //5Mo
   });
   function isPngImage(data) {
     const pngHeader = "data:image/png;base64,";
@@ -285,9 +286,7 @@ const Upload = ({ token, userId }) => {
     const form = new FormData(e.target);
 
     try {
-      form.append("poster", posterFile.b64); // Ajoutez la valeur de l'image de l'affiche à la requête
       if (!torrentFile) throw new Error("No .torrent file added");
-
       const uploadRes = await fetch(`${SQ_API_URL}/torrent/upload`, {
         method: "POST",
         headers: {
@@ -304,7 +303,7 @@ const Upload = ({ token, userId }) => {
           tags: form.get("tags"),
           groupWith,
           mediaInfo: form.get("mediaInfo"),
-          poster: posterFile.b64,
+          poster: posterFile ? posterFile.b64 : null,
         }),
       });
 
@@ -434,18 +433,21 @@ const Upload = ({ token, userId }) => {
                   width={"auto"}
                   height={200}
                 />
-              ) : isPosterDragActive ? (
-                <Text color="grey">
-                  {getLocaleString("uploadDropImageHere")}
-                </Text>
               ) : (
-                <Text color="grey">
-                  {getLocaleString("uploadDragDropClickSelectPoster")}
-                </Text>
+                isPosterDragActive ? (
+                  <Text color="grey">
+                    {getLocaleString("uploadDropImageHere")}
+                  </Text>
+                ) : (
+                  <Text color="grey">
+                    {getLocaleString("uploadDragDropClickSelectPoster")}
+                  </Text>
+                )
               )}
             </FileUpload>
           </WrapLabel>
         </Box>
+
         <TorrentFields
           categories={SQ_TORRENT_CATEGORIES}
           handleGroupSearch={handleGroupSearch}
