@@ -117,7 +117,7 @@
   "passwordResetRequestFailed": "Could not initiate password reset",
   "passwordResetRequestSuccess": "If an account with that email address exists, you will receive an email shortly",
   "passwordResetSuccess": "Password was reset successfully",
-  "posterImage": "Poster",
+  "posterImage": "Cover image",
   "poweredBy": "Powered by",
   "register": "Register",
   "registerFailed": "Could not register",
