@@ -508,7 +508,6 @@ export const getTorrentsPage = async ({
         created: 1,
         freeleech: 1,
         tags: 1,
-        poster: 1,
         confidenceScore: 1,
       },
     },
