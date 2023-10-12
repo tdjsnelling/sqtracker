@@ -1,6 +1,6 @@
 FROM node:16-alpine AS builder
 ARG SENTRY_AUTH_TOKEN
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 ENV SENTRY_ORG=tdjsnelling
 ENV SENTRY_PROJECT=sqtracker-frontend
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
