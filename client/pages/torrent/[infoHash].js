@@ -708,7 +708,6 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           </Box>
         </Infobox>
       )}
-      {console.log(torrent)}
       <Infobox mb={5}>
         <Text
           fontWeight={600}
