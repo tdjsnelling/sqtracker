@@ -608,7 +608,6 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           )}
         </Box>
       </Box>
-
       <Info
         items={{
           [getLocaleString("torrUploadedBy")]: torrent.anonymous ? (
@@ -686,8 +685,6 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           />
         </Infobox>
       )}
-
-
       <Infobox mb={5}>
         <Text
           fontWeight={600}
