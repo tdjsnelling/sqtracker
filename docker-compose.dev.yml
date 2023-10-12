@@ -21,7 +21,7 @@ services:
     container_name: sq_mongodb
     image: mongo:6.0
     ports:
-      - "0.0.0.0:27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - ./data:/data/db
   api:
