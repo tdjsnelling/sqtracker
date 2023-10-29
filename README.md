@@ -118,13 +118,14 @@ The best place to start is to copy the `en.json` file and work through it, trans
 
 ### Existing translations
 
-| Language           | Complete (estimate) | Contributed by                             |
-|--------------------|---------------------|--------------------------------------------|
-| English            | 100%                |                                            |
-| Russian            | 100%                | [@smlinux](https://github.com/smlinux)     |
-| Esperanto          | 100%                | [@smlinux](https://github.com/smlinux)     |
-| German             | 15%                 | [@MikeMatau](https://github.com/MikeMatau) |
-| Simplified Chinese | 95%                 | [@0EAC](https://github.com/0EAC)           |
+| Language           | Complete (estimate) | Contributed by                                     |
+|--------------------|---------------------|----------------------------------------------------|
+| English            | 100%                |                                                    |
+| Russian            | 100%                | [@smlinux](https://github.com/smlinux)             |
+| Esperanto          | 100%                | [@smlinux](https://github.com/smlinux)             |
+| German             | 100%                | [@EchterAlsFake](https://github.com/EchterAlsFake) |
+| Simplified Chinese | 95%                 | [@0EAC](https://github.com/0EAC)                   |
+| French             | 100%                | [@Klaiment](https://github.com/Klaiment)           |
 
 ## Screenshots
 
