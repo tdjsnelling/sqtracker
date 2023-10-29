@@ -14,7 +14,6 @@ import MarkdownInput from "../../components/MarkdownInput";
 import LocaleContext from "../../utils/LocaleContext";
 
 const NewAnnouncement = ({ token, userRole }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   if (userRole !== "admin") {
@@ -58,14 +57,16 @@ const NewAnnouncement = ({ token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("annAnnounceCreatSuccess")}`
       );
 
       const slug = await createAnnouncementRes.text();
       router.push(`/announcements/${slug}`);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("annCouldNotCreateAnnounce")}: ${e.message}`
       );
       console.error(e);
@@ -81,7 +82,12 @@ const NewAnnouncement = ({ token, userRole }) => {
         {getLocaleString("annNewAnnounce")}
       </Text>
       <form onSubmit={handleCreate}>
-        <Input name="title" label={getLocaleString("reqTitle")} mb={4} required />
+        <Input
+          name="title"
+          label={getLocaleString("reqTitle")}
+          mb={4}
+          required
+        />
         <MarkdownInput
           name="body"
           label={getLocaleString("annBody")}
@@ -90,8 +96,16 @@ const NewAnnouncement = ({ token, userRole }) => {
           mb={4}
           required
         />
-        <Checkbox label={getLocaleString("annPinThisAnnounceQ")} name="pinned" mb={4} />
-        <Checkbox label={getLocaleString("annAllowCommentsQ")} name="allowComments" mb={4} />
+        <Checkbox
+          label={getLocaleString("annPinThisAnnounceQ")}
+          name="pinned"
+          mb={4}
+        />
+        <Checkbox
+          label={getLocaleString("annAllowCommentsQ")}
+          name="allowComments"
+          mb={4}
+        />
         <Button display="block" ml="auto">
           {getLocaleString("annCreateAnnounce")}
         </Button>

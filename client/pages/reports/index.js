@@ -9,7 +9,6 @@ import List from "../../components/List";
 import LocaleContext from "../../utils/LocaleContext";
 
 const Reports = ({ reports, userRole }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   if (userRole !== "admin") {
@@ -52,7 +51,9 @@ const Reports = ({ reports, userRole }) => {
             header: `${getLocaleString("accCreated")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
+              <Text>
+                {moment(value).format(`${getLocaleString("indexTime")}`)}
+              </Text>
             ),
             rightAlign: true,
             gridWidth: "175px",

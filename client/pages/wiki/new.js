@@ -47,7 +47,8 @@ export const WikiFields = ({ values }) => {
         required
       />
       <Text color="grey" fontSize={0} mb={4}>
-        {getLocaleString("wikiPageWillBeVisibleAt")} {SQ_BASE_URL}/wiki{slugValue}
+        {getLocaleString("wikiPageWillBeVisibleAt")} {SQ_BASE_URL}/wiki
+        {slugValue}
       </Text>
       <Input
         name="title"
@@ -78,7 +79,6 @@ export const WikiFields = ({ values }) => {
 };
 
 const NewWiki = ({ token, userRole }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   if (userRole !== "admin") {
@@ -119,14 +119,13 @@ const NewWiki = ({ token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("wikiPageCreateSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("wikiPageCreateSuccess")}`);
 
       const slug = await createWikiRes.text();
       router.push(`/wiki/${slug}`);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("wikiCouldNotCreatePage")}: ${e.message}`
       );
       console.error(e);

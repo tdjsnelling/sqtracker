@@ -12,7 +12,6 @@ import List from "../../components/List";
 import LocaleContext from "../../utils/LocaleContext";
 
 const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   return (
@@ -61,7 +60,9 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
                   header: `${getLocaleString("accCreated")}`,
                   accessor: "created",
                   cell: ({ value }) => (
-                    <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
+                    <Text>
+                      {moment(value).format(`${getLocaleString("indexTime")}`)}
+                    </Text>
                   ),
                   rightAlign: true,
                   gridWidth: "175px",
@@ -96,7 +97,9 @@ const Announcements = ({ announcements, pinnedAnnouncements, userRole }) => {
             header: `${getLocaleString("accCreated")}`,
             accessor: "created",
             cell: ({ value }) => (
-              <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
+              <Text>
+                {moment(value).format(`${getLocaleString("indexTime")}`)}
+              </Text>
             ),
             rightAlign: true,
             gridWidth: "175px",

@@ -59,7 +59,9 @@ const Categories = ({ tags }) => {
             ))}
           </Box>
         ) : (
-          <Text color="grey">{getLocaleString("catNoCategoryHaveBeenDefined")}</Text>
+          <Text color="grey">
+            {getLocaleString("catNoCategoryHaveBeenDefined")}
+          </Text>
         )}
       </Box>
       <Text as="h1" mb={5}>

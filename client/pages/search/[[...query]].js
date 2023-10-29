@@ -39,16 +39,26 @@ const Search = ({ results, error, token }) => {
 
   return (
     <>
-      <SEO title={query ? `${getLocaleString("searchSearchResults")} “${query}”` : `${getLocaleString("indexSearch")}`} />
+      <SEO
+        title={
+          query
+            ? `${getLocaleString("searchSearchResults")} “${query}”`
+            : `${getLocaleString("indexSearch")}`
+        }
+      />
       <Text as="h1" mb={5}>
-        {query ? `${getLocaleString("searchSearchResults")} “${query}”` : `${getLocaleString("indexSearch")}`}
+        {query
+          ? `${getLocaleString("searchSearchResults")} “${query}”`
+          : `${getLocaleString("indexSearch")}`}
       </Text>
       <Box as="form" onSubmit={handleSearch} display="flex" mb={5}>
         <Input name="query" mr={3} required />
         <Button>{getLocaleString("indexSearch")}</Button>
       </Box>
       {error ? (
-        <Text color="error">{getLocaleString("searchSearchError")}: {error}</Text>
+        <Text color="error">
+          {getLocaleString("searchSearchError")}: {error}
+        </Text>
       ) : (
         <>
           {query && (

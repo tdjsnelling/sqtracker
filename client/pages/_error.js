@@ -33,9 +33,7 @@ const ErrorPage = () => {
         {getLocaleString("errSomethingWentWrong")} :(
       </Text>
       {rateLimited ? (
-        <Text>
-          {getLocaleString("errTooManyRequests")}
-        </Text>
+        <Text>{getLocaleString("errTooManyRequests")}</Text>
       ) : (
         <Text>
           {getLocaleString("errIfErrorPersist")}{" "}

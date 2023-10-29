@@ -5,7 +5,6 @@ import { embellishTorrentsWithTrackerScrape } from "./torrent";
 
 // prettier-ignore
 const getTorrentXml = (torrent, userId) => {
-  const announceUrl = `${process.env.SQ_BASE_URL}/sq/${userId}/announce`
   return `<item>
       <title>${torrent.name}</title>
       <description>${torrent.description}</description>
@@ -14,11 +13,10 @@ const getTorrentXml = (torrent, userId) => {
       <torrent>
         <filename>${torrent.name}</filename>
         <contentlength>${torrent.size}</contentlength>
-        <magneturi>magnet:?xt=urn:btih:${torrent.infoHash}&dn=${encodeURIComponent(torrent.name)}&tr=${encodeURIComponent(announceUrl)}</magneturi>
         <trackers>
           <group order="ordered">
             <tracker seeds="${torrent.seeders}" peers="${torrent.seeders + torrent.leechers}">
-              ${announceUrl}
+              ${process.env.SQ_BASE_URL}/sq/${userId}/announce
             </tracker>
           </group>
         </trackers>

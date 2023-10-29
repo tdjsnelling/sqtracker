@@ -14,7 +14,6 @@ import MarkdownInput from "../../../components/MarkdownInput";
 import LocaleContext from "../../../utils/LocaleContext";
 
 const EditAnnouncement = ({ announcement, token, userRole }) => {
-
   const { getLocaleString } = useContext(LocaleContext);
 
   if (userRole !== "admin") {
@@ -58,14 +57,16 @@ const EditAnnouncement = ({ announcement, token, userRole }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("annAnnounceUpdatedSuccess")}`
       );
 
       const slug = await updateAnnouncementRes.text();
       router.push(`/announcements/${slug}`);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("annCouldNotUpdateAnnounce")}: ${e.message}`
       );
       console.error(e);

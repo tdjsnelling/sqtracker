@@ -257,7 +257,7 @@ export const login = async (req, res, next) => {
 };
 
 export const generateInvite = (mail) => async (req, res, next) => {
-  if (process.env.SQ_ALLOW_REGISTER !== "invite") {
+  if (process.env.SQ_ALLOW_REGISTER !== "invite" && req.userRole !== "admin") {
     res
       .status(403)
       .send("Can only send invites when tracker is in invite only mode");

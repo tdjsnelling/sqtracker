@@ -4,6 +4,7 @@ import fuzzySearch from "mongoose-fuzzy-searching";
 const Torrent = new mongoose.Schema({
   infoHash: String,
   binary: String,
+  poster: String,
   uploadedBy: mongoose.Schema.ObjectId,
   name: String,
   description: String,

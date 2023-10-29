@@ -65,13 +65,12 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("reqRequestDelSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("reqRequestDelSuccess")}`);
 
       router.push("/requests");
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCouldNotDelReq")}: ${e.message}`
       );
       console.error(e);
@@ -105,9 +104,7 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
-        `${getLocaleString("reqCommentPostSuccess")}`
-      );
+      addNotification("success", `${getLocaleString("reqCommentPostSuccess")}`);
 
       setComments((c) => {
         const newComment = {
@@ -122,7 +119,8 @@ const Request = ({ request, token, user }) => {
 
       commentInputRef.current.value = "";
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCommentNotPost")}: ${e.message}`
       );
       console.error(e);
@@ -156,7 +154,8 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("reqSuggestionAddSuccess")}`
       );
 
@@ -165,7 +164,8 @@ const Request = ({ request, token, user }) => {
 
       setShowSuggestModal(false);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqSuggestionNotAdded")}: ${e.message}`
       );
       console.error(e);
@@ -197,14 +197,16 @@ const Request = ({ request, token, user }) => {
         throw new Error(reason);
       }
 
-      addNotification("success",
+      addNotification(
+        "success",
         `${getLocaleString("reqSuggestionAcceptSuccess")}`
       );
 
       const { torrent } = await acceptRes.json();
       setFulfilledBy(torrent);
     } catch (e) {
-      addNotification("error",
+      addNotification(
+        "error",
         `${getLocaleString("reqCouldNotAcceptSuggestion")}: ${e.message}`
       );
       console.error(e);
@@ -233,7 +235,9 @@ const Request = ({ request, token, user }) => {
       </Box>
       <Box mb={5}>
         <Text color="grey">
-          {getLocaleString("reqPosted")} {moment(request.created).format(`${getLocaleString("indexTime")}`)} {getLocaleString("reqBy")}{" "}
+          {getLocaleString("reqPosted")}{" "}
+          {moment(request.created).format(`${getLocaleString("indexTime")}`)}{" "}
+          {getLocaleString("reqBy")}{" "}
           {request.createdBy?.username ? (
             <Link href={`/user/${request.createdBy.username}`} passHref>
               <a>{request.createdBy.username}</a>
@@ -317,7 +321,9 @@ const Request = ({ request, token, user }) => {
                 header: `${getLocaleString("userUploaded")}`,
                 accessor: "created",
                 cell: ({ value }) => (
-                  <Text>{moment(value).format(`${getLocaleString("indexTime")}`)}</Text>
+                  <Text>
+                    {moment(value).format(`${getLocaleString("indexTime")}`)}
+                  </Text>
                 ),
                 gridWidth: "175px",
                 rightAlign: true,
@@ -345,7 +351,9 @@ const Request = ({ request, token, user }) => {
             ]}
           />
         ) : (
-          <Text color="grey">{getLocaleString("reqNoTorrentsHaveBeenSuggestedYet")}</Text>
+          <Text color="grey">
+            {getLocaleString("reqNoTorrentsHaveBeenSuggestedYet")}
+          </Text>
         )}
       </Box>
       <Box>
@@ -379,7 +387,11 @@ const Request = ({ request, token, user }) => {
         <Modal close={() => setShowSuggestModal(false)}>
           <Text mb={5}>{getLocaleString("reqEnterInfohashTorrentBelow")}</Text>
           <form onSubmit={handleSuggestion}>
-            <Input name="infoHash" label={getLocaleString("reqInfohash")} mb={4} />
+            <Input
+              name="infoHash"
+              label={getLocaleString("reqInfohash")}
+              mb={4}
+            />
             <Box display="flex" justifyContent="flex-end">
               <Button
                 type="button"
