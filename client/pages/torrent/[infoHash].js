@@ -675,13 +675,16 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
           >
             {getLocaleString("posterImage")}
           </Text>
-          <img
+          <Box
+            as="img"
             src={`data:image/${
               isPngImage(torrent.poster) ? "png" : "jpeg"
             };base64,${torrent.poster}`}
-            alt="Poster"
+            alt={`Cover image for “${torrent.name}”`}
             width="auto"
-            height={200}
+            height="auto"
+            maxWidth="500px"
+            maxHeight="500px"
           />
         </Infobox>
       )}

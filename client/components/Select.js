@@ -31,11 +31,11 @@ const StyledSelect = styled.select(
   typography
 );
 
-const Select = ({ label, fRef, ...rest }) => {
+const Select = ({ label, required, fRef, ...rest }) => {
   return (
-    <WrapLabel label={label}>
+    <WrapLabel label={label && required ? `${label} *` : label}>
       <Box position="relative" display="inline-block">
-        <StyledSelect {...rest} ref={fRef} />
+        <StyledSelect {...rest} ref={fRef} required={required} />
         <Box
           position="absolute"
           top="7px"

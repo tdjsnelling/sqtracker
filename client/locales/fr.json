@@ -244,7 +244,6 @@
   "uploadDragDropClickSelect": "Faites glisser et déposez un fichier .torrent ici, ou cliquez pour sélectionner",
   "uploadDragDropClickSelectPoster": "Glissez et déposez votre fichier d'affiche ici, ou cliquez pour sélectionner",
   "uploadDropFileHere": "Déposez le fichier ici...",
-  "uploadPosterImage": "Uploader le fichier d'affiche",
   "uploadGroupWith": "Regrouper avec",
   "uploadGroupWithThisTorrent": "Regrouper avec ce torrent",
   "uploadInfoBox1": "Les extensions de fichier suivantes sont interdites. Tout torrent contenant des fichiers de ces types ne sera pas téléchargé.",

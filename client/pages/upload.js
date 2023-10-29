@@ -235,6 +235,7 @@ const Upload = ({ token, userId }) => {
       setDropError(e.message);
     }
   }, []);
+
   const onPosterDrop = useCallback((acceptedFiles) => {
     try {
       const [file] = acceptedFiles;
@@ -395,46 +396,54 @@ const Upload = ({ token, userId }) => {
         </Infobox>
       )}
       <form onSubmit={handleUpload}>
-        <Box mb={4}>
-          <WrapLabel label={getLocaleString("uploadTorrentFile")} as="div">
-            <FileUpload {...getRootProps()}>
-              <input {...getInputProps()} />
-              {torrentFile ? (
-                <Text icon={Check} iconColor="success" iconSize={24} ml={2}>
-                  {torrentFile.name}
-                </Text>
-              ) : isDragActive ? (
-                <Text color="grey">
-                  {getLocaleString("uploadDropFileHere")}
-                </Text>
-              ) : (
-                <Text color="grey">
-                  {getLocaleString("uploadDragDropClickSelect")}
-                </Text>
-              )}
-            </FileUpload>
-          </WrapLabel>
-          {dropError && (
-            <Text color="error" mt={3}>
-              {getLocaleString("uploadCouldNotUploadTorrent")}: {dropError}
-            </Text>
-          )}
-        </Box>
-        <Box mb={4}>
-          <WrapLabel label={getLocaleString("uploadPosterImage")} as="div">
-            <FileUpload {...getPosterRootProps()}>
-              <input {...getPosterInputProps()} />
-              {posterFile ? (
-                <img
-                  src={`data:image/${
-                    isPngImage(posterFile.b64) ? "png" : "jpeg"
-                  };base64,${posterFile.b64}`}
-                  alt="Poster"
-                  width={"auto"}
-                  height={200}
-                />
-              ) : (
-                isPosterDragActive ? (
+        <Box
+          display="grid"
+          gridTemplateColumns={["1fr", "repeat(2, 1fr)"]}
+          gridGap={4}
+          mb={4}
+        >
+          <Box>
+            <WrapLabel
+              label={`${getLocaleString("uploadTorrentFile")} *`}
+              as="div"
+            >
+              <FileUpload {...getRootProps()}>
+                <input {...getInputProps()} />
+                {torrentFile ? (
+                  <Text icon={Check} iconColor="success" iconSize={24} ml={2}>
+                    {torrentFile.name}
+                  </Text>
+                ) : isDragActive ? (
+                  <Text color="grey">
+                    {getLocaleString("uploadDropFileHere")}
+                  </Text>
+                ) : (
+                  <Text color="grey">
+                    {getLocaleString("uploadDragDropClickSelect")}
+                  </Text>
+                )}
+              </FileUpload>
+            </WrapLabel>
+            {dropError && (
+              <Text color="error" mt={3}>
+                {getLocaleString("uploadCouldNotUploadTorrent")}: {dropError}
+              </Text>
+            )}
+          </Box>
+          <Box>
+            <WrapLabel label={getLocaleString("posterImage")} as="div">
+              <FileUpload {...getPosterRootProps()}>
+                <input {...getPosterInputProps()} />
+                {posterFile ? (
+                  <img
+                    src={`data:image/${
+                      isPngImage(posterFile.b64) ? "png" : "jpeg"
+                    };base64,${posterFile.b64}`}
+                    alt="Poster"
+                    width={"auto"}
+                    height={200}
+                  />
+                ) : isPosterDragActive ? (
                   <Text color="grey">
                     {getLocaleString("uploadDropImageHere")}
                   </Text>
@@ -442,12 +451,11 @@ const Upload = ({ token, userId }) => {
                   <Text color="grey">
                     {getLocaleString("uploadDragDropClickSelectPoster")}
                   </Text>
-                )
-              )}
-            </FileUpload>
-          </WrapLabel>
+                )}
+              </FileUpload>
+            </WrapLabel>
+          </Box>
         </Box>
-
         <TorrentFields
           categories={SQ_TORRENT_CATEGORIES}
           handleGroupSearch={handleGroupSearch}
@@ -512,7 +520,6 @@ const Upload = ({ token, userId }) => {
             ) : undefined
           }
         />
-
         {groupWith && (
           <Box display="flex" alignItems="flex-end" mb={4}>
             <Input
