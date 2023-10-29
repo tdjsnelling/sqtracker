@@ -524,6 +524,11 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
     (Number(SQ_MAXIMUM_HIT_N_RUNS) !== -1 &&
       userStats.hitnruns > Number(SQ_MAXIMUM_HIT_N_RUNS));
 
+  function isPngImage(data) {
+    const pngHeader = "data:image/png;base64,";
+    return data.startsWith(pngHeader);
+  }
+
   return (
     <>
       <SEO title={torrent.name} />
@@ -660,6 +665,26 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
               : [getLocaleString("torrNo")],
         }}
       />
+      {torrent.poster && (
+        <Infobox mb={5}>
+          <Text
+            fontWeight={600}
+            fontSize={1}
+            _css={{ textTransform: "uppercase" }}
+            mb={3}
+          >
+            {getLocaleString("posterImage")}
+          </Text>
+          <img
+            src={`data:image/${
+              isPngImage(torrent.poster) ? "png" : "jpeg"
+            };base64,${torrent.poster}`}
+            alt="Poster"
+            width="auto"
+            height={200}
+          />
+        </Infobox>
+      )}
       <Infobox mb={5}>
         <Text
           fontWeight={600}

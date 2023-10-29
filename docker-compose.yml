@@ -36,7 +36,9 @@ services:
     ports:
       - "127.0.0.1:3001:3001"
     volumes:
-      - ./config.js:/sqtracker/config.js
+      - type: bind
+        source: ./config.js
+        target: /sqtracker/config.js
     depends_on:
       - database
   client:
@@ -45,7 +47,9 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
-      - ./config.js:/sqtracker/config.js
+      - type: bind
+        source: ./config.js
+        target: /sqtracker/config.js
       # - ./favicon.png:/sqtracker/public/favicon.png
       # - ./favicon.ico:/sqtracker/public/favicon.ico
     depends_on:
