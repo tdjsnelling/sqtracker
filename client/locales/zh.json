@@ -196,8 +196,8 @@
   "torrCouldNotSubmitVote": "无法提交投票",
   "torrReportSubmitSuccess": "报告提交成功",
   "torrCouldNotSubmitReport": "无法提交报告",
-  "torrFLToggleSuccess": "FREE状态切换成功",
-  "torrCouldNotToggleFL": "无法切换至FREE状态",
+  "torrFLToggleSuccess": "FREE 状态切换成功",
+  "torrCouldNotToggleFL": "无法切换至 FREE 状态",
   "torrTorrRemFromGroupSuccess": "成功从组中删除种子",
   "torrCouldNotRemTorrFromGroup": "无法从组中删除种子",
   "torrTorrent": "种子",
@@ -224,7 +224,7 @@
   "torrThereAreNoOtherTorrGroup": "此组中没有其他种子。",
   "totp": "一次性代码",
   "uploadAddTag": "添加标签",
-  "uploadAnnounceURL": "Tracker地址",
+  "uploadAnnounceURL": "Tracker 地址",
   "uploadAnonymousUpload": "匿名上传",
   "uploadCategory": "分类",
   "uploadCouldNotGetGroupSuggestions": "无法获取组建议",
@@ -238,7 +238,7 @@
   "uploadGroupWithThisTorrent": "与此种子同组",
   "uploadInfoBox1": "以下文件扩展名被列入黑名单。包含这些类型文件的种子将无法发布。",
   "uploadInfoBox2": "看起来与现有的种子有着相似的名称。您是否想要将您的种子分到其中的任意分组？分组应只包含非常相似的内容，例如相同电影的不同格式。",
-  "uploadInfoBox3": "注意：如果您在上传前已开始做种，上传完成后可能需要在您的客户端中强制重新汇报Tracker。",
+  "uploadInfoBox3": "注意：如果您在上传前已开始做种，上传完成后可能需要在您的客户端中强制重新汇报 Tracker。",
   "uploadMarkdownSupport": "支持 Markdown",
   "uploadMediaInfo": "MediaInfo",
   "uploadName": "名称",
@@ -293,5 +293,5 @@
   "wikiPages": "页面",
   "wikiSaveChanges": "保存更改",
   "wikiThereNothingHereYet": "目前还没有内容。",
-  "wikiDelThisPageQ": "您确定要删除这个Wiki页面吗？此操作无法撤销。"
+  "wikiDelThisPageQ": "您确定要删除这个维基页面吗？此操作无法撤销。"
 }
