@@ -116,6 +116,7 @@
   "passwordResetRequestFailed": "Ne eblis komenci pasvortigon",
   "passwordResetRequestSuccess": "Se konto kun tiu retadreso ekzistas, vi ricevos retmesaĝon baldaŭ",
   "passwordResetSuccess": "Pasvorto estis restarigita sukcese",
+  "posterImage": "Afiŝo",
   "poweredBy": "Funkciigita de",
   "register": "Registriĝi",
   "registerFailed": "Ne eblis registri",
@@ -239,6 +240,7 @@
   "uploadCouldNotUploadTorrent": "Ne eblis alŝuti .torrent",
   "uploadDescription": "Priskribo",
   "uploadDragDropClickSelect": "Trenu kaj faligi .torrent-dosieron ĉi tie, aŭ alklaku por elekti",
+  "uploadDragDropClickSelectPoster": "Tiri kaj demeti vian afiŝo-dosieron ĉi tien, aŭ klaku por elekti",
   "uploadDropFileHere": "Faligi la dosieron ĉi tie...",
   "uploadGroupWith": "Grupu kun",
   "uploadGroupWithThisTorrent": "Grupu kun ĉi tiu torento",
@@ -302,8 +304,5 @@
   "wikiPages": "Paĝoj",
   "wikiSaveChanges": "Konservi ŝanĝojn",
   "wikiThereNothingHereYet": "Ankoraŭ estas nenio ĉi tie.",
-  "wikiDelThisPageQ": "Ĉu vi certas, ke vi volas forigi ĉi tiun vikipaĝon? Ĉi tio ne povas esti malfarita.",
-  "uploadPosterImage": "Alŝuti afiŝo-dosieron",
-  "PosterImage": "Afiŝo",
-  "uploadDragDropClickSelectPoster": "Tiri kaj demeti vian afiŝo-dosieron ĉi tien, aŭ klaku por elekti"
+  "wikiDelThisPageQ": "Ĉu vi certas, ke vi volas forigi ĉi tiun vikipaĝon? Ĉi tio ne povas esti malfarita."
 }

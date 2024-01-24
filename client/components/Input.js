@@ -56,18 +56,40 @@ export const WrapLabel = ({ label, children, as = "label", ...rest }) =>
     children
   );
 
-const Input = ({ label, rows, my, mt, mb, width, forwardedRef, ...rest }) => {
+const Input = ({
+  label,
+  rows,
+  my,
+  mt,
+  mb,
+  width,
+  forwardedRef,
+  required,
+  ...rest
+}) => {
   return (
-    <WrapLabel label={label} my={my} mt={mt} mb={mb} width={width}>
+    <WrapLabel
+      label={label && required ? `${label} *` : label}
+      my={my}
+      mt={mt}
+      mb={mb}
+      width={width}
+    >
       {rows ? (
         <StyledTextarea
           ref={forwardedRef}
           rows={rows}
           width={width}
+          required={required}
           {...rest}
         />
       ) : (
-        <StyledInput ref={forwardedRef} width={width} {...rest} />
+        <StyledInput
+          ref={forwardedRef}
+          width={width}
+          required={required}
+          {...rest}
+        />
       )}
     </WrapLabel>
   );

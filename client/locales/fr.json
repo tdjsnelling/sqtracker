@@ -117,6 +117,7 @@
   "passwordResetRequestFailed": "Impossible d'initier la réinitialisation du mot de passe",
   "passwordResetRequestSuccess": "Si un compte avec cette adresse e-mail existe, vous recevrez bientôt un e-mail",
   "passwordResetSuccess": "Le mot de passe a été réinitialisé avec succès",
+  "posterImage": "Affiche",
   "poweredBy": "Propulsé par",
   "register": "S'inscrire",
   "registerFailed": "Impossible de s'inscrire",
@@ -241,6 +242,7 @@
   "uploadCouldNotUploadTorrent": "Impossible de télécharger le fichier .torrent",
   "uploadDescription": "Description",
   "uploadDragDropClickSelect": "Faites glisser et déposez un fichier .torrent ici, ou cliquez pour sélectionner",
+  "uploadDragDropClickSelectPoster": "Glissez et déposez votre fichier d'affiche ici, ou cliquez pour sélectionner",
   "uploadDropFileHere": "Déposez le fichier ici...",
   "uploadGroupWith": "Regrouper avec",
   "uploadGroupWithThisTorrent": "Regrouper avec ce torrent",
@@ -349,8 +351,5 @@
   "wikiEditDiscussionCouldNotCreate": "Impossible de créer la discussion",
   "wikiEditDiscussionEdit": "Modifier la discussion",
   "wikiEditDiscussionEditSuccess": "Discussion modifiée avec succès",
-  "wikiEditDiscussionCouldNotEdit": "Impossible de modifier la discussion",
-  "uploadPosterImage": "Uploader le fichier d'affiche",
-  "PosterImage": "Affiche",
-  "uploadDragDropClickSelectPoster": "Glissez et déposez votre fichier d'affiche ici, ou cliquez pour sélectionner"
+  "wikiEditDiscussionCouldNotEdit": "Impossible de modifier la discussion"
 }

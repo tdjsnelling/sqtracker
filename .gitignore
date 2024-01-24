@@ -4,8 +4,6 @@
 client/.next
 data/
 config.js
-config.example.js
-yarn.lock
 .DS_Store
 dist/
 letsencrypt/

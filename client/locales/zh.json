@@ -113,6 +113,7 @@
   "passwordResetRequestFailed": "无法发起密码重置",
   "passwordResetRequestSuccess": "如果存在该邮箱地址的帐户，将很快收到邮件",
   "passwordResetSuccess": "密码重置成功",
+  "posterImage": "海报",
   "poweredBy": "Powered by",
   "register": "注册",
   "registerFailed": "无法注册",
@@ -231,6 +232,7 @@
   "uploadCouldNotUploadTorrent": "无法上传 .torrent",
   "uploadDescription": "描述",
   "uploadDragDropClickSelect": "将 .torrent 文件拖放到此处，或单击选择",
+  "uploadDragDropClickSelectPoster": "拖拽您的海报文件至此，或点击以选择",
   "uploadDropFileHere": "将文件拖放到此处...",
   "uploadGroupWith": "与以下种子同组",
   "uploadGroupWithThisTorrent": "与此种子同组",
@@ -291,8 +293,5 @@
   "wikiPages": "页面",
   "wikiSaveChanges": "保存更改",
   "wikiThereNothingHereYet": "目前还没有内容。",
-  "wikiDelThisPageQ": "您确定要删除这个Wiki页面吗？此操作无法撤销。",
-  "uploadPosterImage": "上传海报文件",
-  "PosterImage": "海报",
-  "uploadDragDropClickSelectPoster": "拖拽您的海报文件至此，或点击以选择"
+  "wikiDelThisPageQ": "您确定要删除这个Wiki页面吗？此操作无法撤销。"
 }
