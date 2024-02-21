@@ -9,6 +9,10 @@ module.exports = {
     // A short description of your tracker site. Maximum 80 characters.
     SQ_SITE_DESCRIPTION: "A short description for your tracker site",
 
+    // Default site language.
+    // Currently available languages: de (German), en (English), eo (Esperanto), es (Spanish), fr (French), it (Italian), ru (Russian), zh (Simplified Chinese).
+    SQ_SITE_DEFAULT_LOCALE: "en",
+
     // A map of custom hex colours to use as the theme of your site.
     // If not specified, the default light and dark themes will be used.
     // If only "primary" is specified, the default light and dark themes will be used but with your main brand colour.

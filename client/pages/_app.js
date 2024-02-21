@@ -164,7 +164,6 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
   const [isServer, setIsServer] = useState(true);
   const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState();
-  const [locale, setLocale] = useState("en");
 
   const router = useRouter();
 
@@ -181,8 +180,11 @@ const SqTracker = ({ Component, pageProps, initialTheme }) => {
       SQ_API_URL,
       SQ_MINIMUM_RATIO,
       SQ_MAXIMUM_HIT_N_RUNS,
+      SQ_SITE_DEFAULT_LOCALE,
     },
   } = getConfig();
+
+  const [locale, setLocale] = useState(SQ_SITE_DEFAULT_LOCALE);
 
   const allowThemeToggle = !Object.keys(SQ_CUSTOM_THEME ?? {}).some(
     (key) => key !== "primary"

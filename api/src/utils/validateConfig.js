@@ -10,6 +10,7 @@ const configSchema = yup
       .object({
         SQ_SITE_NAME: yup.string().min(1).max(20).required(),
         SQ_SITE_DESCRIPTION: yup.string().min(1).max(80).required(),
+        SQ_SITE_DEFAULT_LOCALE: yup.string().min(2).max(2).required(),
         SQ_ALLOW_REGISTER: yup
           .string()
           .oneOf(["open", "invite", "closed"])
