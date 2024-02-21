@@ -5,10 +5,12 @@ import de from "./de.json";
 import zh from "./zh.json";
 import eo from "./eo.json";
 import fr from "./fr.json";
+import it from "./it.json";
 
 export default {
   en,
   es,
+  it,
   ru,
   de,
   zh,
