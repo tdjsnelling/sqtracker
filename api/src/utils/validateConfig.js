@@ -1,12 +1,4 @@
 import * as yup from "yup";
-import en from "@sqtracker/client/locales/en.json";
-import es from "@sqtracker/client/locales/es.json";
-import it from "@sqtracker/client/locales/it.json";
-import ru from "@sqtracker/client/locales/ru.json";
-import de from "@sqtracker/client/locales/de.json";
-import zh from "@sqtracker/client/locales/zh.json";
-import eo from "@sqtracker/client/locales/eo.json";
-import fr from "@sqtracker/client/locales/fr.json";
 
 const httpRegex = /http(s)?:\/\/.*/;
 const mongoRegex = /mongodb:\/\/.*/;

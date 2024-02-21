@@ -17,11 +17,17 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - ./traefik.yml:/config/traefik.yml
+#  nginx:
+#    image: "nginx:latest"
+#    container_name: "sq_nginx"
+#    restart: always
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf
   database:
     container_name: sq_mongodb
     image: mongo:6.0
-    ports:
-      - "127.0.0.1:27017:27017"
     volumes:
       - ./data:/data/db
   api:

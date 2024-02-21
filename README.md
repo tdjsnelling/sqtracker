@@ -89,6 +89,8 @@ The sqtracker client service provides the modern, responsive web interface that 
 
 The HTTP proxy allows the client, API, and BitTorrent tracker to all be accessible via a single endpoint.
 
+Traefik is recommended and is configured by default. An Nginx config file is also provided for those that prefer it and the `docker-compose.yml` file contains an Nginx block that can be enabled. 
+
 ### Deploying with Docker compose
 
 The sqtracker platform is designed to be deployed via Docker. Once a configuration file is created, deploying is as simple as running `docker compose up -d` at the root of the project.
