@@ -73,6 +73,9 @@ module.exports = {
     // An array of blacklisted file extensions. Torrents containing files with these extensions will fail to upload.
     SQ_EXTENSION_BLACKLIST: ["exe"],
 
+    // Default site locale. See `client/locales/index.js` for available options.
+    SQ_SITE_DEFAULT_LOCALE: "en",
+
     // The URL of your tracker site.
     SQ_BASE_URL: "https://sqtracker.dev",
 
