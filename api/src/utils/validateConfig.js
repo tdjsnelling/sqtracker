@@ -64,10 +64,31 @@ const configSchema = yup
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),
-        SQ_MAIL_FROM_ADDRESS: yup.string().email().required(),
-        SQ_SMTP_HOST: yup.string().required(),
-        SQ_SMTP_PORT: yup.number().integer().min(1).max(65535).required(),
-        SQ_SMTP_SECURE: yup.boolean().required(),
+        SQ_DISABLE_EMAIL: yup.boolean(),
+        SQ_MAIL_FROM_ADDRESS: yup
+          .string()
+          .email()
+          .when("SQ_DISABLE_EMAIL", {
+            is: (val) => val !== true,
+            then: (schema) => schema.required(),
+          }),
+        SQ_SMTP_HOST: yup.string().when("SQ_DISABLE_EMAIL", {
+          is: (val) => val !== true,
+          then: (schema) => schema.required(),
+        }),
+        SQ_SMTP_PORT: yup
+          .number()
+          .integer()
+          .min(1)
+          .max(65535)
+          .when("SQ_DISABLE_EMAIL", {
+            is: (val) => val !== true,
+            then: (schema) => schema.required(),
+          }),
+        SQ_SMTP_SECURE: yup.boolean().when("SQ_DISABLE_EMAIL", {
+          is: (val) => val !== true,
+          then: (schema) => schema.required(),
+        }),
       })
       .strict()
       .noUnknown()
@@ -77,8 +98,16 @@ const configSchema = yup
         SQ_JWT_SECRET: yup.string().required(),
         SQ_SERVER_SECRET: yup.string().required(),
         SQ_ADMIN_EMAIL: yup.string().email().required(),
-        SQ_SMTP_USER: yup.string().required(),
-        SQ_SMTP_PASS: yup.string().required(),
+        SQ_SMTP_USER: yup.string(),
+        SQ_SMTP_PASS: yup.string(),
+      })
+      .when("envs.SQ_DISABLE_EMAIL", {
+        is: (val) => val !== true,
+        then: (schema) => {
+          schema.fields.SQ_SMTP_USER = yup.string().required();
+          schema.fields.SQ_SMTP_PASS = yup.string().required();
+          return schema;
+        },
       })
       .strict()
       .noUnknown()

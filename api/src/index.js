@@ -52,15 +52,19 @@ validateConfig(config).then(() => {
     });
   }
 
-  const mail = nodemailer.createTransport({
-    host: process.env.SQ_SMTP_HOST,
-    port: process.env.SQ_SMTP_PORT,
-    secure: process.env.SQ_SMTP_SECURE,
-    auth: {
-      user: process.env.SQ_SMTP_USER,
-      pass: process.env.SQ_SMTP_PASS,
-    },
-  });
+  let mail;
+
+  if (!process.env.SQ_DISABLE_EMAIL) {
+    mail = nodemailer.createTransport({
+      host: process.env.SQ_SMTP_HOST,
+      port: process.env.SQ_SMTP_PORT,
+      secure: process.env.SQ_SMTP_SECURE,
+      auth: {
+        user: process.env.SQ_SMTP_USER,
+        pass: process.env.SQ_SMTP_PASS,
+      },
+    });
+  }
 
   const connectToDb = () => {
     console.log("[sq] initiating db connection...");

@@ -85,18 +85,26 @@ module.exports = {
     // The URL of your MongoDB server. Under the recommended setup, it should be `mongodb://sq_mongodb/sqtracker`.
     SQ_MONGO_URL: "mongodb://sq_mongodb/sqtracker",
 
+    // Disables sending of any emails and removes the need for an SMTP server.
+    // Fine for testing, not recommended in production as users will not be able to reset their passwords.
+    SQ_DISABLE_EMAIL: false,
+
     // The email address that mail will be sent from.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_MAIL_FROM_ADDRESS: "mail@sqtracker.dev",
 
     // The hostname of your SMTP server.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_SMTP_HOST: "smtp.example.com",
 
     // The port of your SMTP server.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_SMTP_PORT: 587,
 
     // Whether to force SMTP TLS: if true the connection will use TLS when connecting to server.
     // If false (the default) then TLS is used if server supports the STARTTLS extension.
     // In most cases set this value to true if you are connecting to port 465. For port 587 or 25 keep it false.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_SMTP_SECURE: false,
   },
   secrets: {
@@ -111,9 +119,11 @@ module.exports = {
     SQ_ADMIN_EMAIL: "admin@example.com",
 
     // The username to authenticate with your SMTP server with.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_SMTP_USER: "smtp_username",
 
     // The password to authenticate with your SMTP server with.
+    // Not required if SQ_DISABLE_EMAIL=true.
     SQ_SMTP_PASS: "smtp_password",
   },
 };
