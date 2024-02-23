@@ -683,8 +683,8 @@ const Torrent = ({ token, torrent = {}, userId, userRole, uid, userStats }) => {
             alt={`Cover image for “${torrent.name}”`}
             width="auto"
             height="auto"
-            maxWidth="500px"
-            maxHeight="500px"
+            maxWidth="400px"
+            maxHeight="400px"
           />
         </Infobox>
       )}
