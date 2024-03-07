@@ -116,7 +116,51 @@ export const getWiki = async (req, res, next) => {
     next(e);
   }
 };
-
+export const getWikis = async (req, res, next) => {
+  try {
+    const result = await Wiki.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          as: "createdBy",
+          let: { userId: "$createdBy" },
+          pipeline: [
+            {
+              $match: { $expr: { $eq: ["$_id", "$$userId"] } },
+            },
+            {
+              $project: {
+                username: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$createdBy",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+    if (!result || result.length === 0) {
+      res.status(404).send("No wikis found");
+      return;
+    }
+    let page = result[0];
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId && !page.public) {
+      page = null;
+    }
+    const query = {};
+    if (process.env.SQ_ALLOW_UNREGISTERED_VIEW && !req.userId) {
+      query.public = true;
+    }
+    const allPages = await Wiki.find(query, { slug: 1, title: 1 }).lean();
+    res.json({ page, allPages });
+  } catch (e) {
+    next(e);
+  }
+};
 export const deleteWiki = async (req, res, next) => {
   try {
     if (req.userRole !== "admin") {
