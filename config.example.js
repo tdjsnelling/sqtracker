@@ -87,7 +87,7 @@ module.exports = {
 
     // Disables sending of any emails and removes the need for an SMTP server.
     // Fine for testing, not recommended in production as users will not be able to reset their passwords.
-    SQ_DISABLE_EMAIL: false,
+    SQ_DISABLE_EMAIL: true,
 
     // The email address that mail will be sent from.
     // Not required if SQ_DISABLE_EMAIL=true.

@@ -1,36 +1,36 @@
 version: "3.9"
 services:
-  traefik:
-    image: "traefik:v2.5"
-    container_name: "sq_traefik"
-    command:
-      - "--api.insecure=true"
-      - "--providers.file=true"
-      - "--providers.file.filename=/config/traefik.yml"
-      - "--entrypoints.webinsecure.address=:80"
-      - "--entrypoints.web.address=:443"
-      - "--entryPoints.web.proxyProtocol.insecure"
-      - "--entryPoints.web.forwardedHeaders.insecure"
-      - "--certificatesresolvers.tlsresolver.acme.email=email@example.com"
-      - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
-      - "--certificatesresolvers.tlsresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.tlsresolver.acme.httpchallenge.entrypoint=webinsecure"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ./letsencrypt:/letsencrypt
-      - ./traefik.yml:/config/traefik.yml
-#  nginx:
-#    image: "nginx:latest"
-#    container_name: "sq_nginx"
-#    restart: always
+#  traefik:
+#    image: "traefik:v2.5"
+#    container_name: "sq_traefik"
+#    command:
+#      - "--api.insecure=true"
+#      - "--providers.file=true"
+#      - "--providers.file.filename=/config/traefik.yml"
+#      - "--entrypoints.webinsecure.address=:80"
+#      - "--entrypoints.web.address=:443"
+#      - "--entryPoints.web.proxyProtocol.insecure"
+#      - "--entryPoints.web.forwardedHeaders.insecure"
+#      - "--certificatesresolvers.tlsresolver.acme.email=email@example.com"
+#      - "--certificatesresolvers.tlsresolver.acme.storage=/letsencrypt/acme.json"
+#      - "--certificatesresolvers.tlsresolver.acme.httpchallenge=true"
+#      - "--certificatesresolvers.tlsresolver.acme.httpchallenge.entrypoint=webinsecure"
 #    ports:
 #      - "80:80"
+#      - "443:443"
+#      - "8080:8080"
 #    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf
+#      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+#      - ./letsencrypt:/letsencrypt
+#      - ./traefik.yml:/config/traefik.yml
+  nginx:
+    image: "nginx:latest"
+    container_name: "sq_nginx"
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
   database:
     container_name: sq_mongodb
     image: mongo:6.0
@@ -40,9 +40,9 @@ services:
       - ./data:/data/db
   api:
     container_name: sq_api
-    image: ghcr.io/tdjsnelling/sqtracker-api:latest
+    image: klaiment_api:latest
     ports:
-      - "127.0.0.1:3001:3001"
+      - "3001:3001"
     volumes:
       - type: bind
         source: ./config.js
@@ -51,9 +51,9 @@ services:
       - database
   client:
     container_name: sq_client
-    image: ghcr.io/tdjsnelling/sqtracker-client:latest
+    image: klaiment:latest
     ports:
-      - "127.0.0.1:3000:3000"
+      - "3000:3000"
     volumes:
       - type: bind
         source: ./config.js

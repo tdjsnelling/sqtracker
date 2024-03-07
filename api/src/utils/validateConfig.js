@@ -14,6 +14,7 @@ const configSchema = yup
           .string()
           .oneOf(["open", "invite", "closed"])
           .required(),
+        SQ_DISABLE_EMAIL: yup.boolean().required(),
         SQ_ALLOW_ANONYMOUS_UPLOADS: yup.boolean().required(),
         SQ_MINIMUM_RATIO: yup.number().min(-1).required(),
         SQ_MAXIMUM_HIT_N_RUNS: yup.number().integer().min(-1).required(),
@@ -22,6 +23,7 @@ const configSchema = yup
         SQ_BP_COST_PER_INVITE: yup.number().min(0).required(),
         SQ_BP_COST_PER_GB: yup.number().min(0).required(),
         SQ_SITE_WIDE_FREELEECH: yup.boolean().required(),
+
         SQ_TORRENT_CATEGORIES: yup.lazy((value) => {
           const entries = Object.keys(value).reduce((obj, key) => {
             obj[key] = yup
@@ -51,12 +53,12 @@ const configSchema = yup
         }),
         SQ_EXTENSION_BLACKLIST: yup.array().of(yup.string()).min(0),
         SQ_SITE_DEFAULT_LOCALE: yup
-          .string()
-          .oneOf(["en", "es", "it", "ru", "de", "zh", "eo", "fr"]),
+            .string()
+            .oneOf(["en", "es", "it", "ru", "de", "zh", "eo", "fr"])
+            .required(),
         SQ_BASE_URL: yup.string().matches(httpRegex).required(),
         SQ_API_URL: yup.string().matches(httpRegex).required(),
         SQ_MONGO_URL: yup.string().matches(mongoRegex).required(),
-        SQ_DISABLE_EMAIL: yup.boolean(),
         SQ_MAIL_FROM_ADDRESS: yup
           .string()
           .email()
