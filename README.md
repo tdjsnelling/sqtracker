@@ -89,6 +89,8 @@ The sqtracker client service provides the modern, responsive web interface that 
 
 The HTTP proxy allows the client, API, and BitTorrent tracker to all be accessible via a single endpoint.
 
+Traefik is recommended and is configured by default. An Nginx config file is also provided for those that prefer it and the `docker-compose.yml` file contains an Nginx block that can be enabled. 
+
 ### Deploying with Docker compose
 
 The sqtracker platform is designed to be deployed via Docker. Once a configuration file is created, deploying is as simple as running `docker compose up -d` at the root of the project.
@@ -116,16 +118,20 @@ To add a new translation in your own language, create a new JSON file with your 
 
 The best place to start is to copy the `en.json` file and work through it, translating each English string.
 
+There is also an [inlang project](https://fink.inlang.com/github.com/tdjsnelling/sqtracker) to aid with translation.
+
 ### Existing translations
 
-| Language           | Complete (estimate) | Contributed by                                     |
-|--------------------|---------------------|----------------------------------------------------|
-| English            | 100%                |                                                    |
-| Russian            | 100%                | [@smlinux](https://github.com/smlinux)             |
-| Esperanto          | 100%                | [@smlinux](https://github.com/smlinux)             |
-| German             | 100%                | [@EchterAlsFake](https://github.com/EchterAlsFake) |
-| Simplified Chinese | 95%                 | [@0EAC](https://github.com/0EAC)                   |
-| French             | 100%                | [@Klaiment](https://github.com/Klaiment)           |
+| Language           | Contributed by                                       |
+|--------------------|------------------------------------------------------|
+| English            |                                                      |
+| Russian            | [@smlinux](https://github.com/smlinux)               |
+| Esperanto          | [@smlinux](https://github.com/smlinux)               |
+| German             | [@EchterAlsFake](https://github.com/EchterAlsFake)   |
+| Simplified Chinese | [@0EAC](https://github.com/0EAC)                     |
+| French             | [@Klaiment](https://github.com/Klaiment)             |
+| Spanish            | [@CerealKillerjs](https://github.com/CerealKillerjs) |
+| Italian            | [@NotLugozzi](https://github.com/NotLugozzi)         |
 
 ## Screenshots
 

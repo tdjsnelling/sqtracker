@@ -110,7 +110,7 @@ export const register = (mail) => async (req, res, next) => {
           role,
           invitedBy: invite?.invitingUser,
           remainingInvites: 0,
-          emailVerified: false,
+          emailVerified: process.env.SQ_DISABLE_EMAIL,
           bonusPoints: 0,
           totp: {
             enabled: false,
@@ -125,19 +125,21 @@ export const register = (mail) => async (req, res, next) => {
 
         const createdUser = await newUser.save();
 
-        const emailVerificationValidUntil = created + 48 * 60 * 60 * 1000;
-        const emailVerificationToken = jwt.sign(
-          {
-            user: req.body.email,
-            validUntil: emailVerificationValidUntil,
-          },
-          process.env.SQ_JWT_SECRET
-        );
-        await sendVerificationEmail(
-          mail,
-          req.body.email,
-          emailVerificationToken
-        );
+        if (!process.env.SQ_DISABLE_EMAIL) {
+          const emailVerificationValidUntil = created + 48 * 60 * 60 * 1000;
+          const emailVerificationToken = jwt.sign(
+            {
+              user: req.body.email,
+              validUntil: emailVerificationValidUntil,
+            },
+            process.env.SQ_JWT_SECRET
+          );
+          await sendVerificationEmail(
+            mail,
+            req.body.email,
+            emailVerificationToken
+          );
+        }
 
         if (createdUser) {
           if (req.body.invite) {
@@ -293,14 +295,16 @@ export const generateInvite = (mail) => async (req, res, next) => {
     const createdInvite = await invite.save();
 
     if (createdInvite) {
-      await mail.sendMail({
-        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
-        to: email,
-        subject: "Invite",
-        text: `You have been invited to join ${process.env.SQ_SITE_NAME}. Please follow the link below to register.
+      if (!process.env.SQ_DISABLE_EMAIL) {
+        await mail.sendMail({
+          from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+          to: email,
+          subject: "Invite",
+          text: `You have been invited to join ${process.env.SQ_SITE_NAME}. Please follow the link below to register.
         
 ${process.env.SQ_BASE_URL}/register?token=${createdInvite.token}`,
-      });
+        });
+      }
       res.send(createdInvite);
     }
   } else {
@@ -343,18 +347,20 @@ export const changePassword = (mail) => async (req, res, next) => {
         { $set: { password: hash } }
       );
 
-      await mail.sendMail({
-        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
-        to: user.email,
-        subject: "Your password was changed",
-        text: `Your password was updated successfully at ${new Date().toISOString()} from ${
-          req.ip
-        }.
+      if (!process.env.SQ_DISABLE_EMAIL) {
+        await mail.sendMail({
+          from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+          to: user.email,
+          subject: "Your password was changed",
+          text: `Your password was updated successfully at ${new Date().toISOString()} from ${
+            req.ip
+          }.
         
 If you did not perform this action, follow the link below immediately to reset your password. If this was you, no action is required. 
         
 ${process.env.SQ_BASE_URL}/reset-password/initiate`,
-      });
+        });
+      }
 
       res.sendStatus(200);
     } catch (e) {
@@ -388,14 +394,16 @@ export const initiatePasswordReset = (mail) => async (req, res, next) => {
         process.env.SQ_JWT_SECRET
       );
 
-      await mail.sendMail({
-        from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
-        to: user.email,
-        subject: "Password reset",
-        text: `Please follow the link below to reset your password.
+      if (!process.env.SQ_DISABLE_EMAIL) {
+        await mail.sendMail({
+          from: `"${process.env.SQ_SITE_NAME}" <${process.env.SQ_MAIL_FROM_ADDRESS}>`,
+          to: user.email,
+          subject: "Password reset",
+          text: `Please follow the link below to reset your password.
         
 ${process.env.SQ_BASE_URL}/reset-password/finalise?token=${token}`,
-      });
+        });
+      }
 
       res.sendStatus(200);
     } catch (e) {

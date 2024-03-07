@@ -1,4 +1,4 @@
-FROM node:16-alpine AS builder
+FROM node:16 AS builder
 ARG SENTRY_AUTH_TOKEN
 ENV NODE_ENV=production
 ENV SENTRY_ORG=tdjsnelling

@@ -98,6 +98,7 @@ const Account = ({ token, invites = [], user, userRole }) => {
       SQ_BP_COST_PER_INVITE,
       SQ_BP_COST_PER_GB,
       SQ_ALLOW_REGISTER,
+      SQ_DISABLE_EMAIL,
     },
   } = getConfig();
 
@@ -133,7 +134,14 @@ const Account = ({ token, invites = [], user, userRole }) => {
         return currentInvitesList;
       });
 
-      addNotification("success", `${getLocaleString("accInviteSentSuccess")}`);
+      addNotification(
+        "success",
+        `${getLocaleString(
+          SQ_DISABLE_EMAIL
+            ? "accInviteSentSuccessNoEmail"
+            : "accInviteSentSuccess"
+        )}`
+      );
 
       setRemainingInvites((r) => r - 1);
 
@@ -425,7 +433,9 @@ const Account = ({ token, invites = [], user, userRole }) => {
                 onClick={() => setShowInviteModal(true)}
                 disabled={remainingInvites < 1}
               >
-                {getLocaleString("accSendInvite")}
+                {getLocaleString(
+                  SQ_DISABLE_EMAIL ? "accSendInviteNoEmail" : "accSendInvite"
+                )}
               </Button>
             </Box>
           </Box>
@@ -650,7 +660,11 @@ const Account = ({ token, invites = [], user, userRole }) => {
       )}
       {showInviteModal && (
         <Modal close={() => setShowInviteModal(false)}>
-          <Text mb={5}>{getLocaleString("accInviteText1")}</Text>
+          <Text mb={5}>
+            {getLocaleString(
+              SQ_DISABLE_EMAIL ? "accInviteText1NoEmail" : "accInviteText1"
+            )}
+          </Text>
           <form onSubmit={handleGenerateInvite}>
             <Input
               name="email"
@@ -674,7 +688,11 @@ const Account = ({ token, invites = [], user, userRole }) => {
               >
                 {getLocaleString("accCancel")}
               </Button>
-              <Button>{getLocaleString("accSendInvite")}</Button>
+              <Button>
+                {getLocaleString(
+                  SQ_DISABLE_EMAIL ? "accSendInviteNoEmail" : "accSendInvite"
+                )}
+              </Button>
             </Box>
           </form>
         </Modal>
