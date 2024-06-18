@@ -77,12 +77,15 @@ module.exports = {
     SQ_SITE_DEFAULT_LOCALE: "en",
 
     // The URL of your tracker site.
+    // For local development, this should be `http://127.0.0.1:3000`.
     SQ_BASE_URL: "https://sqtracker.dev",
 
     // The URL of your API. Under the recommended setup, it should be `${SQ_BASE_URL}/api`.
+    // For local development, this should be `http://127.0.0.1:3001`.
     SQ_API_URL: "https://sqtracker.dev/api",
 
     // The URL of your MongoDB server. Under the recommended setup, it should be `mongodb://sq_mongodb/sqtracker`.
+    // For local development, this should be `mongodb://127.0.0.1/sqtracker`.
     SQ_MONGO_URL: "mongodb://sq_mongodb/sqtracker",
 
     // Disables sending of any emails and removes the need for an SMTP server.
